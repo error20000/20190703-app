@@ -47,12 +47,7 @@ public class MainFragment extends QMUIFragment {
 
         @Override
         public Object instantiateItem(final ViewGroup container, int position) {
-            Log.e("test", ""+position);
             View view = mPages.get(Pager.getPagerFromPositon(position));
-            ViewGroup parent = (ViewGroup) view.getParent();
-            if (parent != null) {
-                parent.removeAllViews();
-            }
             container.addView(view);
             return view;
         }
@@ -129,18 +124,32 @@ public class MainFragment extends QMUIFragment {
     private void initPagers() {
         mPages = new HashMap<>();
 
-        HomeView homeView= new HomeView(getActivity());
-        //homeView.setListener(listener);
+        MainListener listener = new MainListener(){
+            @Override
+            public void startFragment(QMUIFragment fragment) {
+                MainFragment.this.startFragment(fragment);
+            }
+        };
+
+        HomeView homeView = new HomeView(getActivity());
+        homeView.setMainListener(listener);
         mPages.put(Pager.Home, homeView);
 
-        MapView mapView= new MapView(getActivity());
+        MapView mapView = new MapView(getActivity());
+        mapView.setMainListener(listener);
         mPages.put(Pager.Map, mapView);
 
-        mPages.put(Pager.Scan, homeView);
+        ScanView scanView = new ScanView(getActivity());
+        scanView.setMainListener(listener);
+        mPages.put(Pager.Scan, scanView);
 
-        mPages.put(Pager.Msg, homeView);
+        MsgView msgView = new MsgView(getActivity());
+        msgView.setMainListener(listener);
+        mPages.put(Pager.Msg, msgView);
 
-        mPages.put(Pager.Center, homeView);
+        CenterView centerView = new CenterView(getActivity());
+        centerView.setMainListener(listener);
+        mPages.put(Pager.Center, centerView);
 
         mViewPager.setAdapter(mPagerAdapter);
         mTabSegment.setupWithViewPager(mViewPager, false);

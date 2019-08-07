@@ -12,14 +12,14 @@ import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapView extends QMUIWindowInsetLayout {
+public class ScanView extends QMUIWindowInsetLayout {
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
 
     private MainListener mListener;
 
-    public MapView(Context context) {
+    public ScanView(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.fragment_map, this);
         ButterKnife.bind(this);
