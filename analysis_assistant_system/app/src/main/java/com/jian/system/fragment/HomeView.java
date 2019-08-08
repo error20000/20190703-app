@@ -8,14 +8,12 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
-
 import com.jian.system.R;
+import com.jian.system.fragment.components.EquipAddFragment;
+import com.jian.system.fragment.components.EquipDetailFragment;
 import com.qmuiteam.qmui.arch.QMUIFragment;
-import com.qmuiteam.qmui.arch.QMUIFragmentActivity;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.widget.QMUILoadingView;
-import com.qmuiteam.qmui.widget.QMUITopBar;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
@@ -116,11 +114,17 @@ public class HomeView extends QMUIWindowInsetLayout{
                 .addItemView(normalItem, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        QDTabSegmentFixModeFragment fragment = new QDTabSegmentFixModeFragment();
+                        EquipDetailFragment fragment = new EquipDetailFragment();
                         startFragment(fragment);
                     }
                 })
-                .addItemView(itemWithDetail, onClickListener)
+                .addItemView(itemWithDetail, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EquipAddFragment fragment = new EquipAddFragment();
+                        startFragment(fragment);
+                    }
+                })
                 .addItemView(itemWithDetailBelow, onClickListener)
                 .addItemView(itemWithChevron, onClickListener)
                 .addItemView(itemWithSwitch, onClickListener)

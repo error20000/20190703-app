@@ -1,5 +1,5 @@
 
-package com.jian.system.utils;
+package com.jian.system.adapter;
 
 import android.content.Context;
 import android.util.SparseArray;
