@@ -2,10 +2,12 @@
 package com.jian.system.fragment;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.jian.system.R;
@@ -93,8 +95,17 @@ public class HomeView extends QMUIWindowInsetLayout{
 
         QMUICommonListItemView itemWithCustom = mGroupListView.createItemView("Item 6");
         itemWithCustom.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
-        QMUILoadingView loadingView = new QMUILoadingView(getContext());
-        itemWithCustom.addAccessoryCustomView(loadingView);
+        //QMUILoadingView loadingView = new QMUILoadingView(getContext());
+        //itemWithCustom.addAccessoryCustomView(loadingView);
+        EditText editText = new EditText(getContext());
+        editText.setWidth(QMUIDisplayHelper.dp2px(getContext(), 300));
+        editText.setHint("test");
+        itemWithCustom.addAccessoryCustomView(editText);
+
+        QMUICommonListItemView test = mGroupListView.createItemView("Item 7");
+        test.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
+        View testView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_list_item_edit, null);
+        test.addAccessoryCustomView(testView);
 
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
@@ -115,6 +126,9 @@ public class HomeView extends QMUIWindowInsetLayout{
                     @Override
                     public void onClick(View v) {
                         EquipDetailFragment fragment = new EquipDetailFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("data","606098577566990336");
+                        fragment.setArguments(bundle);
                         startFragment(fragment);
                     }
                 })
@@ -122,6 +136,9 @@ public class HomeView extends QMUIWindowInsetLayout{
                     @Override
                     public void onClick(View v) {
                         EquipAddFragment fragment = new EquipAddFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("data","传递到的数据");
+                        fragment.setArguments(bundle);
                         startFragment(fragment);
                     }
                 })
@@ -133,6 +150,7 @@ public class HomeView extends QMUIWindowInsetLayout{
         QMUIGroupListView.newSection(getContext())
                 .setTitle("Section 2: 自定义右侧 View")
                 .addItemView(itemWithCustom, onClickListener)
+                .addItemView(test, onClickListener)
                 .addTo(mGroupListView);
     }
 }

@@ -40,4 +40,8 @@ dependencies {
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
     testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
+    //okhttp3
+    implementation 'com.squareup.okhttp3:okhttp:4.0.1'
+    //json
+    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.58'
 }

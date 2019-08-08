@@ -1,6 +1,7 @@
 
 package com.jian.system.fragment.components;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
@@ -11,27 +12,34 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
+import com.jian.system.config.UrlConfig;
 import com.jian.system.entity.Equip;
+import com.jian.system.utils.HttpUtils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUIBottomSheet;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 
+
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
 
 public class EquipDetailFragment extends QMUIFragment {
 
     private final static String TAG = EquipDetailFragment.class.getSimpleName();
     private String title = "器材详情";
     private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
+    private Equip equip;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -116,7 +124,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 .create(mCurrentDialogStyle).show();
     }
 
-    private void initEquipInfo(Equip equip) {
+    private void initEquipInfo() {
         QMUICommonListItemView item1 = mGroupListView.createItemView("ID");
         item1.setDetailText(equip.getsEquip_ID());
         item1.setTag(1);
@@ -195,35 +203,39 @@ public class EquipDetailFragment extends QMUIFragment {
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
+            JSONObject resObj = (JSONObject) msg.obj;
+            if(resObj.getInteger("code") < 0){
+                QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
+                        .setIconType(QMUITipDialog.Builder.ICON_TYPE_FAIL)
+                        .setTipWord(resObj.getString("msg"))
+                        .create();
+                tipDialog.show();
+                return;
+            }
+            equip = resObj.getObject("data", Equip.class);
             refreshData();
         }
     };
 
-    private Equip equip;
 
     private void initData(){
+        Bundle bundle = this.getArguments();
+        String id = bundle.getString("data");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-
+                RequestBody body = new FormBody.Builder()
+                        .add("sEquip_ID", id)
+                        .build();
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryUrl, body);
+                if(res == null || !"".equals(res)){
+                    Log.d(TAG, UrlConfig.equipQueryUrl + " return  is null ");
+                    return;
                 }
-                equip = new Equip();
-                equip.setsEquip_ID("123");
-                equip.setsEquip_NO("123");
-                equip.setsEquip_Name("123");
-                equip.setsEquip_Type("123");
-                equip.setsEquip_Status("123");
-                equip.setsEquip_NfcID("123");
-                equip.setsEquip_AidID("123");
-                equip.setsEquip_StoreLv1("123");
-                equip.setsEquip_StoreLv2("123");
-                equip.setsEquip_StoreLv3("123");
-                equip.setsEquip_StoreLv4("123");
-                equip.setdEquip_CreateDate(new Date());
-                mHandler.sendMessage(mHandler.obtainMessage());
+                JSONObject resObj = JSONObject.parseObject(res);
+                Message msg = mHandler.obtainMessage();
+                msg.obj = resObj;
+                mHandler.sendMessage(msg);
             }
         }).start();
     }
@@ -231,6 +243,6 @@ public class EquipDetailFragment extends QMUIFragment {
     private void refreshData(){
         mGroupListView.getSection(0);
         Log.d(TAG, mGroupListView.getSectionCount()+"");
-        initEquipInfo(equip);
+        initEquipInfo();
     }
 }

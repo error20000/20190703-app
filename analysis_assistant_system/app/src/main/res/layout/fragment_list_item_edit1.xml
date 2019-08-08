@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/qmui_divider_bottom_bitmap"
+            android:padding="5dp"
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+
+</merge>
