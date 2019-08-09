@@ -44,4 +44,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.0.1'
     //json
     implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.58'
+    //components
+    implementation 'com.github.arimorty:floatingsearchview:2.1.1'
 }
