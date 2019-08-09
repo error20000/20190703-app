@@ -2,19 +2,33 @@
 package com.jian.system.fragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.res.ResourcesCompat;
+
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.Util;
 import com.jian.system.R;
 import com.jian.system.fragment.components.EquipAddFragment;
 import com.jian.system.fragment.components.EquipDetailFragment;
+import com.jian.system.fragment.components.EquipListFragment;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
+import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUILoadingView;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
@@ -26,10 +40,14 @@ import butterknife.ButterKnife;
 
 public class HomeView extends QMUIWindowInsetLayout{
 
+    private final static String TAG = HomeView.class.getSimpleName();
+
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
     @BindView(R.id.groupListView)
     QMUIGroupListView mGroupListView;
+    @BindView(R.id.floating_search_view)
+    FloatingSearchView mSearchView;
 
     private MainListener mListener;
     private Context context;
@@ -43,6 +61,7 @@ public class HomeView extends QMUIWindowInsetLayout{
 
         initTopBar();
         initGroupListView();
+        initSearchBar();
     }
 
     protected void startFragment(QMUIFragment fragment) {
@@ -98,8 +117,14 @@ public class HomeView extends QMUIWindowInsetLayout{
         //QMUILoadingView loadingView = new QMUILoadingView(getContext());
         //itemWithCustom.addAccessoryCustomView(loadingView);
         EditText editText = new EditText(getContext());
-        editText.setWidth(QMUIDisplayHelper.dp2px(getContext(), 300));
+        editText.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+        editText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 250));
+        editText.setSingleLine();
         editText.setHint("test");
+        editText.setBackgroundDrawable(null);
+        editText.setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_gray_5));
+        editText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ));
+
         itemWithCustom.addAccessoryCustomView(editText);
 
         QMUICommonListItemView test = mGroupListView.createItemView("Item 7");
@@ -143,7 +168,13 @@ public class HomeView extends QMUIWindowInsetLayout{
                     }
                 })
                 .addItemView(itemWithDetailBelow, onClickListener)
-                .addItemView(itemWithChevron, onClickListener)
+                .addItemView(itemWithChevron, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EquipListFragment fragment = new EquipListFragment();
+                        startFragment(fragment);
+                    }
+                })
                 .addItemView(itemWithSwitch, onClickListener)
                 .addTo(mGroupListView);
 
@@ -152,5 +183,92 @@ public class HomeView extends QMUIWindowInsetLayout{
                 .addItemView(itemWithCustom, onClickListener)
                 .addItemView(test, onClickListener)
                 .addTo(mGroupListView);
+        QMUIGroupListView.newSection(getContext())
+                .setTitle("Section 3: 自定义右侧 View")
+                .addTo(mGroupListView);
+        QMUIGroupListView.newSection(getContext())
+                .setTitle("Section 4: 自定义右侧 View")
+                .addTo(mGroupListView);
+        QMUIGroupListView.newSection(getContext())
+                .setTitle("Section 4: 自定义右侧 View")
+                .addTo(mGroupListView);
+        QMUIGroupListView.newSection(getContext())
+                .setTitle("Section 4: 自定义右侧 View")
+                .addTo(mGroupListView);
+        QMUIGroupListView.newSection(getContext())
+                .setTitle("Section 4: 自定义右侧 View")
+                .addTo(mGroupListView);
+        QMUIGroupListView.newSection(getContext())
+                .setTitle("Section 4: 自定义右侧 View")
+                .addTo(mGroupListView);
+        QMUIGroupListView.newSection(getContext())
+                .setTitle("Section 4: 自定义右侧 View")
+                .addTo(mGroupListView);
+    }
+
+    private void initSearchBar() {
+
+        mSearchView.setShowMoveUpSuggestion(false);
+
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+
+                if (!oldQuery.equals("") && newQuery.equals("")) {
+                    mSearchView.clearSuggestions();
+                } else {
+                    mSearchView.showProgress();
+                }
+                Log.d(TAG, "onSearchTextChanged()");
+            }
+        });
+
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(final SearchSuggestion searchSuggestion) {
+
+                Log.d(TAG, "onSuggestionClicked()");
+
+            }
+
+            @Override
+            public void onSearchAction(String query) {
+                Log.d(TAG, "onSearchAction()");
+            }
+        });
+
+        mSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+            @Override
+            public void onFocus() {
+
+                Log.d(TAG, "onFocus()");
+            }
+
+            @Override
+            public void onFocusCleared() {
+
+                Log.d(TAG, "onFocusCleared()");
+            }
+        });
+
+
+        mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+                Toast.makeText(getContext().getApplicationContext(), item.getTitle(),
+                        Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+            @Override
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon,
+                                         TextView textView, SearchSuggestion item, int itemPosition) {
+
+            }
+
+        });
     }
 }
