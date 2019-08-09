@@ -201,8 +201,8 @@ public class EquipListFragment extends QMUIFragment {
 
 
     private void initData(){
-        Bundle bundle = this.getArguments();
-        String id = bundle.getString("data");
+        //Bundle bundle = this.getArguments();
+        //String id = bundle.getString("data");
         new Thread(new Runnable() {
             @Override
             public void run() {
