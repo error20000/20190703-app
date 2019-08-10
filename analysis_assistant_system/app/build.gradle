@@ -46,4 +46,5 @@ dependencies {
     implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.58'
     //components
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+    implementation 'q.rorbin:badgeview:1.1.3'
 }

@@ -1,5 +1,7 @@
 package com.jian.system.utils;
 
+import android.util.Log;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +17,7 @@ public class HttpUtils {
     OkHttpClient client = null;
 
     public static HttpUtils getInstance(){
-        return getInstance(10, 10, 10);
+        return getInstance(60, 60, 60);
     }
     public static HttpUtils getInstance(int ctimeout, int wtimeout, int rtimeout){
         if (instance == null) {
@@ -46,7 +48,9 @@ public class HttpUtils {
                 .post(body)
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            return response.body().string();
+            String res = response.body().string();
+            Log.d("sendPost", res);
+            return res;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -58,7 +62,9 @@ public class HttpUtils {
                 .url(url)
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            return response.body().string();
+            String res = response.body().string();
+            Log.d("sendGet", res);
+            return res;
         }catch (Exception e){
             e.printStackTrace();
         }

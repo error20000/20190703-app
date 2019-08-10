@@ -220,16 +220,16 @@ public class EquipDetailFragment extends QMUIFragment {
 
     private void initData(){
         Bundle bundle = this.getArguments();
-        String id = bundle.getString("data");
+        String id = bundle.getString("id");
         new Thread(new Runnable() {
             @Override
             public void run() {
                 RequestBody body = new FormBody.Builder()
                         .add("sEquip_ID", id)
                         .build();
-                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryUrl, body);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryDetailUrl, body);
                 if(res == null || !"".equals(res)){
-                    Log.d(TAG, UrlConfig.equipQueryUrl + " return  is null ");
+                    Log.d(TAG, UrlConfig.equipQueryDetailUrl + " return  is null ");
                     return;
                 }
                 JSONObject resObj = JSONObject.parseObject(res);

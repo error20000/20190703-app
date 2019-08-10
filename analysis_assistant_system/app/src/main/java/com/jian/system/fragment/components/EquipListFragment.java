@@ -23,14 +23,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.jian.system.R;
 import com.jian.system.adapter.BaseRecyclerAdapter;
+import com.jian.system.adapter.BaseRecyclerOnScrollListener;
 import com.jian.system.adapter.EquipAdapter;
 import com.jian.system.config.UrlConfig;
+import com.jian.system.decorator.DividerItemDecoration;
+import com.jian.system.decorator.GridDividerItemDecoration;
 import com.jian.system.entity.Equip;
 import com.jian.system.utils.HttpUtils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
@@ -44,7 +48,11 @@ import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,6 +65,12 @@ public class EquipListFragment extends QMUIFragment {
     private String title = "器材列表";
     private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
     private List<Equip> data;
+    private int total = 0;
+    private int page = 1;
+    private int rows = 10;
+    private EquipAdapter mItemAdapter;
+    private final int INIT = 0;
+    private final int LOADMORE = 1;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -150,43 +164,53 @@ public class EquipListFragment extends QMUIFragment {
     }
 
     private void initEquipList() {
-        EquipAdapter mItemAdapter = new EquipAdapter(getActivity(), data);
+        mItemAdapter = new EquipAdapter(getActivity(), data);
         mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int pos) {
-                Log.d(TAG, "onItemClick");
+                Log.d(TAG, "onItemClick: " + data.get(pos).getsEquip_ID());
+                EquipDetailFragment fragment = new EquipDetailFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("id", data.get(pos).getsEquip_ID());
+                fragment.setArguments(bundle);
+                startFragment(fragment);
             }
         });
         mRecyclerView.setAdapter(mItemAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //mRecyclerView.addItemDecoration(new GridDividerItemDecoration(getContext(), spanCount));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+        // 设置加载更多监听
+        mRecyclerView.addOnScrollListener(new BaseRecyclerOnScrollListener() {
+
+            @Override
+            public void onLoadMore() {
+                if( data.size() >= total ){
+                    mItemAdapter.setLoadState(mItemAdapter.LOADING_END);
+                    return;
+                }
+                mItemAdapter.setLoadState(mItemAdapter.LOADING);
+                //refreshData();
+                // 模拟获取网络数据，延时1s
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        refreshData();
+                    }
+                }, 1000);
+            }
+        });
 
     }
 
-    private View.OnClickListener mOnClickListenerGroup = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            QMUICommonListItemView viewList = (QMUICommonListItemView) view;
-            Log.d(TAG, "选项：" + viewList.getText().toString() + " 点击了");
-            switch ((int)viewList.getTag()) {
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-            }
-            Toast.makeText(getActivity(),"选项：" +  viewList.getTag()+ " 点击了",Toast.LENGTH_SHORT).show();
-        }
+    private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
+
     };
 
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
-            /*JSONObject resObj = (JSONObject) msg.obj;
-            if(resObj.getInteger("code") < 0){
+            JSONObject resObj = (JSONObject) msg.obj;
+            if(resObj.getInteger("code") <= 0){
                 QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
                         .setIconType(QMUITipDialog.Builder.ICON_TYPE_FAIL)
                         .setTipWord(resObj.getString("msg"))
@@ -194,41 +218,65 @@ public class EquipListFragment extends QMUIFragment {
                 tipDialog.show();
                 return;
             }
-            equip = resObj.getObject("data", Equip.class);*/
-            refreshData();
+            total = resObj.getInteger("total");
+            JSONArray resData = resObj.getJSONArray("data");
+            if(data == null){
+                data = new ArrayList<>();
+            }
+            for (int i = 0; i < resData.size(); i++) {
+                data.add(resData.getObject(i, Equip.class));
+            }
+            //处理数据
+            switch (msg.what){
+                case INIT:
+                    initEquipList();
+                    break;
+                case LOADMORE:
+                    mItemAdapter.setLoadState(mItemAdapter.LOADING_COMPLETE);
+                    break;
+                default:
+                    break;
+            }
+
         }
     };
 
 
     private void initData(){
-        //Bundle bundle = this.getArguments();
-        //String id = bundle.getString("data");
+        //查询数据 -- 判断网络
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", page);
+        params.put("rows", rows);
+        queryData(params, INIT);
+
+    }
+
+    private void refreshData(){
+        if( data.size() >= total ){
+            return;
+        }
+        page = page + 1;
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", page);
+        params.put("rows", rows);
+        queryData(params, LOADMORE);
+    }
+
+    private void queryData(Map<String, Object> params, int init){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                /*RequestBody body = new FormBody.Builder()
-                        .add("sEquip_ID", id)
-                        .build();
-                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryUrl, body);
-                if(res == null || !"".equals(res)){
-                    Log.d(TAG, UrlConfig.equipQueryUrl + " return  is null ");
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryPageUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, UrlConfig.equipQueryPageUrl + " return  is null ");
                     return;
                 }
                 JSONObject resObj = JSONObject.parseObject(res);
                 Message msg = mHandler.obtainMessage();
+                msg.what = init; //init
                 msg.obj = resObj;
-                mHandler.sendMessage(msg);*/
-                data = new ArrayList<>();
-                Equip equip = new Equip();
-                equip.setsEquip_Name("setsEquip_Name");
-                data.add(equip);
-                mHandler.sendEmptyMessage(1);
+                mHandler.sendMessage(msg);
             }
         }).start();
-    }
-
-    private void refreshData(){
-        Log.d(TAG, "refreshData");
-        initEquipList();
     }
 }

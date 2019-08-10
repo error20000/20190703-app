@@ -1,26 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="120dp"
-              android:background="?attr/qmui_s_list_item_bg_with_border_none"
-              android:gravity="center"
-              android:orientation="horizontal"
-              android:paddingLeft="8dp"
-              android:paddingRight="8dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:background="?attr/qmui_s_list_item_bg_with_border_none"
+    android:orientation="horizontal"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="10dp">
+
 
     <ImageView
         android:id="@+id/item_icon"
-        android:contentDescription="Item Icon"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:contentDescription="Item Icon" />
 
     <TextView
-        android:id="@+id/item_name"
+        android:id="@+id/item_state"
+        android:layout_width="74dp"
+        android:layout_height="30dp"
+        android:layout_alignBottom="@+id/item_badge"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="20dp"
+        android:background="#3B7FD4"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+
+    <RelativeLayout
+        android:id="@+id/item_badge"
+        android:layout_width="74dp"
+        android:layout_height="39dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="0dp"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="?attr/qmui_common_list_item_detail_h_text_size"
+        android:visibility="gone">
+
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/item_line_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal|top"
-        android:lines="2"
-        android:textColor="?attr/qmui_config_color_gray_6"
-        android:textSize="11sp"/>
-</LinearLayout>
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="left|center_vertical"
+            android:includeFontPadding="false"
+            android:textColor="?attr/qmui_config_color_gray_1"
+            android:textSize="?attr/qmui_common_list_item_title_h_text_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/item_line_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_line_1"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="?attr/qmui_common_list_item_detail_line_space"
+            android:text="器材编码"
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+        <TextView
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" : " />
+        <TextView
+            android:id="@+id/item_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="?attr/qmui_common_list_item_detail_line_space"
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_line_2"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="?attr/qmui_common_list_item_detail_line_space"
+            android:text="器材种类"
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+        <TextView
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" : " />
+
+        <TextView
+            android:id="@+id/item_detail"
+            android:layout_width="366dp"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="?attr/qmui_common_list_item_detail_line_space"
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/item_icon2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:src="@mipmap/public_right_arrow" />
+
+</RelativeLayout>

@@ -2,7 +2,9 @@
 package com.jian.system.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,12 +14,23 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class RecyclerViewHolder extends RecyclerView.ViewHolder {
+import com.jian.system.R;
+import com.qmuiteam.qmui.util.QMUIResHelper;
+
+import q.rorbin.badgeview.QBadgeView;
+
+public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
     private SparseArray<View> mViews;
 
-    public RecyclerViewHolder(Context ctx, View itemView) {
+    public BaseRecyclerViewHolder(Context context, View itemView) {
         super(itemView);
         mViews = new SparseArray<>();
+        /*new QBadgeView(context).bindTarget(itemView.findViewById(R.id.item_badge))
+                .setBadgeBackgroundColor(Color.parseColor("#ff00ff"))
+                .setBadgeTextColor(QMUIResHelper.getAttrColor(context, R.attr.qmui_config_color_gray_5))
+                .setBadgeGravity(Gravity.CENTER)
+                .setBadgeTextSize(14, true)
+                .setBadgeText("置背景色");*/
     }
 
     @SuppressWarnings("unchecked")
@@ -54,19 +67,19 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         return (EditText) getView(viewId);
     }
 
-    public RecyclerViewHolder setText(int viewId, String value) {
+    public BaseRecyclerViewHolder setText(int viewId, String value) {
         TextView view = findViewById(viewId);
         view.setText(value);
         return this;
     }
 
-    public RecyclerViewHolder setBackground(int viewId, int resId) {
+    public BaseRecyclerViewHolder setBackground(int viewId, int resId) {
         View view = findViewById(viewId);
         view.setBackgroundResource(resId);
         return this;
     }
 
-    public RecyclerViewHolder setClickListener(int viewId, View.OnClickListener listener) {
+    public BaseRecyclerViewHolder setClickListener(int viewId, View.OnClickListener listener) {
         View view = findViewById(viewId);
         view.setOnClickListener(listener);
         return this;
