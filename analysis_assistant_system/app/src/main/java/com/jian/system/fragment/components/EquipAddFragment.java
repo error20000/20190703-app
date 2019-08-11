@@ -1,6 +1,12 @@
 
 package com.jian.system.fragment.components;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -8,22 +14,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.jian.system.R;
+import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
+import com.jian.system.entity.Nfc;
+import com.jian.system.entity.Store;
+import com.jian.system.entity.StoreType;
+import com.jian.system.utils.DataUtils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
+import com.sonnyjack.library.qrcode.QrCodeUtils;
+import com.sonnyjack.permission.IRequestPermissionCallBack;
+import com.sonnyjack.permission.PermissionUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,6 +55,20 @@ public class EquipAddFragment extends QMUIFragment {
     private final static String TAG = EquipAddFragment.class.getSimpleName();
     private String title = "新增器材";
     private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
+    private final int REQUESTCODE = 1003;
+
+    private QMUITipDialog tipDialog;
+    private Equip equip;
+    private List<Dict> equipTypeData = new ArrayList<>();
+    private List<Dict> equipStatusData = new ArrayList<>();
+    private List<StoreType> storeTypeData = new ArrayList<>();
+    private List<Store> storeData = new ArrayList<>();
+    private List<Nfc> nfcUnusedData = new ArrayList<>();
+
+    private QMUICommonListItemView equipNo;
+    private QMUICommonListItemView equipName;
+    private QMUICommonListItemView equipType;
+    private QMUICommonListItemView equipNfc;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -48,6 +83,8 @@ public class EquipAddFragment extends QMUIFragment {
         initTopBar();
         initData();
 
+        equip = new Equip();
+
         return rootView;
     }
 
@@ -58,41 +95,74 @@ public class EquipAddFragment extends QMUIFragment {
                 popBackStack();
             }
         });
-
+        mTopBar.addRightTextButton("保存", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, equip.getsEquip_NO() +"------"+equip.getsEquip_Name());
+            }
+        });
         mTopBar.setTitle(title);
     }
 
+    @SuppressLint("NewApi")
     private void initEquipInfo() {
-        QMUICommonListItemView item2 = mGroupListView.createItemView("器材类型");
-        item2.setTag(2);
-        QMUICommonListItemView item3 = mGroupListView.createItemView("器材状态");
-        item3.setTag(3);
-        QMUICommonListItemView item4 = mGroupListView.createItemView("NFC标签ID");
-        item4.setTag(4);
-        QMUICommonListItemView item5 = mGroupListView.createItemView("航标ID");
-        item5.setTag(5);
-        QMUICommonListItemView item6 = mGroupListView.createItemView("创建日期");
-        item6.setTag(6);
-        QMUICommonListItemView item7 = mGroupListView.createItemView("器材编码");
-        item7.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
-        EditText editText7 = new EditText(getActivity());
-        //editText7.setWidth(QMUIDisplayHelper.dp2px(getActivity(), 300));
-        editText7.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        editText7.setHint("请输入编码");
-        editText7.setBackgroundDrawable(QMUIResHelper.getAttrDrawable(getActivity(), R.drawable.qmui_divider_bottom_bitmap));
-        editText7.setTextColor(QMUIResHelper.getAttrColor(getActivity(), R.attr.qmui_config_color_gray_5));
-        editText7.setTextSize(QMUIResHelper.getAttrDimen(getActivity(), R.attr.qmui_common_list_item_detail_h_text_size) );
-        item7.addAccessoryCustomView(editText7);
-        item7.setTag(7);
+        equipNo = mGroupListView.createItemView("器材编码");
+        equipNo.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
+        View equipNoLayout = LayoutInflater.from(getContext()).inflate(R.layout.fragment_list_item_edit, null);
+        EditText equipNoEditText = equipNoLayout.findViewById(R.id.item_edit_text);
+        equipNoEditText.setSingleLine();
+        equipNoEditText.setId(R.id.equip_no_edit);
+        equipNoEditText.setHint("--请输入编码--");
+        ImageView equipNoImage = equipNoLayout.findViewById(R.id.item_image_button);
+        Drawable equipNoDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.ic_scan_24dp);
+        equipNoDrawable.setTint(ContextCompat.getColor(getActivity(), R.color.app_color_blue));
+        equipNoImage.setImageDrawable(equipNoDrawable);
+        equipNo.addAccessoryCustomView(equipNoLayout);
+        equipNo.setImageDrawable(getResources().getDrawable(R.mipmap.ic_required));
+        equipNo.setTag(1);
+        equipNoImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "选项：equipNoImage 点击了");
+                scanQrCode();
+            }
+        });
 
-        QMUICommonListItemView item8 = mGroupListView.createItemView("器材名称");
-        item8.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
-        EditText editText8 = new EditText(getActivity());
-        editText8.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        //editText7.setWidth(QMUIDisplayHelper.dp2px(getActivity(), 300));
-        editText8.setHint("请输入名称");
-        item8.addAccessoryCustomView(editText8);
-        item8.setTag(8);
+        equipName = mGroupListView.createItemView("器材名称");
+        equipName.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
+        EditText equipNameEditText = new EditText(getContext());
+        equipNameEditText.setLayoutParams(new ViewGroup.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        equipNameEditText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 260));
+        equipNameEditText.setBackgroundDrawable(null);
+        equipNameEditText.setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_gray_5));
+        equipNameEditText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ));
+        equipNameEditText.setSingleLine();
+        equipNameEditText.setHint("--请输入名称--");
+        equipNameEditText.setId(R.id.equip_name_edit);
+        equipName.addAccessoryCustomView(equipNameEditText);
+        equipName.setTag(2);
+
+        equipType = mGroupListView.createItemView("器材类型");
+        equipType.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        equipType.setDetailText("--请选择类型--");
+        equipType.setImageDrawable(getResources().getDrawable(R.mipmap.ic_required));
+        equipType.setTag(3);
+
+        equipNfc = mGroupListView.createItemView("NFC标签ID");
+        equipNfc.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
+        equipNfc.setDetailText("--请选择NFC标签--");
+        ImageView equipNfcImage = new ImageView(getActivity());
+        Drawable equipNfcDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.ic_nfc_24dp);
+        equipNfcDrawable.setTint(ContextCompat.getColor(getActivity(), R.color.app_color_blue));
+        equipNfcImage.setImageDrawable(equipNfcDrawable);
+        equipNfc.addAccessoryCustomView(equipNfcImage);
+        equipNfc.setTag(4);
+        equipNfcImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "选项：equipNfcImage 点击了");
+            }
+        });
 
         QMUICommonListItemView item9 = mGroupListView.createItemView("一级仓库");
         item9.setTag(9);
@@ -105,13 +175,10 @@ public class EquipAddFragment extends QMUIFragment {
 
         QMUIGroupListView.newSection(getContext())
                 .setTitle("基础信息")
-                .addItemView(item7, mOnClickListenerGroup)
-                .addItemView(item8, mOnClickListenerGroup)
-                .addItemView(item2, mOnClickListenerGroup)
-                .addItemView(item3, mOnClickListenerGroup)
-                .addItemView(item4, mOnClickListenerGroup)
-                .addItemView(item5, mOnClickListenerGroup)
-                .addItemView(item6, mOnClickListenerGroup)
+                .addItemView(equipNo, null)
+                .addItemView(equipName, null)
+                .addItemView(equipType, mOnClickListenerGroup)
+                .addItemView(equipNfc, mOnClickListenerGroup)
                 .addItemView(item9, mOnClickListenerGroup)
                 .addItemView(item10, mOnClickListenerGroup)
                 .addItemView(item11, mOnClickListenerGroup)
@@ -120,19 +187,76 @@ public class EquipAddFragment extends QMUIFragment {
 
     }
 
+
+    /**
+     * 扫描二维码（先请求权限，用第三方库）
+     */
+    private void scanQrCode() {
+        ArrayList<String> permissionList = new ArrayList<>();
+        permissionList.add(Manifest.permission.CAMERA);
+        PermissionUtils.getInstances().requestPermission(getActivity(), permissionList, new IRequestPermissionCallBack() {
+            @Override
+            public void onGranted() {
+                //扫描二维码/条形码
+                QrCodeUtils.startScan(getActivity(), REQUESTCODE);
+            }
+
+            @Override
+            public void onDenied() {
+                Toast.makeText(getActivity(), "请在应用管理中打开拍照权限", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (RESULT_OK == resultCode) {
+            switch (requestCode) {
+                case REQUESTCODE:
+                    Log.d(TAG, QrCodeUtils.getScanResult(data));
+                    break;
+            }
+        }
+    }
+
     private View.OnClickListener mOnClickListenerGroup = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             QMUICommonListItemView viewList = (QMUICommonListItemView) view;
             Log.d(TAG, "选项：" + viewList.getText().toString() + " 点击了");
             switch ((int)viewList.getTag()) {
-                case 1:
+                case 3: //type
+                    String[] typeNames = new String[equipTypeData.size()];
+                    for (int i = 0; i < equipTypeData.size(); i++) {
+                        typeNames[i] = equipTypeData.get(i).getsDict_Name();
+                    }
+                    new QMUIDialog.CheckableDialogBuilder(getActivity())
+                            .addItems(typeNames, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    viewList.getDetailTextView().setText(typeNames[which]);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create(mCurrentDialogStyle).show();
+                    break;
+                case 4: //nfc标签
+                    String[] nfcNames = new String[nfcUnusedData.size()];
+                    for (int i = 0; i < nfcUnusedData.size(); i++) {
+                        nfcNames[i] = nfcUnusedData.get(i).getsNfc_Name();
+                    }
+                    new QMUIDialog.CheckableDialogBuilder(getActivity())
+                            .addItems(nfcNames, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    viewList.getDetailTextView().setText(nfcNames[which]);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create(mCurrentDialogStyle).show();
                     break;
                 case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
                     break;
             }
             Toast.makeText(getActivity(),"选项：" +  viewList.getTag()+ " 点击了",Toast.LENGTH_SHORT).show();
@@ -147,6 +271,22 @@ public class EquipAddFragment extends QMUIFragment {
     };
 
     private void initData(){
+        //查询数据 -- 判断网络
+
+        tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载")
+                .create();
+        //tipDialog.show();
+        //查询器材种类
+        DataUtils.getDictData("EquipType", equipTypeData);
+        //查询器材状态
+        DataUtils.getDictData("EquipStatus", equipStatusData);
+        //查询仓库
+        DataUtils.getStoreTypeData(storeTypeData);
+        DataUtils.getStoreData(storeData);
+        //查询NFC
+        DataUtils.getNfcUnusedData(nfcUnusedData);
 
         initEquipInfo();
 

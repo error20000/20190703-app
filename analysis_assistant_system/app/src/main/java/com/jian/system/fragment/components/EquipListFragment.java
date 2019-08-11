@@ -1,25 +1,18 @@
 
 package com.jian.system.fragment.components;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,19 +27,15 @@ import com.jian.system.adapter.BaseRecyclerOnScrollListener;
 import com.jian.system.adapter.EquipAdapter;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.decorator.DividerItemDecoration;
-import com.jian.system.decorator.GridDividerItemDecoration;
+import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
+import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
+import com.jian.system.utils.ThreadUtils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
-import com.qmuiteam.qmui.widget.dialog.QMUIBottomSheet;
-import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
-import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
-import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
-import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,21 +45,23 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.FormBody;
-import okhttp3.RequestBody;
 
 public class EquipListFragment extends QMUIFragment {
 
     private final static String TAG = EquipListFragment.class.getSimpleName();
     private String title = "器材列表";
     private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
-    private List<Equip> data;
+    private List<Equip> data = new ArrayList<>();
+    private List<Dict> equipTypeData = new ArrayList<>();
+    private List<Dict> equipStatusData = new ArrayList<>();
     private int total = 0;
     private int page = 1;
     private int rows = 10;
     private EquipAdapter mItemAdapter;
-    private final int INIT = 0;
-    private final int LOADMORE = 1;
+    private final int MsgType_INIT = 0;
+    private final int MsgType_LOADMORE = 1;
+
+    private QMUITipDialog tipDialog;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -94,8 +85,15 @@ public class EquipListFragment extends QMUIFragment {
     private void initTopBar() {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 popBackStack();
+            }
+        });
+        mTopBar.addRightTextButton("新增", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                EquipAddFragment fragment = new EquipAddFragment();
+                startFragment(fragment);
             }
         });
 
@@ -202,9 +200,6 @@ public class EquipListFragment extends QMUIFragment {
 
     }
 
-    private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
-
-    };
 
     Handler mHandler = new Handler(){
         @Override
@@ -216,6 +211,12 @@ public class EquipListFragment extends QMUIFragment {
                         .setTipWord(resObj.getString("msg"))
                         .create();
                 tipDialog.show();
+                mRecyclerView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tipDialog.dismiss();
+                    }
+                }, 1500);
                 return;
             }
             total = resObj.getInteger("total");
@@ -228,10 +229,11 @@ public class EquipListFragment extends QMUIFragment {
             }
             //处理数据
             switch (msg.what){
-                case INIT:
+                case MsgType_INIT:
                     initEquipList();
+                    tipDialog.dismiss();
                     break;
-                case LOADMORE:
+                case MsgType_LOADMORE:
                     mItemAdapter.setLoadState(mItemAdapter.LOADING_COMPLETE);
                     break;
                 default:
@@ -244,10 +246,20 @@ public class EquipListFragment extends QMUIFragment {
 
     private void initData(){
         //查询数据 -- 判断网络
+        tipDialog = new QMUITipDialog.Builder(getContext())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord("正在加载")
+                .create();
+        tipDialog.show();
+        //查询器材种类
+        DataUtils.getDictData("EquipType", equipTypeData);
+        //查询器材状态
+        DataUtils.getDictData("EquipStatus", equipStatusData);
+        //查询器材列表
         Map<String, Object> params = new HashMap<>();
         params.put("page", page);
         params.put("rows", rows);
-        queryData(params, INIT);
+        queryData(params, MsgType_INIT);
 
     }
 
@@ -259,11 +271,11 @@ public class EquipListFragment extends QMUIFragment {
         Map<String, Object> params = new HashMap<>();
         params.put("page", page);
         params.put("rows", rows);
-        queryData(params, LOADMORE);
+        queryData(params, MsgType_LOADMORE);
     }
 
     private void queryData(Map<String, Object> params, int init){
-        new Thread(new Runnable() {
+        ThreadUtils.execute(new Runnable() {
             @Override
             public void run() {
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryPageUrl, params);
@@ -277,6 +289,8 @@ public class EquipListFragment extends QMUIFragment {
                 msg.obj = resObj;
                 mHandler.sendMessage(msg);
             }
-        }).start();
+        });
     }
+
+
 }

@@ -3,6 +3,8 @@ package com.jian.system.utils;
 import android.util.Log;
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.FormBody;
@@ -36,8 +38,10 @@ public class HttpUtils {
 
     public String sendPost(String url, Map<String, Object> params){
         FormBody.Builder builder = new FormBody.Builder();
-        for (String key: params.keySet()) {
-            builder.add(key, String.valueOf(params.get(key)));
+        if(params != null){
+            for (String key: params.keySet()) {
+                builder.add(key, String.valueOf(params.get(key)));
+            }
         }
         return sendPost(url, builder.build());
     }
@@ -48,9 +52,12 @@ public class HttpUtils {
                 .post(body)
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            String res = response.body().string();
-            Log.d("sendPost", res);
-            return res;
+            Log.d("sendPost", url + "   " + response.code());
+            if(response.code() == 200){
+                String res = response.body().string();
+                Log.d("sendPost", res);
+                return res;
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -62,9 +69,12 @@ public class HttpUtils {
                 .url(url)
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            String res = response.body().string();
-            Log.d("sendGet", res);
-            return res;
+            Log.d("sendGet", url + "   " + response.code());
+            if(response.code() == 200){
+                String res = response.body().string();
+                Log.d("sendGet", res);
+                return res;
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

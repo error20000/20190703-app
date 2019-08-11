@@ -132,6 +132,11 @@ public class HomeView extends QMUIWindowInsetLayout{
         View testView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_list_item_edit, null);
         test.addAccessoryCustomView(testView);
 
+        QMUICommonListItemView test8 = mGroupListView.createItemView("Item 8");
+        test8.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
+        View testView8 = LayoutInflater.from(getContext()).inflate(R.layout.fragment_list_item_edit, null);
+        test8.addAccessoryCustomView(testView8);
+
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,6 +187,7 @@ public class HomeView extends QMUIWindowInsetLayout{
                 .setTitle("Section 2: 自定义右侧 View")
                 .addItemView(itemWithCustom, onClickListener)
                 .addItemView(test, onClickListener)
+                .addItemView(test8, onClickListener)
                 .addTo(mGroupListView);
         QMUIGroupListView.newSection(getContext())
                 .setTitle("Section 3: 自定义右侧 View")
