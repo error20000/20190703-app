@@ -187,14 +187,14 @@ public class EquipListFragment extends QMUIFragment {
                     return;
                 }
                 mItemAdapter.setLoadState(mItemAdapter.LOADING);
-                //refreshData();
+                refreshData();
                 // 模拟获取网络数据，延时1s
-                new Timer().schedule(new TimerTask() {
+                /*new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
                         refreshData();
                     }
-                }, 1000);
+                }, 1000);*/
             }
         });
 

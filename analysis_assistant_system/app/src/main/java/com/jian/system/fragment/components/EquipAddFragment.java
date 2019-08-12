@@ -102,8 +102,10 @@ public class EquipAddFragment extends QMUIFragment {
         mTopBar.addRightTextButton("保存", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                equip.setsEquip_ID(equipNo.getDetailText().toString());
-                equip.setsEquip_Name(equipName.getDetailText().toString());
+                EditText editTextNo = equipNo.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                equip.setsEquip_ID(editTextNo.getText().toString());
+                EditText editTextName = (EditText)equipName.getAccessoryContainerView().getChildAt(0);
+                equip.setsEquip_Name(editTextName.getText().toString());
 
                 Log.d(TAG,  "equip: "+JSON.toJSONString(equip));
             }
@@ -118,7 +120,6 @@ public class EquipAddFragment extends QMUIFragment {
         View equipNoLayout = LayoutInflater.from(getContext()).inflate(R.layout.fragment_list_item_edit, null);
         EditText equipNoEditText = equipNoLayout.findViewById(R.id.item_edit_text);
         equipNoEditText.setSingleLine();
-        equipNoEditText.setId(R.id.equip_no_edit);
         equipNoEditText.setHint("--请输入编码--");
         ImageView equipNoImage = equipNoLayout.findViewById(R.id.item_image_button);
         Drawable equipNoDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.ic_scan_24dp);
@@ -145,7 +146,6 @@ public class EquipAddFragment extends QMUIFragment {
         equipNameEditText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ));
         equipNameEditText.setSingleLine();
         equipNameEditText.setHint("--请输入名称--");
-        equipNameEditText.setId(R.id.equip_name_edit);
         equipName.addAccessoryCustomView(equipNameEditText);
         equipName.setTag(2);
 

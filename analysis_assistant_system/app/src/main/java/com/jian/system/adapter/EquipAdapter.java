@@ -1,6 +1,7 @@
 package com.jian.system.adapter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.jian.system.R;
 import com.jian.system.entity.Equip;

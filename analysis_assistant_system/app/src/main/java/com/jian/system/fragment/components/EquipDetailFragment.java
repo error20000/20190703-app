@@ -107,13 +107,13 @@ public class EquipDetailFragment extends QMUIFragment {
     }
     private void showBottomSheetList() {
         new QMUIBottomSheet.BottomListSheetBuilder(getActivity())
+                .addItem("入库")
                 .addItem("出库")
                 .addItem("拆除")
                 .addItem("运输")
                 .addItem("待检测")
                 .addItem("检测")
                 .addItem("维修")
-                .addItem("入库")
                 .setOnSheetItemClickListener(new QMUIBottomSheet.BottomListSheetBuilder.OnSheetItemClickListener() {
                     @Override
                     public void onClick(QMUIBottomSheet dialog, View itemView, int position, String tag) {
@@ -136,16 +136,20 @@ public class EquipDetailFragment extends QMUIFragment {
                         CharSequence text = builder.getEditText().getText();
                         dialog.dismiss();
                         switch (position) {
-                            case 0:
+                            case 0: //入库
 
                                 break;
-                            case 1:
+                            case 1: //出库
                                 break;
-                            case 2:
+                            case 2: //拆除
                                 break;
-                            case 3:
+                            case 3: //运输
                                 break;
-                            case 4:
+                            case 4: //待检测
+                                break;
+                            case 5: //检测
+                                break;
+                            case 6: //维修
                                 break;
                             default:
                                 break;

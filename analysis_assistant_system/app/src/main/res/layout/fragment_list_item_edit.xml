@@ -23,7 +23,6 @@
             android:id="@+id/item_image_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="10dp"
-            android:src="@drawable/ic_mic_black_24dp"/>
+            android:paddingLeft="10dp"/>
 
 </LinearLayout>
