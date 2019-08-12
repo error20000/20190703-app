@@ -5,7 +5,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -16,12 +15,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.alibaba.fastjson.JSON;
+import com.jian.system.MainActivity;
 import com.jian.system.R;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
@@ -29,6 +29,7 @@ import com.jian.system.entity.Nfc;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
 import com.jian.system.utils.DataUtils;
+import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIResHelper;
@@ -41,13 +42,16 @@ import com.sonnyjack.library.qrcode.QrCodeUtils;
 import com.sonnyjack.permission.IRequestPermissionCallBack;
 import com.sonnyjack.permission.PermissionUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import chihane.jdaddressselector.BottomDialog;
+import chihane.jdaddressselector.DataProvider;
+import chihane.jdaddressselector.ISelectAble;
+import chihane.jdaddressselector.SelectedListener;
+import chihane.jdaddressselector.Selector;
 
 
 public class EquipAddFragment extends QMUIFragment {
@@ -58,7 +62,8 @@ public class EquipAddFragment extends QMUIFragment {
     private final int REQUESTCODE = 1003;
 
     private QMUITipDialog tipDialog;
-    private Equip equip;
+    private BottomDialog selectorDialog;
+    private Equip equip = new Equip();
     private List<Dict> equipTypeData = new ArrayList<>();
     private List<Dict> equipStatusData = new ArrayList<>();
     private List<StoreType> storeTypeData = new ArrayList<>();
@@ -69,6 +74,7 @@ public class EquipAddFragment extends QMUIFragment {
     private QMUICommonListItemView equipName;
     private QMUICommonListItemView equipType;
     private QMUICommonListItemView equipNfc;
+    private QMUICommonListItemView equipStore;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -83,8 +89,6 @@ public class EquipAddFragment extends QMUIFragment {
         initTopBar();
         initData();
 
-        equip = new Equip();
-
         return rootView;
     }
 
@@ -98,7 +102,10 @@ public class EquipAddFragment extends QMUIFragment {
         mTopBar.addRightTextButton("保存", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, equip.getsEquip_NO() +"------"+equip.getsEquip_Name());
+                equip.setsEquip_ID(equipNo.getDetailText().toString());
+                equip.setsEquip_Name(equipName.getDetailText().toString());
+
+                Log.d(TAG,  "equip: "+JSON.toJSONString(equip));
             }
         });
         mTopBar.setTitle(title);
@@ -164,14 +171,10 @@ public class EquipAddFragment extends QMUIFragment {
             }
         });
 
-        QMUICommonListItemView item9 = mGroupListView.createItemView("一级仓库");
-        item9.setTag(9);
-        QMUICommonListItemView item10 = mGroupListView.createItemView("二级仓库");
-        item10.setTag(10);
-        QMUICommonListItemView item11 = mGroupListView.createItemView("三级仓库");
-        item11.setTag(11);
-        QMUICommonListItemView item12 = mGroupListView.createItemView("四级仓库");
-        item12.setTag(12);
+        equipStore = mGroupListView.createItemView("仓库");
+        equipStore.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        equipStore.setDetailText("--请选择仓库--");
+        equipStore.setTag(5);
 
         QMUIGroupListView.newSection(getContext())
                 .setTitle("基础信息")
@@ -179,10 +182,7 @@ public class EquipAddFragment extends QMUIFragment {
                 .addItemView(equipName, null)
                 .addItemView(equipType, mOnClickListenerGroup)
                 .addItemView(equipNfc, mOnClickListenerGroup)
-                .addItemView(item9, mOnClickListenerGroup)
-                .addItemView(item10, mOnClickListenerGroup)
-                .addItemView(item11, mOnClickListenerGroup)
-                .addItemView(item12, mOnClickListenerGroup)
+                .addItemView(equipStore, mOnClickListenerGroup)
                 .addTo(mGroupListView);
 
     }
@@ -236,6 +236,7 @@ public class EquipAddFragment extends QMUIFragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     viewList.getDetailTextView().setText(typeNames[which]);
+                                    equip.setsEquip_Type(equipTypeData.get(which).getsDict_NO());
                                     dialog.dismiss();
                                 }
                             })
@@ -251,12 +252,102 @@ public class EquipAddFragment extends QMUIFragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     viewList.getDetailTextView().setText(nfcNames[which]);
+                                    equip.setsEquip_NfcID(nfcUnusedData.get(which).getsNfc_ID());
                                     dialog.dismiss();
                                 }
                             })
                             .create(mCurrentDialogStyle).show();
                     break;
-                case 2:
+                case 5: //仓库
+                    Selector selector = new Selector(getActivity(), 4);
+                    selector.setDataProvider(new DataProvider() {
+                        @Override
+                        public void provideData(int currentDeep, String preId, DataReceiver receiver) {
+                            //根据tab的深度和前一项选择的id，获取下一级菜单项
+                            Log.i(TAG, "provideData: currentDeep >>> "+currentDeep+" preId >>> "+preId);
+                            List<ISelectAble> data = new ArrayList<>();
+                            if(currentDeep == 0){
+                                for (int j = 0; j < storeTypeData.size(); j++) {
+                                    StoreType type = storeTypeData.get(j);
+                                    data.add(new ISelectAble() {
+                                        @Override
+                                        public String getName() {
+                                            return type.getsStoreType_Name();
+                                        }
+                                        @Override
+                                        public String getId() {
+                                            return type.getsStoreType_ID();
+                                        }
+
+                                        @Override
+                                        public Object getArg() {
+                                            return type;
+                                        }
+                                    });
+                                }
+                            }else{
+                                for (int j = 0; j < storeData.size(); j++) {
+                                    Store store = storeData.get(j);
+                                    if(!preId.equals(store.getsStore_Parent())){
+                                        continue;
+                                    }
+                                    data.add(new ISelectAble() {
+                                        @Override
+                                        public String getName() {
+                                            return store.getsStore_Name();
+                                        }
+                                        @Override
+                                        public String getId() {
+                                            return store.getsStore_ID();
+                                        }
+
+                                        @Override
+                                        public Object getArg() {
+                                            return store;
+                                        }
+                                    });
+                                }
+                                data = data.size() == 0 ? null : data;
+                            }
+                            receiver.send(data);
+                        }
+                    });
+                    selector.setSelectedListener(new SelectedListener() {
+                        @Override
+                        public void onAddressSelected(ArrayList<ISelectAble> selectAbles) {
+                            String result = "";
+                            for (int i = 0; i < selectAbles.size(); i++) {
+                                ISelectAble selectAble = selectAbles.get(i);
+                                if(selectAble == null){
+                                    continue;
+                                }
+                                switch (i){
+                                    case 0:
+                                        equip.setsEquip_StoreLv1(selectAble.getId());
+                                        break;
+                                    case 1:
+                                        equip.setsEquip_StoreLv2(selectAble.getId());
+                                        break;
+                                    case 2:
+                                        equip.setsEquip_StoreLv3(selectAble.getId());
+                                        break;
+                                    case 3:
+                                        equip.setsEquip_StoreLv4(selectAble.getId());
+                                        break;
+                                }
+                                equip.setsEquip_StoreLv1(selectAble.getId());
+                                result += " / " + selectAble.getName();
+                            }
+                            result = "".equals(result) ? result : result.substring(" / ".length());
+                            Log.i(TAG, "result : "+ result);
+                            equipStore.setDetailText(result);
+                            //viewList.getDetailTextView().setText(result);
+                            selectorDialog.dismiss();
+                        }
+                    });
+                    selectorDialog = new BottomDialog(getActivity());
+                    selectorDialog.init(getActivity(), selector);
+                    selectorDialog.show();
                     break;
             }
             Toast.makeText(getActivity(),"选项：" +  viewList.getTag()+ " 点击了",Toast.LENGTH_SHORT).show();

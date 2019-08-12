@@ -2,7 +2,7 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.1.11:8065";
+    public static String baseUrl = "http://192.168.106.67:8065";
 
     //查询数据字典
     public static String dictQueryUrl = baseUrl + "/api/dict/findList";
