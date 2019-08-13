@@ -2,14 +2,19 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.1.11:8065";
+    public static String baseUrl = "http://192.168.106.67:8065";
+
+    //用户
+    public static String userLoginUrl = baseUrl + "/api/user/app/login";
+    public static String userLogoutUrl = baseUrl + "/api/user/app/logout";
+    public static String userIsLoginUrl = baseUrl + "/api/user/app/isLogin";
 
     //查询数据字典
-    public static String dictQueryUrl = baseUrl + "/api/dict/findList";
+    public static String dictQueryUrl = baseUrl + "/api/dict/app/findList";
 
     //器材
-    public static String equipQueryPageUrl = baseUrl + "/api/equip/findPage";
-    public static String equipQueryDetailUrl = baseUrl + "/api/equip/findOne";
+    public static String equipQueryPageUrl = baseUrl + "/api/equip/app/findPage";
+    public static String equipQueryDetailUrl = baseUrl + "/api/equip/app/findOne";
     public static String equipQueryHistoryUrl = baseUrl + "/api/equip/app/history"; //历史
     public static String equipAddUrl = baseUrl + "/api/equip/app/add"; //新增
     public static String equipInStoreUrl = baseUrl + "/api/equip/app/inStore"; //入库
@@ -23,10 +28,10 @@ public class UrlConfig {
     public static String equipUseToAidUrl = baseUrl + "/api/equip/app/useToAid"; //使用
 
     //仓库
-    public static String storeTypeQueryUrl = baseUrl + "/api/store/findType";
-    public static String storeQueryUrl = baseUrl + "/api/store/findList";
+    public static String storeTypeQueryUrl = baseUrl + "/api/store/app/findType";
+    public static String storeQueryUrl = baseUrl + "/api/store/app/findList";
 
     //NFC
-    public static String nfcQueryUrl = baseUrl + "/api/nfc/findAll";
-    public static String nfcUnusedQueryUrl = baseUrl + "/api/nfc/unbind";
+    public static String nfcQueryUrl = baseUrl + "/api/nfc/app/findAll";
+    public static String nfcUnusedQueryUrl = baseUrl + "/api/nfc/app/unbind";
 }

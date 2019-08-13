@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_primary_color"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+   <com.qmuiteam.qmui.widget.QMUITopBar
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/qmui_topbar_height"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/qmui_config_color_background"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/qmui_config_color_white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp">
+
+            <com.github.florent37.materialtextfield.MaterialTextField
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:mtf_image="@drawable/ic_history_black_24dp"
+                android:layout_marginBottom="20dp"
+                app:mtf_labelColor="#666">
+
+                <EditText
+                    android:id="@+id/login_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="用户名"
+                    android:textColor="#333"
+                    android:textSize="15sp" />
+
+            </com.github.florent37.materialtextfield.MaterialTextField>
+
+            <com.github.florent37.materialtextfield.MaterialTextField
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:mtf_image="@drawable/ic_history_black_24dp"
+                android:layout_marginBottom="20dp"
+                app:mtf_labelColor="#666">
+
+                <EditText
+                    android:id="@+id/login_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="密码"
+                    android:textColor="#333"
+                    android:textSize="15sp" />
+
+            </com.github.florent37.materialtextfield.MaterialTextField>
+
+            <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+                android:id="@+id/button_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="10dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="10dp"
+                android:text="登录"
+                app:qmui_radius="4dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

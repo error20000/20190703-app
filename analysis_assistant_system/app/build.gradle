@@ -49,6 +49,7 @@ dependencies {
     implementation 'q.rorbin:badgeview:1.1.3'
     implementation 'com.github.baoyachi:StepView:1.9'
     implementation project(path: ':selector')
+    implementation 'com.github.florent37:materialtextfield:1.0.7'
 
     //qrcode
     implementation 'com.sonnyjack.permission:PermissionUtils:0.1.0'
