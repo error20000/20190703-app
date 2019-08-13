@@ -21,14 +21,20 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.jian.system.MainActivity;
 import com.jian.system.R;
+import com.jian.system.config.UrlConfig;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
 import com.jian.system.entity.Nfc;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
+import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.utils.DataUtils;
+import com.jian.system.utils.HttpUtils;
+import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
@@ -43,7 +49,9 @@ import com.sonnyjack.permission.IRequestPermissionCallBack;
 import com.sonnyjack.permission.PermissionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -76,6 +84,8 @@ public class EquipAddFragment extends QMUIFragment {
     private QMUICommonListItemView equipNfc;
     private QMUICommonListItemView equipStore;
 
+    private final int MsgType_Add = 0;
+
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
     @BindView(R.id.groupListView)
@@ -103,11 +113,11 @@ public class EquipAddFragment extends QMUIFragment {
             @Override
             public void onClick(View view) {
                 EditText editTextNo = equipNo.getAccessoryContainerView().findViewById(R.id.item_edit_text);
-                equip.setsEquip_ID(editTextNo.getText().toString());
+                equip.setsEquip_NO(editTextNo.getText().toString());
                 EditText editTextName = (EditText)equipName.getAccessoryContainerView().getChildAt(0);
                 equip.setsEquip_Name(editTextName.getText().toString());
-
-                Log.d(TAG,  "equip: "+JSON.toJSONString(equip));
+                //保存数据
+                sendAdd();
             }
         });
         mTopBar.setTitle(title);
@@ -350,14 +360,20 @@ public class EquipAddFragment extends QMUIFragment {
                     selectorDialog.show();
                     break;
             }
-            Toast.makeText(getActivity(),"选项：" +  viewList.getTag()+ " 点击了",Toast.LENGTH_SHORT).show();
         }
     };
 
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
-            //refreshData();
+            hideTips();
+            JSONObject resData = (JSONObject) msg.obj;
+            //处理数据
+            switch (msg.what){
+                case MsgType_Add:
+                    handleAdd(resData);
+                    break;
+            }
         }
     };
 
@@ -381,17 +397,49 @@ public class EquipAddFragment extends QMUIFragment {
 
         initEquipInfo();
 
-        new Thread(new Runnable() {
+    }
+
+    private void showTips(String msg){
+        tipDialog = new QMUITipDialog.Builder(getActivity())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord(msg)
+                .create();
+        tipDialog.show();
+    }
+
+    private void hideTips(){
+        tipDialog.dismiss();
+    }
+    private void showToast(String msg){
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void sendAdd(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-
+                Map<String, Object> params = JSONObject.parseObject(JSONObject.toJSONString(equip), new TypeReference<Map<String, Object>>(){});
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipAddUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
                 }
-                mHandler.sendMessage(mHandler.obtainMessage());
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_Add);
+                message.obj = resObj;
+                mHandler.sendMessage(message);
             }
-        }).start();
+        });
+    }
+    private void handleAdd(JSONObject resObj){
+        if(resObj.getInteger("code") <= 0){
+            showToast(resObj.getString("msg"));
+            return;
+        }
+        showToast("保存成功");
+        popBackStack();
     }
 
 }

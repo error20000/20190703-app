@@ -35,6 +35,8 @@ import com.jian.system.utils.ThreadUtils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
+import com.qmuiteam.qmui.widget.pullRefreshLayout.QMUICenterGravityRefreshOffsetCalculator;
+import com.qmuiteam.qmui.widget.pullRefreshLayout.QMUIPullRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +62,7 @@ public class EquipListFragment extends QMUIFragment {
     private EquipAdapter mItemAdapter;
     private final int MsgType_INIT = 0;
     private final int MsgType_LOADMORE = 1;
+    private final int MsgType_REFRESH = 2;
 
     private QMUITipDialog tipDialog;
 
@@ -69,6 +72,8 @@ public class EquipListFragment extends QMUIFragment {
     RecyclerView mRecyclerView;
     @BindView(R.id.floating_search_view)
     FloatingSearchView mSearchView;
+    @BindView(R.id.pull_to_refresh)
+    QMUIPullRefreshLayout mPullRefreshLayout;
 
     @Override
     protected View onCreateView() {
@@ -77,6 +82,7 @@ public class EquipListFragment extends QMUIFragment {
 
         initTopBar();
         initSearchBar();
+        initPullRefresh();
         initData();
 
         return rootView;
@@ -161,6 +167,35 @@ public class EquipListFragment extends QMUIFragment {
         });
     }
 
+    private void initPullRefresh(){
+        mPullRefreshLayout.setRefreshOffsetCalculator(new QMUICenterGravityRefreshOffsetCalculator());
+        mPullRefreshLayout.setOnPullListener(new QMUIPullRefreshLayout.OnPullListener() {
+            @Override
+            public void onMoveTarget(int offset) {
+
+            }
+
+            @Override
+            public void onMoveRefreshView(int offset) {
+
+            }
+
+            @Override
+            public void onRefresh() {
+                //清空数据
+                data = new ArrayList<>();
+                total = 0;
+                page = 1;
+                rows = 10;
+                //请求数据
+                Map<String, Object> params = new HashMap<>();
+                params.put("page", page);
+                params.put("rows", rows);
+                queryData(params, MsgType_REFRESH);
+            }
+        });
+    }
+
     private void initEquipList() {
         mItemAdapter = new EquipAdapter(getActivity(), data);
         mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
@@ -227,6 +262,7 @@ public class EquipListFragment extends QMUIFragment {
             for (int i = 0; i < resData.size(); i++) {
                 data.add(resData.getObject(i, Equip.class));
             }
+
             //处理数据
             switch (msg.what){
                 case MsgType_INIT:
@@ -235,6 +271,11 @@ public class EquipListFragment extends QMUIFragment {
                     break;
                 case MsgType_LOADMORE:
                     mItemAdapter.setLoadState(mItemAdapter.LOADING_COMPLETE);
+                    break;
+                case MsgType_REFRESH:
+                    Toast.makeText(getActivity(), "刷新成功", Toast.LENGTH_SHORT).show();
+                    mPullRefreshLayout.finishRefresh();
+                    mItemAdapter.notifyDataSetChanged();
                     break;
                 default:
                     break;

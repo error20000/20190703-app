@@ -41,7 +41,9 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
                 String str = succeedOrFailed ? "解锁成功" : "解锁失败";
                 Toast.makeText(GesturePwdCheckActivity.this, str, Toast.LENGTH_SHORT).show();
                 //跳转主页面
-                onCheckSuccess();
+                if(succeedOrFailed){
+                    onCheckSuccess();
+                }
             }
 
             @Override

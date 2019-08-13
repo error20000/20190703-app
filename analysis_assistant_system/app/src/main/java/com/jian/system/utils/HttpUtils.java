@@ -2,6 +2,9 @@ package com.jian.system.utils;
 
 import android.util.Log;
 
+import com.jian.system.Application;
+import com.jian.system.gesture.util.GestureUtils;
+
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +52,7 @@ public class HttpUtils {
     public String sendPost(String url, RequestBody body){
         Request request = new Request.Builder()
                 .url(url)
+                .header("token", Application.getTokenStr())
                 .post(body)
                 .build();
         try (Response response = client.newCall(request).execute()) {
@@ -67,6 +71,7 @@ public class HttpUtils {
     public String sendGet(String url){
         Request request = new Request.Builder()
                 .url(url)
+                .header("token", Application.getTokenStr())
                 .build();
         try (Response response = client.newCall(request).execute()) {
             Log.d("sendGet", url + "   " + response.code());

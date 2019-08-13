@@ -13,10 +13,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.baoyachi.stepview.VerticalStepView;
 import com.jian.system.R;
 import com.jian.system.config.UrlConfig;
@@ -43,12 +45,19 @@ import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import chihane.jdaddressselector.BottomDialog;
+import chihane.jdaddressselector.DataProvider;
+import chihane.jdaddressselector.ISelectAble;
+import chihane.jdaddressselector.SelectedListener;
+import chihane.jdaddressselector.Selector;
 
 public class EquipDetailFragment extends QMUIFragment {
 
@@ -56,9 +65,22 @@ public class EquipDetailFragment extends QMUIFragment {
     private String title = "器材详情";
     private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
     private QMUITipDialog tipDialog;
+    private BottomDialog selectorDialog;
     private final int MsgType_Detail = 0;
     private final int MsgType_History = 1;
 
+    private final int MsgType_InStore = 100;
+    private final int MsgType_OutStore = 101;
+    private final int MsgType_UseToAid = 102;
+    private final int MsgType_Remove = 103;
+    private final int MsgType_Transport = 104;
+    private final int MsgType_ToBeTest = 105;
+    private final int MsgType_Check = 106;
+    private final int MsgType_Repair = 107;
+    private final int MsgType_Dump = 108;
+
+
+    private String remarks = "";
     private Equip equip;
     private List<Dict> equipTypeData = new ArrayList<>();
     private List<Dict> equipStatusData = new ArrayList<>();
@@ -107,52 +129,76 @@ public class EquipDetailFragment extends QMUIFragment {
     }
     private void showBottomSheetList() {
         new QMUIBottomSheet.BottomListSheetBuilder(getActivity())
-                .addItem("入库")
-                .addItem("出库")
-                .addItem("拆除")
-                .addItem("运输")
-                .addItem("待检测")
-                .addItem("检测")
-                .addItem("维修")
+                .addItem("入库", "inStore")
+                .addItem("出库", "outStore")
+                .addItem("使用", "useToAid")
+                .addItem("拆除", "remove")
+                .addItem("运输", "transport")
+                .addItem("待检测", "toBeTest")
+                .addItem("检测", "check")
+                .addItem("维修", "repair")
+                .addItem("报废", "dump")
                 .setOnSheetItemClickListener(new QMUIBottomSheet.BottomListSheetBuilder.OnSheetItemClickListener() {
                     @Override
                     public void onClick(QMUIBottomSheet dialog, View itemView, int position, String tag) {
                         dialog.dismiss();
-                        showEditTextDialog(position);
+                        if(position == 0){
+                            showStore(tag);
+                        }else{
+                            showEditTextDialog(tag);
+                        }
                     }
                 })
                 .build()
                 .show();
     }
 
-    private void showEditTextDialog(int position) {
+    private void showEditTextDialog(String tag) {
         final QMUIDialog.EditTextDialogBuilder builder = new QMUIDialog.EditTextDialogBuilder(getActivity());
         builder.setTitle("备注")
                 .setPlaceholder("非必填")
                 .setInputType(InputType.TYPE_CLASS_TEXT)
+                .addAction("取消", new QMUIDialogAction.ActionListener(){
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        dialog.dismiss();
+                    }
+                })
                 .addAction("确定", new QMUIDialogAction.ActionListener() {
                     @Override
                     public void onClick(QMUIDialog dialog, int index) {
-                        CharSequence text = builder.getEditText().getText();
+                        remarks = builder.getEditText().getText().toString();
                         dialog.dismiss();
-                        switch (position) {
-                            case 0: //入库
-
+                        switch (tag) {
+                            case "inStore": //入库
+                                itemInStore();
                                 break;
-                            case 1: //出库
+                            case "outStore": //出库
+                                itemOutStore();
                                 break;
-                            case 2: //拆除
+                            /*case "useToAid": //使用
+                                itemUseToAid();
                                 break;
-                            case 3: //运输
+                            case "remove": //拆除
+                                itemRemove();
                                 break;
-                            case 4: //待检测
+                            case "transport": //运输
+                                itemTransport();
                                 break;
-                            case 5: //检测
+                            case "toBeTest": //待检测
+                                itemToBeTest();
                                 break;
-                            case 6: //维修
+                            case "check": //检测
+                                itemCheck();
+                                break;
+                            case "repair": //维修
+                                itemRepair();
+                                break;
+                            case "dump": //报废
+                                itemDump();
                                 break;
                             default:
-                                break;
+                                break;*/
                         }
                     }
                 })
@@ -253,6 +299,10 @@ public class EquipDetailFragment extends QMUIFragment {
         storeName += Utils.isNullOrEmpty(storeName2) ? "": "/"+storeName2;
         storeName += Utils.isNullOrEmpty(storeName3) ? "": "/"+storeName3;
         storeName += Utils.isNullOrEmpty(storeName4) ? "": "/"+storeName4;
+        System.out.println("storeTypeName  " + storeTypeName );
+        System.out.println("storeName2 " + storeName2);
+        System.out.println("storeName3 " + storeName3);
+        System.out.println("storeName4 " + storeName4);
         item13.setDetailText(storeName);
         item13.setTag(13);
 
@@ -352,6 +402,45 @@ public class EquipDetailFragment extends QMUIFragment {
         }
     };
 
+    Handler mItemHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            hideTips();
+            JSONObject resData = (JSONObject) msg.obj;
+            //处理数据
+            switch (msg.what) {
+                case MsgType_InStore: //入库
+                    handleInStore(resData);
+                    break;
+                case MsgType_OutStore: //出库
+                    handleOutStore(resData);
+                    break;
+                /*case MsgType_UseToAid: //使用
+                    handleUseToAid(resData);
+                    break;
+                case MsgType_Remove: //拆除
+                    handleRemove(resData);
+                    break;
+                case MsgType_Transport: //运输
+                    handleTransport(resData);
+                    break;
+                case MsgType_ToBeTest: //待检测
+                    handleToBeTest(resData);
+                    break;
+                case MsgType_Check: //检测
+                    handleCheck(resData);
+                    break;
+                case MsgType_Repair: //维修
+                    handleRepair(resData);
+                    break;
+                case MsgType_Dump: //报废
+                    handleDump(resData);
+                    break;
+                default:
+                    break;*/
+            }
+        }
+    };
 
     private void initData(){
         //查询数据 -- 判断网络
@@ -417,6 +506,177 @@ public class EquipDetailFragment extends QMUIFragment {
         mGroupListView.getSection(0);
         Log.d(TAG, mGroupListView.getSectionCount()+"");
         initEquipInfo();
+    }
+
+    private void showStore(String tag){
+        Selector selector = new Selector(getActivity(), 4);
+        selector.setDataProvider(new DataProvider() {
+            @Override
+            public void provideData(int currentDeep, String preId, DataReceiver receiver) {
+                //根据tab的深度和前一项选择的id，获取下一级菜单项
+                Log.i(TAG, "provideData: currentDeep >>> "+currentDeep+" preId >>> "+preId);
+                List<ISelectAble> data = new ArrayList<>();
+                if(currentDeep == 0){
+                    for (int j = 0; j < storeTypeData.size(); j++) {
+                        StoreType type = storeTypeData.get(j);
+                        data.add(new ISelectAble() {
+                            @Override
+                            public String getName() {
+                                return type.getsStoreType_Name();
+                            }
+                            @Override
+                            public String getId() {
+                                return type.getsStoreType_ID();
+                            }
+
+                            @Override
+                            public Object getArg() {
+                                return type;
+                            }
+                        });
+                    }
+                }else{
+                    for (int j = 0; j < storeData.size(); j++) {
+                        Store store = storeData.get(j);
+                        if(!preId.equals(store.getsStore_Parent())){
+                            continue;
+                        }
+                        data.add(new ISelectAble() {
+                            @Override
+                            public String getName() {
+                                return store.getsStore_Name();
+                            }
+                            @Override
+                            public String getId() {
+                                return store.getsStore_ID();
+                            }
+
+                            @Override
+                            public Object getArg() {
+                                return store;
+                            }
+                        });
+                    }
+                    data = data.size() == 0 ? null : data;
+                }
+                receiver.send(data);
+            }
+        });
+        selector.setSelectedListener(new SelectedListener() {
+            @Override
+            public void onAddressSelected(ArrayList<ISelectAble> selectAbles) {
+                String result = "";
+                for (int i = 0; i < selectAbles.size(); i++) {
+                    ISelectAble selectAble = selectAbles.get(i);
+                    if(selectAble == null){
+                        continue;
+                    }
+                    switch (i){
+                        case 0:
+                            equip.setsEquip_StoreLv1(selectAble.getId());
+                            break;
+                        case 1:
+                            equip.setsEquip_StoreLv2(selectAble.getId());
+                            break;
+                        case 2:
+                            equip.setsEquip_StoreLv3(selectAble.getId());
+                            break;
+                        case 3:
+                            equip.setsEquip_StoreLv4(selectAble.getId());
+                            break;
+                    }
+                    equip.setsEquip_StoreLv1(selectAble.getId());
+                    result += " / " + selectAble.getName();
+                }
+                result = "".equals(result) ? result : result.substring(" / ".length());
+                Log.d(TAG, "result : "+ result);
+                selectorDialog.dismiss();
+                //显示保存
+                showEditTextDialog(tag);
+            }
+        });
+        selectorDialog = new BottomDialog(getActivity());
+        selectorDialog.init(getActivity(), selector);
+        selectorDialog.show();
+    }
+
+
+    //TODO --------------------------------------------------------------------------- handle
+
+    private void showTips(String msg){
+        tipDialog = new QMUITipDialog.Builder(getActivity())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord(msg)
+                .create();
+        tipDialog.show();
+    }
+
+    private void hideTips(){
+        tipDialog.dismiss();
+    }
+    private void showToast(String msg){
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void itemInStore(){
+        showTips("入库中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = JSONObject.parseObject(JSONObject.toJSONString(equip), new TypeReference<Map<String, Object>>(){});
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipInStoreUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_InStore);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleInStore(JSONObject resObj) {
+        if (resObj.getInteger("code") <= 0) {
+            showToast(resObj.getString("msg"));
+            return;
+        }
+        showToast("入库成功");
+        popBackStack();
+    }
+
+    private void itemOutStore(){
+        showTips("正在出库");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipOutStoreUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_OutStore);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleOutStore(JSONObject resObj) {
+        if (resObj.getInteger("code") <= 0) {
+            showToast(resObj.getString("msg"));
+            return;
+        }
+        showToast("出库成功");
+        popBackStack();
     }
 
 }
