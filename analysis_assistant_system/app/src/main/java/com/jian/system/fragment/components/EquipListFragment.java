@@ -1,9 +1,13 @@
 
 package com.jian.system.fragment.components;
 
+import android.Manifest;
+import android.content.Intent;
+import android.media.audiofx.DynamicsProcessing;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,6 +25,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.jian.system.Application;
 import com.jian.system.R;
 import com.jian.system.adapter.BaseRecyclerAdapter;
 import com.jian.system.adapter.BaseRecyclerOnScrollListener;
@@ -37,6 +42,9 @@ import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.pullRefreshLayout.QMUICenterGravityRefreshOffsetCalculator;
 import com.qmuiteam.qmui.widget.pullRefreshLayout.QMUIPullRefreshLayout;
+import com.sonnyjack.library.qrcode.QrCodeUtils;
+import com.sonnyjack.permission.IRequestPermissionCallBack;
+import com.sonnyjack.permission.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,6 +71,11 @@ public class EquipListFragment extends QMUIFragment {
     private final int MsgType_INIT = 0;
     private final int MsgType_LOADMORE = 1;
     private final int MsgType_REFRESH = 2;
+    private final int MsgType_SEARCH = 3;
+
+    //search
+    List<Equip> sdata = new ArrayList<>();
+    List<SearchSuggestion> slist = new ArrayList<>();
 
     private QMUITipDialog tipDialog;
 
@@ -115,8 +128,12 @@ public class EquipListFragment extends QMUIFragment {
 
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     mSearchView.clearSuggestions();
+                    //还原列表
+                    mItemAdapter.setData(data);
                 } else {
                     mSearchView.showProgress();
+                    //查询数据
+                    searchData(newQuery);
                 }
                 Log.d(TAG, "onSearchTextChanged()");
             }
@@ -125,9 +142,12 @@ public class EquipListFragment extends QMUIFragment {
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(final SearchSuggestion searchSuggestion) {
-
                 Log.d(TAG, "onSuggestionClicked()");
-
+                mSearchView.clearQuery();
+                mSearchView.clearSearchFocus();
+                //进入详情页面
+                int index = searchSuggestion.describeContents();
+                intoDetail(sdata.get(index).getsEquip_ID());
             }
 
             @Override
@@ -151,9 +171,12 @@ public class EquipListFragment extends QMUIFragment {
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override
             public void onActionMenuItemSelected(MenuItem item) {
-                Toast.makeText(getContext().getApplicationContext(), item.getTitle(),
-                        Toast.LENGTH_SHORT).show();
-
+                    Log.d(TAG, "onActionMenuItemSelected()" +item.getTitle());
+                    if("scan".equals(item.getTitle())){
+                        scanQrCode();
+                    }else if("nfc".equals(item.getTitle())){
+                        scanNFC();
+                    }
             }
         });
 
@@ -202,11 +225,8 @@ public class EquipListFragment extends QMUIFragment {
             @Override
             public void onItemClick(View itemView, int pos) {
                 Log.d(TAG, "onItemClick: " + data.get(pos).getsEquip_ID());
-                EquipDetailFragment fragment = new EquipDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("id", data.get(pos).getsEquip_ID());
-                fragment.setArguments(bundle);
-                startFragment(fragment);
+                //进入详情页面
+                intoDetail(data.get(pos).getsEquip_ID());
             }
         });
         mRecyclerView.setAdapter(mItemAdapter);
@@ -232,6 +252,57 @@ public class EquipListFragment extends QMUIFragment {
                 }, 1000);*/
             }
         });
+
+    }
+
+    private void intoDetail(String sEquip_ID){
+        Bundle bundle = new Bundle();
+        bundle.putString("id", sEquip_ID);
+        EquipDetailFragment fragment = new EquipDetailFragment();
+        fragment.setArguments(bundle);
+        startFragment(fragment);
+    }
+
+    /**
+     * 扫描二维码（先请求权限，用第三方库）
+     */
+    private void scanQrCode() {
+        ArrayList<String> permissionList = new ArrayList<>();
+        permissionList.add(Manifest.permission.CAMERA);
+        PermissionUtils.getInstances().requestPermission(getActivity(), permissionList, new IRequestPermissionCallBack() {
+            @Override
+            public void onGranted() {
+                //扫描二维码/条形码
+                //QrCodeUtils.startScan(getActivity(), Application.Scan_Search_Request_Code);
+                Intent intent = QrCodeUtils.createScanQrCodeIntent(getActivity());
+                startActivityForResult(intent, Application.Scan_Search_Request_Code);
+            }
+
+            @Override
+            public void onDenied() {
+                Toast.makeText(getActivity(), "请在应用管理中打开拍照权限", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (RESULT_OK == resultCode) {
+            switch (requestCode) {
+                case Application.Scan_Search_Request_Code:
+                    String str = QrCodeUtils.getScanResult(data);
+                    Log.d("onActivityResult", str);
+                    //进入详情
+                    intoDetail(str);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * NFC扫描
+     */
+    private void scanNFC() {
 
     }
 
@@ -284,6 +355,22 @@ public class EquipListFragment extends QMUIFragment {
         }
     };
 
+    Handler mSearchHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            JSONObject resObj = (JSONObject) msg.obj;
+            if(resObj.getInteger("code") <= 0){
+                Toast.makeText(getActivity(), resObj.getString("msg"), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            //处理数据
+            switch (msg.what){
+                case MsgType_SEARCH:
+                    handleSearch(resObj);
+                    break;
+            }
+        }
+    };
 
     private void initData(){
         //查询数据 -- 判断网络
@@ -334,4 +421,59 @@ public class EquipListFragment extends QMUIFragment {
     }
 
 
+    private void searchData(String keywords){
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<>();
+                params.put("keywords", keywords);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipSearchUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, UrlConfig.equipSearchUrl + " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+                Message msg = mHandler.obtainMessage();
+                msg.what = MsgType_SEARCH;
+                msg.obj = resObj;
+                mSearchHandler.sendMessage(msg);
+            }
+        });
+    }
+
+    private void handleSearch(JSONObject resObj){
+        JSONArray resData = resObj.getJSONArray("data");
+
+        Log.d(TAG, resObj.getString("data"));
+        mSearchView.hideProgress();
+
+        //更新搜索建议
+        SearchSuggestion node = null;
+        for (int i = 0; i < resData.size(); i++) {
+            Equip temp = resData.getObject(i, Equip.class);
+            sdata.add(temp);
+            int index = i;
+            node = new SearchSuggestion() {
+                @Override
+                public String getBody() {
+                    return temp.getsEquip_NO();
+                }
+
+                @Override
+                public int describeContents() {
+                    return index;
+                }
+
+                @Override
+                public void writeToParcel(Parcel parcel, int i) {
+
+                }
+            };
+            slist.add(node);
+        }
+        mSearchView.swapSuggestions(slist);
+
+        //更新列表
+        mItemAdapter.setData(sdata);
+    }
 }

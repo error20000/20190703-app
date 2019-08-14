@@ -8,6 +8,7 @@ import com.jian.system.R;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
 import com.jian.system.utils.FormatUtils;
+import com.jian.system.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;

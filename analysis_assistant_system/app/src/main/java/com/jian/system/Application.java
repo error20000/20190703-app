@@ -12,6 +12,9 @@ public class Application extends android.app.Application {
     private static Context context;
     private static String tokenStr;
 
+    public static final int Scan_Search_Request_Code = 100;
+    public static final int Scan_Add_Request_Code = 200;
+
     public static Context getContext() {
         return context;
     }

@@ -6,6 +6,13 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!--NFC 相关权限-->
+    <!--描述所需硬件特性-->
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
+    <uses-permission android:name="android.permission.NFC" />
+
     <application
         android:name=".Application"
         android:allowBackup="true"
@@ -60,6 +67,19 @@
         <activity
             android:name=".gesture.GesturePwdCheckActivity"
             android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".NfcActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED"/>
+            </intent-filter>
         </activity>
 
     </application>

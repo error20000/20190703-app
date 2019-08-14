@@ -4,14 +4,17 @@ package com.jian.system;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.jian.system.fragment.MainFragment;
+import com.jian.system.fragment.components.EquipDetailFragment;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.arch.QMUIFragmentActivity;
 import com.qmuiteam.qmui.arch.annotation.DefaultFirstFragment;
+import com.sonnyjack.library.qrcode.QrCodeUtils;
 
 
 @DefaultFirstFragment(value = MainFragment.class)
@@ -32,4 +35,5 @@ public class MainActivity extends QMUIFragmentActivity {
                             @Nullable Bundle fragmentArgs) {
         return QMUIFragmentActivity.intentOf(context, MainActivity.class, firstFragment, fragmentArgs);
     }
+
 }

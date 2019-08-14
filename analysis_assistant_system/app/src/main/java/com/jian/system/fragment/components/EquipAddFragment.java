@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -23,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.jian.system.Application;
 import com.jian.system.MainActivity;
 import com.jian.system.R;
 import com.jian.system.config.UrlConfig;
@@ -67,7 +69,6 @@ public class EquipAddFragment extends QMUIFragment {
     private final static String TAG = EquipAddFragment.class.getSimpleName();
     private String title = "新增器材";
     private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
-    private final int REQUESTCODE = 1003;
 
     private QMUITipDialog tipDialog;
     private BottomDialog selectorDialog;
@@ -208,7 +209,9 @@ public class EquipAddFragment extends QMUIFragment {
             @Override
             public void onGranted() {
                 //扫描二维码/条形码
-                QrCodeUtils.startScan(getActivity(), REQUESTCODE);
+                //QrCodeUtils.startScan(getActivity(), Application.Scan_Add_Request_Code);
+                Intent intent = QrCodeUtils.createScanQrCodeIntent(getActivity());
+                startActivityForResult(intent, Application.Scan_Add_Request_Code);
             }
 
             @Override
@@ -223,8 +226,12 @@ public class EquipAddFragment extends QMUIFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
-                case REQUESTCODE:
-                    Log.d(TAG, QrCodeUtils.getScanResult(data));
+                case Application.Scan_Add_Request_Code:
+                    String str = QrCodeUtils.getScanResult(data);
+                    Log.d("onActivityResult", str);
+                    //填入NO
+                    EditText editTextNo = equipNo.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                    editTextNo.setText(str);
                     break;
             }
         }

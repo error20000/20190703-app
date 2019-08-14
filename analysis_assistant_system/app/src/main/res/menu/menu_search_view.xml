@@ -1,12 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_scan"
-        android:title="扫一扫"
+        android:title="scan"
         android:orderInCategory="1"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_scan_24dp"/>
     <item android:id="@+id/action_nfc"
-        android:title="NFC"
+        android:title="nfc"
         android:orderInCategory="2"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_nfc_24dp"/>
