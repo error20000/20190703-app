@@ -197,7 +197,7 @@ public class EquipListFragment extends QMUIFragment {
     }
 
     private void initEquipList() {
-        mItemAdapter = new EquipAdapter(getActivity(), data);
+        mItemAdapter = new EquipAdapter(getActivity(), data, equipTypeData, equipStatusData);
         mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int pos) {
@@ -274,8 +274,8 @@ public class EquipListFragment extends QMUIFragment {
                     break;
                 case MsgType_REFRESH:
                     Toast.makeText(getActivity(), "刷新成功", Toast.LENGTH_SHORT).show();
+                    mItemAdapter.setData(data);
                     mPullRefreshLayout.finishRefresh();
-                    mItemAdapter.notifyDataSetChanged();
                     break;
                 default:
                     break;

@@ -116,6 +116,7 @@ public class EquipAddFragment extends QMUIFragment {
                 equip.setsEquip_NO(editTextNo.getText().toString());
                 EditText editTextName = (EditText)equipName.getAccessoryContainerView().getChildAt(0);
                 equip.setsEquip_Name(editTextName.getText().toString());
+                Log.d(TAG, JSONObject.toJSONString(equip));
                 //保存数据
                 sendAdd();
             }
@@ -141,7 +142,6 @@ public class EquipAddFragment extends QMUIFragment {
         equipNoImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "选项：equipNoImage 点击了");
                 scanQrCode();
             }
         });
@@ -177,7 +177,7 @@ public class EquipAddFragment extends QMUIFragment {
         equipNfcImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "选项：equipNfcImage 点击了");
+                scanNFC();
             }
         });
 
@@ -230,6 +230,13 @@ public class EquipAddFragment extends QMUIFragment {
         }
     }
 
+    /**
+     * NFC扫描
+     */
+    private void scanNFC() {
+
+    }
+
     private View.OnClickListener mOnClickListenerGroup = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -242,6 +249,7 @@ public class EquipAddFragment extends QMUIFragment {
                         typeNames[i] = equipTypeData.get(i).getsDict_Name();
                     }
                     new QMUIDialog.CheckableDialogBuilder(getActivity())
+                            .setTitle("请选择")
                             .addItems(typeNames, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -258,6 +266,7 @@ public class EquipAddFragment extends QMUIFragment {
                         nfcNames[i] = nfcUnusedData.get(i).getsNfc_Name();
                     }
                     new QMUIDialog.CheckableDialogBuilder(getActivity())
+                            .setTitle("请选择")
                             .addItems(nfcNames, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -345,7 +354,6 @@ public class EquipAddFragment extends QMUIFragment {
                                         equip.setsEquip_StoreLv4(selectAble.getId());
                                         break;
                                 }
-                                equip.setsEquip_StoreLv1(selectAble.getId());
                                 result += " / " + selectAble.getName();
                             }
                             result = "".equals(result) ? result : result.substring(" / ".length());

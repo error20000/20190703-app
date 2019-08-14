@@ -5,6 +5,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.config.UrlConfig;
+import com.jian.system.entity.Aid;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Nfc;
 import com.jian.system.entity.Store;
@@ -209,4 +210,79 @@ public class DataUtils {
         });
     }
 
+    /**
+     * 查询所有航标
+     * @param aidAllData
+     */
+    public static void getAidAllData(List<JSONObject> aidAllData){
+        if(aidAllData == null){
+            throw new RuntimeException("Aid is list can not be null!");
+        }
+        String ckey = "cache_aid_all_data";
+        //缓存获取数据
+        List<JSONObject> cacheData = DataCacheUtils.getList(ckey, JSONObject.class);
+        if(cacheData != null){
+            Log.d(TAG, " AidAll 从缓存获取数据。");
+            aidAllData.addAll(cacheData);
+            return;
+        }
+        //获取数据
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<>();
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.aidQueryAllUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, UrlConfig.aidQueryAllUrl + " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+                if(resObj.getInteger("code") > 0){
+                    JSONArray data = resObj.getJSONArray("data");
+                    for (int i = 0; i < data.size(); i++) {
+                        aidAllData.add(data.getJSONObject(i));
+                    }
+                    DataCacheUtils.set(ckey, aidAllData);
+                }
+            }
+        });
+    }
+
+    /**
+     * 查询用户航标
+     * @param aidUserData
+     */
+    public static void getAidUserData(List<JSONObject> aidUserData){
+        if(aidUserData == null){
+            throw new RuntimeException("Aid is list can not be null!");
+        }
+        String ckey = "cache_aid_user_data";
+        //缓存获取数据
+        List<JSONObject> cacheData = DataCacheUtils.getList(ckey, JSONObject.class);
+        if(cacheData != null){
+            Log.d(TAG, " AidUser 从缓存获取数据。");
+            aidUserData.addAll(cacheData);
+            return;
+        }
+        //获取数据
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<>();
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.userAidUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, UrlConfig.userAidUrl + " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+                if(resObj.getInteger("code") > 0){
+                    JSONArray data = resObj.getJSONArray("data");
+                    for (int i = 0; i < data.size(); i++) {
+                        aidUserData.add(data.getJSONObject(i));
+                    }
+                    DataCacheUtils.set(ckey, aidUserData);
+                }
+            }
+        });
+    }
 }

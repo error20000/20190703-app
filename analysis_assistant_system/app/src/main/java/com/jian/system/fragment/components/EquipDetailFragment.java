@@ -2,6 +2,7 @@
 package com.jian.system.fragment.components;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,12 +23,15 @@ import com.alibaba.fastjson.TypeReference;
 import com.baoyachi.stepview.VerticalStepView;
 import com.jian.system.R;
 import com.jian.system.config.UrlConfig;
+import com.jian.system.entity.Aid;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
 import com.jian.system.entity.EquipLog;
+import com.jian.system.entity.Nfc;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
 import com.jian.system.utils.DataUtils;
+import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
@@ -44,12 +48,14 @@ import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,11 +88,15 @@ public class EquipDetailFragment extends QMUIFragment {
 
     private String remarks = "";
     private Equip equip;
+    private String sAid_ID = "";
     private List<Dict> equipTypeData = new ArrayList<>();
     private List<Dict> equipStatusData = new ArrayList<>();
     private List<StoreType> storeTypeData = new ArrayList<>();
     private List<Store> storeData = new ArrayList<>();
+    private List<Nfc> nfcData = new ArrayList<>();
     private List<EquipLog> historyData = new ArrayList<>();
+    private List<JSONObject> aidAllData = new ArrayList<>();
+    private List<JSONObject> userAidData = new ArrayList<>();
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -142,8 +152,10 @@ public class EquipDetailFragment extends QMUIFragment {
                     @Override
                     public void onClick(QMUIBottomSheet dialog, View itemView, int position, String tag) {
                         dialog.dismiss();
-                        if(position == 0){
+                        if("inStore".equals(tag)){
                             showStore(tag);
+                        }else if("useToAid".equals(tag)){
+                            showAid(tag);
                         }else{
                             showEditTextDialog(tag);
                         }
@@ -156,15 +168,32 @@ public class EquipDetailFragment extends QMUIFragment {
     private void showEditTextDialog(String tag) {
         final QMUIDialog.EditTextDialogBuilder builder = new QMUIDialog.EditTextDialogBuilder(getActivity());
         builder.setTitle("备注")
-                .setPlaceholder("非必填")
+                .setPlaceholder("请填写备注，非必填！")
                 .setInputType(InputType.TYPE_CLASS_TEXT)
-                .addAction("取消", new QMUIDialogAction.ActionListener(){
+                .addAction(0, "取消", QMUIDialogAction.ACTION_PROP_NEGATIVE, new QMUIDialogAction.ActionListener(){
                     @Override
                     public void onClick(QMUIDialog dialog, int index) {
-                        dialog.dismiss();
+                        //二次确认
+                        new QMUIDialog.MessageDialogBuilder(getActivity())
+                                .setTitle("")
+                                .setMessage("确定要取消本次操作吗？")
+                                .addAction("取消", new QMUIDialogAction.ActionListener() {
+                                    @Override
+                                    public void onClick(QMUIDialog dialog2, int index) {
+                                        dialog2.dismiss();
+                                    }
+                                })
+                                .addAction("确定",  new QMUIDialogAction.ActionListener() {
+                                    @Override
+                                    public void onClick(QMUIDialog dialog2, int index) {
+                                        dialog2.dismiss();
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
                     }
                 })
-                .addAction("确定", new QMUIDialogAction.ActionListener() {
+                .addAction("提交", new QMUIDialogAction.ActionListener() {
                     @Override
                     public void onClick(QMUIDialog dialog, int index) {
                         remarks = builder.getEditText().getText().toString();
@@ -176,7 +205,7 @@ public class EquipDetailFragment extends QMUIFragment {
                             case "outStore": //出库
                                 itemOutStore();
                                 break;
-                            /*case "useToAid": //使用
+                            case "useToAid": //使用
                                 itemUseToAid();
                                 break;
                             case "remove": //拆除
@@ -198,7 +227,7 @@ public class EquipDetailFragment extends QMUIFragment {
                                 itemDump();
                                 break;
                             default:
-                                break;*/
+                                break;
                         }
                     }
                 })
@@ -206,71 +235,36 @@ public class EquipDetailFragment extends QMUIFragment {
     }
 
     private void initEquipInfo() {
-        QMUICommonListItemView item1 = mGroupListView.createItemView("ID");
-        item1.setDetailText(equip.getsEquip_ID());
-        item1.setTag(1);
+        QMUICommonListItemView equipId = mGroupListView.createItemView("ID");
+        equipId.setDetailText(equip.getsEquip_ID());
 
-        QMUICommonListItemView item2 = mGroupListView.createItemView("器材类型");
-        String typeName = equip.getsEquip_Type();
-        for(int i = 0; i < equipTypeData.size(); i++){
-            Dict node = equipTypeData.get(i);
-            if(node.getsDict_NO().equals(equip.getsEquip_Type())){
-                typeName = node.getsDict_Name();
-                break;
-            }
-        }
-        item2.setDetailText(typeName);
-        item2.setTag(2);
+        QMUICommonListItemView equipNo = mGroupListView.createItemView("器材编码");
+        equipNo.setDetailText(equip.getsEquip_NO());
 
-        QMUICommonListItemView item3 = mGroupListView.createItemView("器材状态");
-        String statusName = equip.getsEquip_Status();
-        for(int i = 0; i < equipStatusData.size(); i++){
-            Dict node = equipStatusData.get(i);
-            if(node.getsDict_NO().equals(equip.getsEquip_Status())){
-                statusName = node.getsDict_Name();
-                break;
-            }
-        }
-        item3.setDetailText(statusName);
-        item3.setTag(3);
+        QMUICommonListItemView equipName = mGroupListView.createItemView("器材名称");
+        equipName.setDetailText(equip.getsEquip_Name());
 
-        QMUICommonListItemView item4 = mGroupListView.createItemView("NFC标签ID");
-        item4.setDetailText(equip.getsEquip_NfcID());
-        item4.setTag(4);
+        QMUICommonListItemView equipType = mGroupListView.createItemView("器材类型");
+        String typeName = FormatUtils.formatDict(equip.getsEquip_Type(), equipTypeData);
+        equipType.setDetailText(typeName);
 
-        QMUICommonListItemView item5 = mGroupListView.createItemView("航标ID");
-        item5.setDetailText(equip.getsEquip_AidID());
-        item5.setTag(5);
+        QMUICommonListItemView equipStatus = mGroupListView.createItemView("器材状态");
+        String statusName = FormatUtils.formatDict(equip.getsEquip_Status(), equipStatusData);
+        equipStatus.setDetailText(statusName);
 
-        QMUICommonListItemView item6 = mGroupListView.createItemView("创建日期");
-        if(equip.getdEquip_CreateDate() != null){
-            String date = new SimpleDateFormat("yyyy-MM-dd").format(equip.getdEquip_CreateDate());
-            item6.setDetailText(date);
-        }
-        item6.setTag(6);
+        QMUICommonListItemView equipDate = mGroupListView.createItemView("创建日期");
+        String date = FormatUtils.formatDate("yyyy-MM-dd", equip.getdEquip_CreateDate());
+        equipDate.setDetailText(date);
 
-        QMUICommonListItemView item7 = mGroupListView.createItemView("器材编码");
-        item7.setDetailText(equip.getsEquip_NO());
-        item7.setTag(7);
+        QMUICommonListItemView equipNfc = mGroupListView.createItemView("所属NFC标签");
+        String nfcName = FormatUtils.formatNFC(equip.getsEquip_NfcID(), nfcData);
+        equipNfc.setDetailText(nfcName);
 
-        QMUICommonListItemView item8 = mGroupListView.createItemView("器材名称");
-        item8.setDetailText(equip.getsEquip_Name());
-        item8.setTag(8);
+        QMUICommonListItemView equipAid = mGroupListView.createItemView("所属航标");
+        String aidName = FormatUtils.formatAidJSONObject(equip.getsEquip_AidID(), aidAllData);
+        equipAid.setDetailText(aidName);
 
-        /*QMUICommonListItemView item9 = mGroupListView.createItemView("一级仓库");
-        item9.setDetailText(equip.getsEquip_StoreLv1());
-        item9.setTag(9);
-        QMUICommonListItemView item10 = mGroupListView.createItemView("二级仓库");
-        item10.setDetailText(equip.getsEquip_StoreLv2());
-        item10.setTag(10);
-        QMUICommonListItemView item11 = mGroupListView.createItemView("三级仓库");
-        item11.setDetailText(equip.getsEquip_StoreLv3());
-        item11.setTag(11);
-        QMUICommonListItemView item12 = mGroupListView.createItemView("四级仓库");
-        item12.setDetailText(equip.getsEquip_StoreLv4());
-        item12.setTag(12);*/
-
-        QMUICommonListItemView item13 = mGroupListView.createItemView("仓库");
+        QMUICommonListItemView equipStore = mGroupListView.createItemView("所属仓库");
         String storeTypeName = "";
         String storeName2 = "";
         String storeName3 = "";
@@ -299,28 +293,19 @@ public class EquipDetailFragment extends QMUIFragment {
         storeName += Utils.isNullOrEmpty(storeName2) ? "": "/"+storeName2;
         storeName += Utils.isNullOrEmpty(storeName3) ? "": "/"+storeName3;
         storeName += Utils.isNullOrEmpty(storeName4) ? "": "/"+storeName4;
-        System.out.println("storeTypeName  " + storeTypeName );
-        System.out.println("storeName2 " + storeName2);
-        System.out.println("storeName3 " + storeName3);
-        System.out.println("storeName4 " + storeName4);
-        item13.setDetailText(storeName);
-        item13.setTag(13);
+        equipStore.setDetailText(storeName);
 
         QMUIGroupListView.newSection(getContext())
                 .setTitle("基础信息")
-                .addItemView(item1, null)
-                .addItemView(item7, null)
-                .addItemView(item8, null)
-                .addItemView(item2, null)
-                .addItemView(item3, null)
-                .addItemView(item4, null)
-                //.addItemView(item5, null)
-                .addItemView(item6, null)
-                //.addItemView(item9, null)
-                //.addItemView(item10, null)
-                //.addItemView(item11, null)
-                //.addItemView(item12, null)
-                .addItemView(item13, null)
+                .addItemView(equipId, null)
+                .addItemView(equipNo, null)
+                .addItemView(equipName, null)
+                .addItemView(equipType, null)
+                .addItemView(equipStatus, null)
+                .addItemView(equipDate, null)
+                .addItemView(equipNfc, null)
+                .addItemView(equipAid, null)
+                .addItemView(equipStore, null)
                 .addTo(mGroupListView);
 
         //设置历史信息
@@ -340,7 +325,11 @@ public class EquipDetailFragment extends QMUIFragment {
         mVerticalStepView.setVisibility(View.VISIBLE);
         List<String> list = new ArrayList<>();
         for (int i = 0; i < historyData.size(); i++) {
-            list.add(historyData.get(i).getsELog_Describe());
+            String str = "";
+            str += FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", historyData.get(i).getdELog_CreateDate());
+            str +=" 【" + historyData.get(i).getsELog_Describe();
+            str +="】    " + (historyData.get(i).getsELog_Remarks() == null ? "" : historyData.get(i).getsELog_Remarks());
+            list.add(str);
         }
 
         Drawable compltedIcon = ContextCompat.getDrawable(getActivity(), R.drawable.complted);
@@ -348,6 +337,9 @@ public class EquipDetailFragment extends QMUIFragment {
 
         Drawable defaultIcon = ContextCompat.getDrawable(getActivity(), R.drawable.default_icon);
         defaultIcon.setTint(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5));
+
+        Drawable attentionIcon = ContextCompat.getDrawable(getActivity(), R.drawable.attention);
+        attentionIcon.setTint(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5));
 
         mVerticalStepView.setStepsViewIndicatorComplectingPosition(list.size() - 1)//设置完成的步数
                 .reverseDraw(true)//default is true
@@ -359,7 +351,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 .setStepViewUnComplectedTextColor(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5))//设置StepsView text未完成线的颜色
                 .setStepsViewIndicatorCompleteIcon(defaultIcon)//设置StepsViewIndicator CompleteIcon
                 .setStepsViewIndicatorDefaultIcon(defaultIcon)//设置StepsViewIndicator DefaultIcon
-                .setStepsViewIndicatorAttentionIcon(defaultIcon);//设置StepsViewIndicator AttentionIcon
+                .setStepsViewIndicatorAttentionIcon(attentionIcon);//设置StepsViewIndicator AttentionIcon
     }
 
 
@@ -415,7 +407,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 case MsgType_OutStore: //出库
                     handleOutStore(resData);
                     break;
-                /*case MsgType_UseToAid: //使用
+                case MsgType_UseToAid: //使用
                     handleUseToAid(resData);
                     break;
                 case MsgType_Remove: //拆除
@@ -437,7 +429,7 @@ public class EquipDetailFragment extends QMUIFragment {
                     handleDump(resData);
                     break;
                 default:
-                    break;*/
+                    break;
             }
         }
     };
@@ -457,6 +449,10 @@ public class EquipDetailFragment extends QMUIFragment {
         //查询仓库
         DataUtils.getStoreTypeData(storeTypeData);
         DataUtils.getStoreData(storeData);
+        //查询NFC
+        DataUtils.getNfcAllData(nfcData);
+        //查询所有航标
+        DataUtils.getAidAllData(aidAllData);
         //查询器材详情
         Bundle bundle = this.getArguments();
         String id = bundle.getString("id");
@@ -464,6 +460,8 @@ public class EquipDetailFragment extends QMUIFragment {
         params.put("sEquip_ID", id);
         queryDetail(params);
         queryHistory(params);
+        //查询用户航标
+        DataUtils.getAidUserData(userAidData);
     }
 
     private void queryDetail(Map<String, Object> params){
@@ -585,7 +583,6 @@ public class EquipDetailFragment extends QMUIFragment {
                             equip.setsEquip_StoreLv4(selectAble.getId());
                             break;
                     }
-                    equip.setsEquip_StoreLv1(selectAble.getId());
                     result += " / " + selectAble.getName();
                 }
                 result = "".equals(result) ? result : result.substring(" / ".length());
@@ -600,6 +597,24 @@ public class EquipDetailFragment extends QMUIFragment {
         selectorDialog.show();
     }
 
+    private void showAid(String tag){
+        String[] items = new String[userAidData.size()];
+        for (int i = 0; i < userAidData.size(); i++) {
+            items[i] = userAidData.get(i).getString("sAid_Name");
+        }
+        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                .setTitle("请选择")
+                .addItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sAid_ID = userAidData.get(which).getString("sAid_ID");
+                        dialog.dismiss();
+                        //显示保存
+                        showEditTextDialog(tag);
+                    }
+                })
+                .create(mCurrentDialogStyle).show();
+    }
 
     //TODO --------------------------------------------------------------------------- handle
 
@@ -617,7 +632,13 @@ public class EquipDetailFragment extends QMUIFragment {
     private void showToast(String msg){
         Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
     }
-
+    private boolean handleErrorCode(JSONObject resObj){
+        if (resObj.getInteger("code") <= 0) {
+            showToast(resObj.getString("msg"));
+            return true;
+        }
+        return false;
+    }
     private void itemInStore(){
         showTips("入库中");
         ThreadUtils.execute(new Runnable() {
@@ -640,8 +661,8 @@ public class EquipDetailFragment extends QMUIFragment {
     }
 
     private void handleInStore(JSONObject resObj) {
-        if (resObj.getInteger("code") <= 0) {
-            showToast(resObj.getString("msg"));
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
             return;
         }
         showToast("入库成功");
@@ -671,11 +692,229 @@ public class EquipDetailFragment extends QMUIFragment {
     }
 
     private void handleOutStore(JSONObject resObj) {
-        if (resObj.getInteger("code") <= 0) {
-            showToast(resObj.getString("msg"));
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
             return;
         }
         showToast("出库成功");
+        popBackStack();
+    }
+
+    private void itemUseToAid(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                params.put("sAid_ID", sAid_ID);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipUseToAidUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_UseToAid);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleUseToAid(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+        popBackStack();
+    }
+
+    private void itemRemove(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipRemoveUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_Remove);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleRemove(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+        popBackStack();
+    }
+
+    private void itemTransport(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipTransportUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_Transport);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleTransport(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+        popBackStack();
+    }
+
+    private void itemToBeTest(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipToBeTestUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_ToBeTest);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleToBeTest(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+        popBackStack();
+    }
+
+    private void itemCheck(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipCheckUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_Check);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleCheck(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+        popBackStack();
+    }
+
+    private void itemRepair(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipRepairUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_Repair);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleRepair(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+        popBackStack();
+    }
+
+    private void itemDump(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipDumpUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+
+                Message message = mHandler.obtainMessage(MsgType_Dump);
+                message.obj = resObj;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleDump(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
         popBackStack();
     }
 

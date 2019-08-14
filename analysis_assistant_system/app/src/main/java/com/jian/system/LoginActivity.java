@@ -217,6 +217,7 @@ public class LoginActivity extends AppCompatActivity {
         user = data.getObject("user", User.class);
 
         //保存用户信息
+        Application.setTokenStr(tokenStr);
         GestureUtils.set(this, GestureUtils.USER_TOEKN, tokenStr);
         GestureUtils.set(this, GestureUtils.USER_INFO, data.getString("user"));
         GestureUtils.set(this, GestureUtils.USER_USERNAME, editText1.getText().toString());

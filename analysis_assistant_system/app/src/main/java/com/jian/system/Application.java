@@ -20,6 +20,10 @@ public class Application extends android.app.Application {
         return tokenStr;
     }
 
+    public static void setTokenStr(String tokenStr) {
+        Application.tokenStr = tokenStr;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -33,6 +37,7 @@ public class Application extends android.app.Application {
         //QDUpgradeManager.getInstance(this).check();
 
         tokenStr = GestureUtils.get(this, GestureUtils.USER_TOEKN);
+        tokenStr = tokenStr == null ? "" : tokenStr;
 
         QMUISwipeBackActivityManager.init(this);
     }

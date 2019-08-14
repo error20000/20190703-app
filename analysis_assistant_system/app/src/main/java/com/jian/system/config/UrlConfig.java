@@ -2,12 +2,13 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.1.11:8065";
+    public static String baseUrl = "http://192.168.106.67:8065";
 
     //用户
     public static String userLoginUrl = baseUrl + "/api/user/app/login";
     public static String userLogoutUrl = baseUrl + "/api/user/app/logout";
     public static String userIsLoginUrl = baseUrl + "/api/user/app/isLogin";
+    public static String userAidUrl = baseUrl + "/api/user/app/aid";
 
     //查询数据字典
     public static String dictQueryUrl = baseUrl + "/api/dict/app/findList";
@@ -34,4 +35,10 @@ public class UrlConfig {
     //NFC
     public static String nfcQueryUrl = baseUrl + "/api/nfc/app/findAll";
     public static String nfcUnusedQueryUrl = baseUrl + "/api/nfc/app/unbind";
+
+    //航标
+    public static String aidQueryAllUrl = baseUrl + "/api/aid/app/findAll";
+    public static String aidQueryPageUrl = baseUrl + "/api/aid/app/findPage";
+    public static String aidQueryDetailUrl = baseUrl + "/api/aid/app/findOne";
+
 }
