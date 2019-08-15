@@ -20,17 +20,25 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
     private LayoutInflater mInflater;
     private OnItemClickListener mClickListener;
     private OnItemLongClickListener mLongClickListener;
+    private boolean hasFoot;
+
     private final int TYPE_ITEM = 1; // 普通布局
     private final int TYPE_FOOTER = 2;// 脚布局
+
     private int loadState = 2;// 当前加载状态，默认为加载完成
     public final int LOADING = 1; // 正在加载
     public final int LOADING_COMPLETE = 2;// 加载完成
     public final int LOADING_END = 3;// 加载到底
 
     public BaseRecyclerAdapter(Context ctx, List<T> list) {
+        this(ctx, list, true);
+    }
+
+    public BaseRecyclerAdapter(Context ctx, List<T> list, boolean hasFoot) {
         mData = (list != null) ? list : new ArrayList<T>();
         mContext = ctx;
         mInflater = LayoutInflater.from(ctx);
+        this.hasFoot = hasFoot;
     }
 
     public void setData(List<T> list) {
@@ -40,12 +48,15 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
 
     @Override
     public int getItemViewType(int position) {
-        // 最后一个item设置为FooterView
-        if (position + 1 == getItemCount()) {
-            return TYPE_FOOTER;
-        } else {
-            return TYPE_ITEM;
+        if(hasFoot){
+            // 最后一个item设置为FooterView
+            if (position + 1 == getItemCount()) {
+                return TYPE_FOOTER;
+            } else {
+                return TYPE_ITEM;
+            }
         }
+        return TYPE_ITEM;
     }
 
     @Override
@@ -114,7 +125,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
 
     @Override
     public int getItemCount() {
-        return mData.size()+1;
+        return  hasFoot ? mData.size()+1 : mData.size();
     }
 
     public void add(int pos, T item) {
