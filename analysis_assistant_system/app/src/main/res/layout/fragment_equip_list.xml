@@ -17,18 +17,11 @@
             android:layout_height="match_parent"
             android:layout_marginTop="70dp">
 
-            <ScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/qmui_config_color_background">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/qmui_config_color_white"/>
-
-            </ScrollView>
+                android:layout_height="wrap_content"
+                android:background="@color/qmui_config_color_white"/>
 
         </com.qmuiteam.qmui.widget.pullRefreshLayout.QMUIPullRefreshLayout>
 

@@ -17,7 +17,7 @@ public class MsgView extends QMUIWindowInsetLayout {
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
 
-    private MainListener mListener;
+    private ViewPagerListener mListener;
 
     public MsgView(Context context) {
         super(context);
@@ -32,7 +32,7 @@ public class MsgView extends QMUIWindowInsetLayout {
         }
     }
 
-    public void setMainListener(MainListener listener) {
+    public void setMainListener(ViewPagerListener listener) {
         mListener = listener;
     }
 

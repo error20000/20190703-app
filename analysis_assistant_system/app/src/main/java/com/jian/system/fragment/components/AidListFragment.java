@@ -38,6 +38,7 @@ import com.jian.system.entity.Equip;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
+import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
@@ -240,8 +241,8 @@ public class AidListFragment extends QMUIFragment {
 
     private void intoDetail(String sAid_ID){
         Bundle bundle = new Bundle();
-        bundle.putString("id", sAid_ID);
-        EquipDetailFragment fragment = new EquipDetailFragment();
+        bundle.putString("sAid_ID", sAid_ID);
+        AidDetailFragment fragment = new AidDetailFragment();
         fragment.setArguments(bundle);
         startFragment(fragment);
     }
@@ -267,8 +268,14 @@ public class AidListFragment extends QMUIFragment {
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
+            //处理结果
             hideTips();
-            JSONObject resData = (JSONObject) msg.obj;
+            String str =  (String) msg.obj;
+            if(Utils.isNullOrEmpty(str)){
+                showToast("网络异常，请检查网络。");
+                return;
+            }
+            JSONObject resData = JSONObject.parseObject(str);
             //处理数据
             switch (msg.what){
                 case MsgType_Init:
@@ -321,14 +328,9 @@ public class AidListFragment extends QMUIFragment {
             @Override
             public void run() {
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.aidQueryPageUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.aidQueryPageUrl + " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
                 Message msg = mHandler.obtainMessage();
                 msg.what = init; //init
-                msg.obj = resObj;
+                msg.obj = res;
                 mHandler.sendMessage(msg);
             }
         });
@@ -408,14 +410,9 @@ public class AidListFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<>();
                 params.put("keywords", keywords);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.aidSearchUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.aidSearchUrl + " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
                 Message msg = mHandler.obtainMessage();
                 msg.what = MsgType_Search;
-                msg.obj = resObj;
+                msg.obj = res;
                 mHandler.sendMessage(msg);
             }
         });

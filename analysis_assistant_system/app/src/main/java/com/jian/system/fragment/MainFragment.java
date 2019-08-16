@@ -1,8 +1,6 @@
 
 package com.jian.system.fragment;
 
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,7 +123,7 @@ public class MainFragment extends QMUIFragment {
     private void initPagers() {
         mPages = new HashMap<>();
 
-        MainListener listener = new MainListener(){
+        ViewPagerListener listener = new ViewPagerListener(){
             @Override
             public void startFragment(QMUIFragment fragment) {
                 MainFragment.this.startFragment(fragment);

@@ -1,22 +1,12 @@
 
 package com.jian.system.fragment;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,9 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.arlib.floatingsearchview.FloatingSearchView;
-import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.jian.system.R;
 import com.jian.system.adapter.BaseRecyclerAdapter;
 import com.jian.system.adapter.HomeRvItemAdapter;
@@ -35,21 +22,16 @@ import com.jian.system.config.UrlConfig;
 import com.jian.system.decorator.DividerItemDecoration;
 import com.jian.system.decorator.GridDividerItemDecoration;
 import com.jian.system.fragment.components.AidListFragment;
-import com.jian.system.fragment.components.EquipAddFragment;
-import com.jian.system.fragment.components.EquipDetailFragment;
 import com.jian.system.fragment.components.EquipListFragment;
 import com.jian.system.model.HomeRvItem;
-import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
+import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
-import com.qmuiteam.qmui.util.QMUIDisplayHelper;
-import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
-import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +54,7 @@ public class HomeView extends QMUIWindowInsetLayout{
     @BindView(R.id.recyclerViewMsg)
     RecyclerView mMsgRecyclerView;
 
-    private MainListener mListener;
+    private ViewPagerListener mListener;
     private Context context;
     private HomeRvItemAdapter mItemAdapter;
     private QMUITipDialog tipDialog;
@@ -102,7 +84,7 @@ public class HomeView extends QMUIWindowInsetLayout{
         }
     }
 
-    public void setMainListener(MainListener listener) {
+    public void setMainListener(ViewPagerListener listener) {
         mListener = listener;
     }
 
@@ -159,15 +141,10 @@ public class HomeView extends QMUIWindowInsetLayout{
                 params.put("rows", 5);
 
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryPageUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.equipQueryPageUrl + " return  is null ");
-                    return;
-                }
 
-                JSONObject resObj = JSONObject.parseObject(res);
                 Message msg = mHandler.obtainMessage();
                 msg.what = MsgType_Msg;
-                msg.obj = resObj;
+                msg.obj = res;
                 mHandler.sendMessage(msg);
             }
         });
@@ -203,8 +180,14 @@ public class HomeView extends QMUIWindowInsetLayout{
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
+            //处理结果
             hideTips();
-            JSONObject resData = (JSONObject) msg.obj;
+            String str =  (String) msg.obj;
+            if(Utils.isNullOrEmpty(str)){
+                showToast("网络异常，请检查网络。");
+                return;
+            }
+            JSONObject resData = JSONObject.parseObject(str);
             //处理数据
             switch (msg.what){
                 case MsgType_Msg:

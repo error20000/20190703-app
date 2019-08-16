@@ -17,7 +17,7 @@ public class CenterView extends QMUIWindowInsetLayout {
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
 
-    private MainListener mListener;
+    private ViewPagerListener mListener;
 
     public CenterView(Context context) {
         super(context);
@@ -32,7 +32,7 @@ public class CenterView extends QMUIWindowInsetLayout {
         }
     }
 
-    public void setMainListener(MainListener listener) {
+    public void setMainListener(ViewPagerListener listener) {
         mListener = listener;
     }
 

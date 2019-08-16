@@ -235,6 +235,11 @@ public class EquipDetailFragment extends QMUIFragment {
     }
 
     private void initEquipInfo() {
+
+        if(equip == null){
+            return;
+        }
+
         QMUICommonListItemView equipId = mGroupListView.createItemView("ID");
         equipId.setDetailText(equip.getsEquip_ID());
 
