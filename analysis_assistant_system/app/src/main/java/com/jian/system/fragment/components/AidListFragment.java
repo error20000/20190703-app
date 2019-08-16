@@ -3,7 +3,6 @@ package com.jian.system.fragment.components;
 
 import android.Manifest;
 import android.content.Intent;
-import android.media.audiofx.DynamicsProcessing;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,11 +26,13 @@ import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.jian.system.Application;
 import com.jian.system.R;
+import com.jian.system.adapter.AidAdapter;
 import com.jian.system.adapter.BaseRecyclerAdapter;
 import com.jian.system.adapter.BaseRecyclerOnScrollListener;
 import com.jian.system.adapter.EquipAdapter;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.decorator.DividerItemDecoration;
+import com.jian.system.entity.Aid;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
 import com.jian.system.utils.DataUtils;
@@ -50,31 +51,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class EquipListFragment extends QMUIFragment {
+public class AidListFragment extends QMUIFragment {
 
-    private final static String TAG = EquipListFragment.class.getSimpleName();
-    private String title = "器材列表";
-    private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
-    private List<Equip> data = new ArrayList<>();
-    private List<Dict> equipTypeData = new ArrayList<>();
-    private List<Dict> equipStatusData = new ArrayList<>();
+    private final static String TAG = AidListFragment.class.getSimpleName();
+    private String title = "航标列表";
+
+    private List<Aid> data = new ArrayList<>();
+    private List<Dict> aidTypeData = new ArrayList<>();
+    private List<Dict> aidStationData = new ArrayList<>();
+    private List<Dict> aidIconData = new ArrayList<>();
+    private List<Dict> aidLightingData = new ArrayList<>();
+    private List<Dict> aidMarkData = new ArrayList<>();
     private int total = 0;
     private int page = 1;
     private int rows = 10;
-    private EquipAdapter mItemAdapter;
-    private final int MsgType_INIT = 0;
-    private final int MsgType_LOADMORE = 1;
-    private final int MsgType_REFRESH = 2;
-    private final int MsgType_SEARCH = 3;
+    private AidAdapter mItemAdapter;
+    private final int MsgType_Init = 0;
+    private final int MsgType_LoadMore = 1;
+    private final int MsgType_Refresh = 2;
+    private final int MsgType_Search = 3;
 
     //search
-    List<Equip> sdata = new ArrayList<>();
+    List<Aid> sdata = new ArrayList<>();
     List<SearchSuggestion> slist = new ArrayList<>();
 
     private QMUITipDialog tipDialog;
@@ -90,7 +92,7 @@ public class EquipListFragment extends QMUIFragment {
 
     @Override
     protected View onCreateView() {
-        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_equip_list, null);
+        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_aid_list, null);
         ButterKnife.bind(this, rootView);
 
         initTopBar();
@@ -106,13 +108,6 @@ public class EquipListFragment extends QMUIFragment {
             @Override
             public void onClick(View view) {
                 popBackStack();
-            }
-        });
-        mTopBar.addRightTextButton("新增", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                EquipAddFragment fragment = new EquipAddFragment();
-                startFragment(fragment);
             }
         });
 
@@ -147,7 +142,7 @@ public class EquipListFragment extends QMUIFragment {
                 mSearchView.clearSearchFocus();
                 //进入详情页面
                 int index = searchSuggestion.describeContents();
-                intoDetail(sdata.get(index).getsEquip_ID());
+                intoDetail(sdata.get(index).getsAid_ID());
             }
 
             @Override
@@ -172,11 +167,6 @@ public class EquipListFragment extends QMUIFragment {
             @Override
             public void onActionMenuItemSelected(MenuItem item) {
                     Log.d(TAG, "onActionMenuItemSelected()" +item.getTitle());
-                    if("scan".equals(item.getTitle())){
-                        scanQrCode();
-                    }else if("nfc".equals(item.getTitle())){
-                        scanNFC();
-                    }
             }
         });
 
@@ -214,19 +204,19 @@ public class EquipListFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<>();
                 params.put("page", page);
                 params.put("rows", rows);
-                queryData(params, MsgType_REFRESH);
+                queryData(params, MsgType_Refresh);
             }
         });
     }
 
-    private void initEquipList() {
-        mItemAdapter = new EquipAdapter(getActivity(), data, equipTypeData, equipStatusData);
+    private void initAidList() {
+        mItemAdapter = new AidAdapter(getActivity(), data, aidTypeData);
         mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int pos) {
-                Log.d(TAG, "onItemClick: " + data.get(pos).getsEquip_ID());
+                Log.d(TAG, "onItemClick: " + data.get(pos).getsAid_Name());
                 //进入详情页面
-                intoDetail(data.get(pos).getsEquip_ID());
+                intoDetail(data.get(pos).getsAid_ID());
             }
         });
         mRecyclerView.setAdapter(mItemAdapter);
@@ -242,135 +232,20 @@ public class EquipListFragment extends QMUIFragment {
                     return;
                 }
                 mItemAdapter.setLoadState(mItemAdapter.LOADING);
-                refreshData();
-                // 模拟获取网络数据，延时1s
-                /*new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        refreshData();
-                    }
-                }, 1000);*/
+                loadMoreData();
             }
         });
 
     }
 
-    private void intoDetail(String sEquip_ID){
+    private void intoDetail(String sAid_ID){
         Bundle bundle = new Bundle();
-        bundle.putString("id", sEquip_ID);
+        bundle.putString("id", sAid_ID);
         EquipDetailFragment fragment = new EquipDetailFragment();
         fragment.setArguments(bundle);
         startFragment(fragment);
     }
 
-    /**
-     * 扫描二维码（先请求权限，用第三方库）
-     */
-    private void scanQrCode() {
-        ArrayList<String> permissionList = new ArrayList<>();
-        permissionList.add(Manifest.permission.CAMERA);
-        PermissionUtils.getInstances().requestPermission(getActivity(), permissionList, new IRequestPermissionCallBack() {
-            @Override
-            public void onGranted() {
-                //扫描二维码/条形码
-                //QrCodeUtils.startScan(getActivity(), Application.Scan_Search_Request_Code);
-                Intent intent = QrCodeUtils.createScanQrCodeIntent(getActivity());
-                startActivityForResult(intent, Application.Scan_Search_Request_Code);
-            }
-
-            @Override
-            public void onDenied() {
-                Toast.makeText(getActivity(), "请在应用管理中打开拍照权限", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (RESULT_OK == resultCode) {
-            switch (requestCode) {
-                case Application.Scan_Search_Request_Code:
-                    String str = QrCodeUtils.getScanResult(data);
-                    Log.d("onActivityResult", str);
-                    //进入详情
-                    intoDetail(str);
-                    break;
-            }
-        }
-    }
-
-    /**
-     * NFC扫描
-     */
-    private void scanNFC() {
-
-    }
-
-
-    Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            JSONObject resObj = (JSONObject) msg.obj;
-            if(resObj.getInteger("code") <= 0){
-                QMUITipDialog tipDialog = new QMUITipDialog.Builder(getContext())
-                        .setIconType(QMUITipDialog.Builder.ICON_TYPE_FAIL)
-                        .setTipWord(resObj.getString("msg"))
-                        .create();
-                tipDialog.show();
-                mRecyclerView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        tipDialog.dismiss();
-                    }
-                }, 1500);
-                return;
-            }
-            total = resObj.getInteger("total");
-            JSONArray resData = resObj.getJSONArray("data");
-            if(data == null){
-                data = new ArrayList<>();
-            }
-            for (int i = 0; i < resData.size(); i++) {
-                data.add(resData.getObject(i, Equip.class));
-            }
-
-            //处理数据
-            switch (msg.what){
-                case MsgType_INIT:
-                    initEquipList();
-                    tipDialog.dismiss();
-                    break;
-                case MsgType_LOADMORE:
-                    mItemAdapter.setLoadState(mItemAdapter.LOADING_COMPLETE);
-                    break;
-                case MsgType_REFRESH:
-                    Toast.makeText(getActivity(), "刷新成功", Toast.LENGTH_SHORT).show();
-                    mItemAdapter.setData(data);
-                    mPullRefreshLayout.finishRefresh();
-                    break;
-                default:
-                    break;
-            }
-
-        }
-    };
-
-    Handler mSearchHandler = new Handler(){
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            JSONObject resObj = (JSONObject) msg.obj;
-            if(resObj.getInteger("code") <= 0){
-                Toast.makeText(getActivity(), resObj.getString("msg"), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            //处理数据
-            switch (msg.what){
-                case MsgType_SEARCH:
-                    handleSearch(resObj);
-                    break;
-            }
-        }
-    };
 
     private void initData(){
         //查询数据 -- 判断网络
@@ -379,36 +254,75 @@ public class EquipListFragment extends QMUIFragment {
                 .setTipWord("正在加载")
                 .create();
         tipDialog.show();
-        //查询器材种类
-        DataUtils.getDictData("EquipType", equipTypeData);
-        //查询器材状态
-        DataUtils.getDictData("EquipStatus", equipStatusData);
-        //查询器材列表
+        //查询航标种类
+        DataUtils.getDictData("AidType", aidTypeData);
+        //查询航标列表
         Map<String, Object> params = new HashMap<>();
         params.put("page", page);
         params.put("rows", rows);
-        queryData(params, MsgType_INIT);
-
+        queryData(params, MsgType_Init);
     }
 
-    private void refreshData(){
-        if( data.size() >= total ){
-            return;
+
+    Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            hideTips();
+            JSONObject resData = (JSONObject) msg.obj;
+            //处理数据
+            switch (msg.what){
+                case MsgType_Init:
+                    handleAidListInit(resData);
+                    break;
+                case MsgType_LoadMore:
+                    handleAidLoadMore(resData);
+                    break;
+                case MsgType_Refresh:
+                    handleAidRefresh(resData);
+                    break;
+                case MsgType_Search:
+                    handleSearch(resData);
+                    break;
+                default:
+                    break;
+            }
+
         }
-        page = page + 1;
-        Map<String, Object> params = new HashMap<>();
-        params.put("page", page);
-        params.put("rows", rows);
-        queryData(params, MsgType_LOADMORE);
+    };
+
+    //TODO --------------------------------------------------------------------------- handle
+
+    private void showTips(String msg){
+        tipDialog = new QMUITipDialog.Builder(getActivity())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord(msg)
+                .create();
+        tipDialog.show();
+    }
+
+    private void hideTips(){
+        tipDialog.dismiss();
+    }
+
+    private void showToast(String msg){
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean handleErrorCode(JSONObject resObj){
+        if (resObj.getInteger("code") <= 0) {
+            showToast(resObj.getString("msg"));
+            return true;
+        }
+        return false;
     }
 
     private void queryData(Map<String, Object> params, int init){
         ThreadUtils.execute(new Runnable() {
             @Override
             public void run() {
-                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryPageUrl, params);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.aidQueryPageUrl, params);
                 if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.equipQueryPageUrl + " return  is null ");
+                    Log.d(TAG, UrlConfig.aidQueryPageUrl + " return  is null ");
                     return;
                 }
                 JSONObject resObj = JSONObject.parseObject(res);
@@ -420,6 +334,72 @@ public class EquipListFragment extends QMUIFragment {
         });
     }
 
+    private void handleAidListInit(JSONObject resObj){
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        //分页
+        total = resObj.getInteger("total");
+        JSONArray resData = resObj.getJSONArray("data");
+        if(data == null){
+            data = new ArrayList<>();
+        }
+        for (int i = 0; i < resData.size(); i++) {
+            data.add(resData.getObject(i, Aid.class));
+        }
+        //展示数据
+        initAidList();
+    }
+
+    private void loadMoreData(){
+        if( data.size() >= total ){
+            return;
+        }
+        page = page + 1;
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", page);
+        params.put("rows", rows);
+        queryData(params, MsgType_LoadMore);
+    }
+
+    private void handleAidLoadMore(JSONObject resObj){
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        //分页
+        total = resObj.getInteger("total");
+        JSONArray resData = resObj.getJSONArray("data");
+        if(data == null){
+            data = new ArrayList<>();
+        }
+        for (int i = 0; i < resData.size(); i++) {
+            data.add(resData.getObject(i, Aid.class));
+        }
+        //刷新数据
+        mItemAdapter.setLoadState(mItemAdapter.LOADING_COMPLETE);
+    }
+
+    private void handleAidRefresh(JSONObject resObj){
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        //分页
+        total = resObj.getInteger("total");
+        JSONArray resData = resObj.getJSONArray("data");
+        if(data == null){
+            data = new ArrayList<>();
+        }
+        for (int i = 0; i < resData.size(); i++) {
+            data.add(resData.getObject(i, Aid.class));
+        }
+        //刷新数据
+        showToast("刷新成功");
+        mItemAdapter.setData(data);
+        mPullRefreshLayout.finishRefresh();
+    }
 
     private void searchData(String keywords){
         ThreadUtils.execute(new Runnable() {
@@ -427,23 +407,26 @@ public class EquipListFragment extends QMUIFragment {
             public void run() {
                 Map<String, Object> params = new HashMap<>();
                 params.put("keywords", keywords);
-                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipSearchUrl, params);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.aidSearchUrl, params);
                 if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.equipSearchUrl + " return  is null ");
+                    Log.d(TAG, UrlConfig.aidSearchUrl + " return  is null ");
                     return;
                 }
                 JSONObject resObj = JSONObject.parseObject(res);
                 Message msg = mHandler.obtainMessage();
-                msg.what = MsgType_SEARCH;
+                msg.what = MsgType_Search;
                 msg.obj = resObj;
-                mSearchHandler.sendMessage(msg);
+                mHandler.sendMessage(msg);
             }
         });
     }
 
     private void handleSearch(JSONObject resObj){
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
         JSONArray resData = resObj.getJSONArray("data");
-        Log.d(TAG, resObj.getString("data"));
 
         mSearchView.hideProgress();
         sdata = new ArrayList<>();
@@ -452,13 +435,13 @@ public class EquipListFragment extends QMUIFragment {
         //更新搜索建议
         SearchSuggestion node = null;
         for (int i = 0; i < resData.size(); i++) {
-            Equip temp = resData.getObject(i, Equip.class);
+            Aid temp = resData.getObject(i, Aid.class);
             sdata.add(temp);
             int index = i;
             node = new SearchSuggestion() {
                 @Override
                 public String getBody() {
-                    return temp.getsEquip_NO();
+                    return temp.getsAid_NO();
                 }
 
                 @Override

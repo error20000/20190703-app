@@ -34,6 +34,7 @@ import com.jian.system.adapter.HomeRvItemAdapter;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.decorator.DividerItemDecoration;
 import com.jian.system.decorator.GridDividerItemDecoration;
+import com.jian.system.fragment.components.AidListFragment;
 import com.jian.system.fragment.components.EquipAddFragment;
 import com.jian.system.fragment.components.EquipDetailFragment;
 import com.jian.system.fragment.components.EquipListFragment;
@@ -113,10 +114,12 @@ public class HomeView extends QMUIWindowInsetLayout{
     private void initRecyclerView() {
 
         List<HomeRvItem> data = new ArrayList<>();
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(AidListFragment.class, "航标列表", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(EquipListFragment.class, "器材管理", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(EquipListFragment.class, "器材扫码", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(EquipListFragment.class, "器材NFC", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(EquipListFragment.class, "电子地图", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(EquipListFragment.class, "消息中心", R.mipmap.icon_tabbar_component));
 
         mItemAdapter = new HomeRvItemAdapter(context, data);
         mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
