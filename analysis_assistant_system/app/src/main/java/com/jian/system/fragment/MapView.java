@@ -16,15 +16,38 @@ public class MapView extends QMUIWindowInsetLayout {
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
+//    @BindView(R.id.mapView)
+//    MapView mMapView;
 
     private ViewPagerListener mListener;
 
     public MapView(Context context) {
         super(context);
-        LayoutInflater.from(context).inflate(R.layout.fragment_map, this);
+        LayoutInflater.from(context).inflate(R.layout.layout_map, this);
         ButterKnife.bind(this);
+
         initTopBar();
+        initMap();
     }
+
+    private void initTopBar() {
+        mTopBar.setTitle("电子地图");
+    }
+
+
+    private void initMap() {
+        /*if (mMapView != null) {
+            Basemap.Type basemapType = Basemap.Type.STREETS_VECTOR;
+            double latitude = 34.09042;
+            double longitude = -118.71511;
+            int levelOfDetail = 11;
+            ArcGISMap map = new ArcGISMap(basemapType, latitude, longitude, levelOfDetail);
+            mMapView.setMap(map);
+        }*/
+    }
+
+
+
 
     protected void startFragment(QMUIFragment fragment) {
         if (mListener != null) {
@@ -36,9 +59,5 @@ public class MapView extends QMUIWindowInsetLayout {
         mListener = listener;
     }
 
-
-    private void initTopBar() {
-        mTopBar.setTitle("地图");
-    }
 
 }

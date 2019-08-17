@@ -49,6 +49,50 @@ public class FormatUtils {
         return name;
     }
 
+
+    public static String formatDictCustom(String sDict_NO, List<Dict> data, String attr){
+        if(Utils.isNullOrEmpty(sDict_NO) || Utils.isNullOrEmpty(attr)){
+            return "";
+        }
+        if(data == null || data.size() == 0){
+            return "";
+        }
+        String name = "";
+        for(int i = 0; i < data.size(); i++){
+            Dict node = data.get(i);
+            if(node.getsDict_NO().equals(sDict_NO)){
+                switch (attr){
+                    case "Name":
+                        name = node.getsDict_Name();
+                        break;
+                    case "Describe":
+                        name = node.getsDict_Describe();
+                        break;
+                    case "ID":
+                        name = node.getsDict_ID();
+                        break;
+                    case "Link":
+                        name = node.getsDict_Link();
+                        break;
+                    case "Picture":
+                        name = node.getsDict_Picture();
+                        break;
+                    case "Color":
+                        name = node.getsDict_Color();
+                        break;
+                    case "UserID":
+                        name = node.getsDict_UserID();
+                        break;
+                    case "UpdateUserID":
+                        name = node.getsDict_UpdateUserID();
+                        break;
+                }
+                break;
+            }
+        }
+        return name;
+    }
+
     public static String formatDate(String formatStr, Date date){
         if(Utils.isNullOrEmpty(formatStr) || date == null){
             return "";

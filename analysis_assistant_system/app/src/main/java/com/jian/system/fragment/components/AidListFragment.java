@@ -30,6 +30,7 @@ import com.jian.system.adapter.AidAdapter;
 import com.jian.system.adapter.BaseRecyclerAdapter;
 import com.jian.system.adapter.BaseRecyclerOnScrollListener;
 import com.jian.system.adapter.EquipAdapter;
+import com.jian.system.config.Constant;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.decorator.DividerItemDecoration;
 import com.jian.system.entity.Aid;
@@ -256,7 +257,7 @@ public class AidListFragment extends QMUIFragment {
                 .create();
         tipDialog.show();
         //查询航标种类
-        DataUtils.getDictData("AidType", aidTypeData);
+        DataUtils.getDictData(Constant.aidTypeDict, aidTypeData);
         //查询航标列表
         Map<String, Object> params = new HashMap<>();
         params.put("page", page);

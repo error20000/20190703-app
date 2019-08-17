@@ -6,15 +6,22 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
+import com.jian.system.adapter.AidAdapter;
+import com.jian.system.adapter.AidEquipAdapter;
+import com.jian.system.adapter.BaseRecyclerAdapter;
+import com.jian.system.adapter.BaseRecyclerOnScrollListener;
 import com.jian.system.config.UrlConfig;
+import com.jian.system.decorator.DividerItemDecoration;
 import com.jian.system.entity.Aid;
 import com.jian.system.entity.AidEquip;
 import com.jian.system.entity.Dict;
@@ -43,25 +50,18 @@ public class AidEquipView extends QMUIWindowInsetLayout{
 
     private final static String TAG = AidDetailView.class.getSimpleName();
 
-    @BindView(R.id.topbar)
-    QMUITopBarLayout mTopBar;
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
-    @BindView(R.id.msg_title)
-    QMUICommonListItemView mMsgTitle;
-    @BindView(R.id.recyclerViewMsg)
-    RecyclerView mMsgRecyclerView;
 
     private ViewPagerListener mListener;
     private Context context;
     private QMUITipDialog tipDialog;
-    private BottomDialog selectorDialog;
     private final int MsgType_Detail = 1;
     private final int MsgType_Equip = 2;
 
 
     private String sAid_ID;
-    private Aid aid;
+    private AidEquipAdapter mItemAdapter;
     private List<AidEquip> aidEquipData = new ArrayList<>();
 
     public AidEquipView(Context context, String sAid_ID) {
@@ -69,7 +69,7 @@ public class AidEquipView extends QMUIWindowInsetLayout{
         this.context = context;
         this.sAid_ID = sAid_ID;
 
-        LayoutInflater.from(context).inflate(R.layout.layout_home, this);
+        LayoutInflater.from(context).inflate(R.layout.fragment_aid_equip_view, this);
         ButterKnife.bind(this);
 
         initData();
@@ -77,44 +77,11 @@ public class AidEquipView extends QMUIWindowInsetLayout{
 
 
     private  void initAidEquip(){
-        /*if(historyData.size() == 0){
-            mEmptyView.setDetailText("抱歉，没有更多数据");
-            mEmptyView.setVisibility(View.VISIBLE);
-            mVerticalStepView.setVisibility(View.GONE);
-            return;
-        }
-        mEmptyView.setVisibility(View.GONE);
-        mVerticalStepView.setVisibility(View.VISIBLE);
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < historyData.size(); i++) {
-            String str = "";
-            str += FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", historyData.get(i).getdELog_CreateDate());
-            str +=" 【" + historyData.get(i).getsELog_Describe();
-            str +="】    " + (historyData.get(i).getsELog_Remarks() == null ? "" : historyData.get(i).getsELog_Remarks());
-            list.add(str);
-        }
 
-        Drawable compltedIcon = ContextCompat.getDrawable(getActivity(), R.drawable.complted);
-        compltedIcon.setTint(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5));
-
-        Drawable defaultIcon = ContextCompat.getDrawable(getActivity(), R.drawable.default_icon);
-        defaultIcon.setTint(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5));
-
-        Drawable attentionIcon = ContextCompat.getDrawable(getActivity(), R.drawable.attention);
-        attentionIcon.setTint(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5));
-
-        mVerticalStepView.setStepsViewIndicatorComplectingPosition(list.size() - 1)//设置完成的步数
-                .reverseDraw(true)//default is true
-                .setStepViewTexts(list)//总步骤
-                .setLinePaddingProportion(0.85f)//设置indicator线与线间距的比例系数
-                .setStepsViewIndicatorCompletedLineColor(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5))//设置StepsViewIndicator完成线的颜色
-                .setStepsViewIndicatorUnCompletedLineColor(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5))//设置StepsViewIndicator未完成线的颜色
-                .setStepViewComplectedTextColor(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5))//设置StepsView text完成线的颜色
-                .setStepViewUnComplectedTextColor(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5))//设置StepsView text未完成线的颜色
-                .setStepsViewIndicatorCompleteIcon(defaultIcon)//设置StepsViewIndicator CompleteIcon
-                .setStepsViewIndicatorDefaultIcon(defaultIcon)//设置StepsViewIndicator DefaultIcon
-                .setStepsViewIndicatorAttentionIcon(attentionIcon);//设置StepsViewIndicator AttentionIcon
-    */
+        mItemAdapter = new AidEquipAdapter(context, aidEquipData);
+        mRecyclerView.setAdapter(mItemAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST));
     }
 
 

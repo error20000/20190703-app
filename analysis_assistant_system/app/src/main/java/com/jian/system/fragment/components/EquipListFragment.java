@@ -30,6 +30,7 @@ import com.jian.system.R;
 import com.jian.system.adapter.BaseRecyclerAdapter;
 import com.jian.system.adapter.BaseRecyclerOnScrollListener;
 import com.jian.system.adapter.EquipAdapter;
+import com.jian.system.config.Constant;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.decorator.DividerItemDecoration;
 import com.jian.system.entity.Dict;
@@ -380,9 +381,9 @@ public class EquipListFragment extends QMUIFragment {
                 .create();
         tipDialog.show();
         //查询器材种类
-        DataUtils.getDictData("EquipType", equipTypeData);
+        DataUtils.getDictData(Constant.equipTypeDict, equipTypeData);
         //查询器材状态
-        DataUtils.getDictData("EquipStatus", equipStatusData);
+        DataUtils.getDictData(Constant.equipStatusDict, equipStatusData);
         //查询器材列表
         Map<String, Object> params = new HashMap<>();
         params.put("page", page);

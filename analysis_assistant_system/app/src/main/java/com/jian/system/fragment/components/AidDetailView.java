@@ -2,6 +2,7 @@
 package com.jian.system.fragment.components;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
+import com.jian.system.config.Constant;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.entity.Aid;
 import com.jian.system.entity.AidEquip;
@@ -19,10 +21,14 @@ import com.jian.system.entity.Dict;
 import com.jian.system.entity.Nfc;
 import com.jian.system.fragment.ViewPagerListener;
 import com.jian.system.utils.DataUtils;
+import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
+import com.jian.system.view.UrlImageView;
 import com.qmuiteam.qmui.arch.QMUIFragment;
+import com.qmuiteam.qmui.util.QMUIResHelper;
+import com.qmuiteam.qmui.widget.QMUIRadiusImageView;
 import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
@@ -79,13 +85,73 @@ public class AidDetailView extends QMUIWindowInsetLayout{
             return;
         }
 
-        QMUICommonListItemView aidId = mGroupListView.createItemView("ID");
-        aidId.setDetailText(aid.getsAid_ID());
+        QMUICommonListItemView sAid_ID = mGroupListView.createItemView("ID");
+        sAid_ID.setDetailText(aid.getsAid_ID());
+
+        QMUICommonListItemView sAid_Name = mGroupListView.createItemView("航标名称");
+        sAid_Name.setDetailText(aid.getsAid_Name());
+
+        QMUICommonListItemView sAid_NO = mGroupListView.createItemView("航标编码");
+        sAid_NO.setDetailText(aid.getsAid_NO());
+
+        QMUICommonListItemView lAid_Lng = mGroupListView.createItemView("经度");
+        lAid_Lng.setDetailText(aid.getlAid_Lng()+"");
+
+        QMUICommonListItemView lAid_Lat = mGroupListView.createItemView("纬度");
+        lAid_Lat.setDetailText(aid.getlAid_Lat()+"");
+
+        QMUICommonListItemView sAid_Station = mGroupListView.createItemView("归属航标站");
+        sAid_Station.setDetailText(FormatUtils.formatDict(aid.getsAid_Station(), aidStationData) );
+
+        QMUICommonListItemView sAid_Type = mGroupListView.createItemView("航标种类");
+        sAid_Type.setDetailText(FormatUtils.formatDict(aid.getsAid_Type(), aidTypeData) );
+
+        QMUICommonListItemView sAid_Icon = mGroupListView.createItemView("航标图标");
+        String imgUrl = FormatUtils.formatDictCustom(aid.getsAid_Icon(), aidIconData, "Picture");
+        if(!Utils.isNullOrEmpty(imgUrl)){
+            sAid_Icon.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
+            UrlImageView imageView = new UrlImageView(context);
+            imageView.setImageURL(UrlConfig.baseUrl+"/" + imgUrl );
+            sAid_Icon.addAccessoryCustomView(imageView);
+        }
+
+        QMUICommonListItemView dAid_BuildDate = mGroupListView.createItemView("始建时间");
+        dAid_BuildDate.setDetailText(FormatUtils.formatDate("yyyy-MM-dd", aid.getdAid_BuildDate()));
+
+        QMUICommonListItemView dAid_DelDate = mGroupListView.createItemView("撤除时间");
+        dAid_DelDate.setDetailText(FormatUtils.formatDate("yyyy-MM-dd", aid.getdAid_DelDate()));
+
+        QMUICommonListItemView sAid_Lighting = mGroupListView.createItemView("灯质明灭");
+        String str = FormatUtils.formatDict(aid.getsAid_Lighting(), aidLightingData);
+        str += "("+FormatUtils.formatDictDesc(aid.getsAid_Lighting(), aidLightingData)+")";
+        sAid_Lighting.setDetailText(str);
+
+        QMUICommonListItemView sAid_Mark = mGroupListView.createItemView("航标设置");
+        sAid_Mark.setDetailText(FormatUtils.formatDict(aid.getsAid_Mark(), aidMarkData) );
+
+        QMUICommonListItemView sAid_NfcID = mGroupListView.createItemView("NFC标签");
+        sAid_NfcID.setDetailText(FormatUtils.formatNFC(aid.getsAid_NfcID(), nfcData) );
+
+        QMUICommonListItemView dAid_CreateDate = mGroupListView.createItemView("创建日期");
+        dAid_CreateDate.setDetailText(FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", aid.getdAid_CreateDate()));
 
 
         QMUIGroupListView.newSection(getContext())
                 .setTitle("")
-                .addItemView(aidId, null)
+                .addItemView(sAid_ID, null)
+                .addItemView(sAid_Name, null)
+                .addItemView(sAid_NO, null)
+                .addItemView(lAid_Lng, null)
+                .addItemView(lAid_Lat, null)
+                .addItemView(sAid_Type, null)
+                .addItemView(sAid_Icon, null)
+                .addItemView(sAid_Station, null)
+                .addItemView(dAid_BuildDate, null)
+                .addItemView(dAid_DelDate, null)
+                .addItemView(sAid_Lighting, null)
+                .addItemView(sAid_Mark, null)
+                .addItemView(sAid_NfcID, null)
+                .addItemView(dAid_CreateDate, null)
                 .addTo(mGroupListView);
     }
 
@@ -99,15 +165,15 @@ public class AidDetailView extends QMUIWindowInsetLayout{
                 .create();
         tipDialog.show();
         //查询航标种类
-        DataUtils.getDictData("AidType", aidTypeData);
+        DataUtils.getDictData(Constant.aidTypeDict, aidTypeData);
         //查询航标航站
-        DataUtils.getDictData("AidStation", aidStationData);
+        DataUtils.getDictData(Constant.aidStationDict, aidStationData);
         //查询航标灯
-        DataUtils.getDictData("AidLighting", aidLightingData);
+        DataUtils.getDictData(Constant.aidLightingDict, aidLightingData);
         //查询航标设置
-        DataUtils.getDictData("AidMark", aidMarkData);
+        DataUtils.getDictData(Constant.aidMarkDict, aidMarkData);
         //查询航标Icon
-        DataUtils.getDictData("AidIcon", aidIconData);
+        DataUtils.getDictData(Constant.aidIconDict, aidIconData);
         //查询NFC
         DataUtils.getNfcAllData(nfcData);
         //查询器材详情

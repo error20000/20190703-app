@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
 
     <!--NFC 相关权限-->
     <!--描述所需硬件特性-->

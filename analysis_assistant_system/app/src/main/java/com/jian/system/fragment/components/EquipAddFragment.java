@@ -27,6 +27,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.jian.system.Application;
 import com.jian.system.MainActivity;
 import com.jian.system.R;
+import com.jian.system.config.Constant;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
@@ -401,9 +402,9 @@ public class EquipAddFragment extends QMUIFragment {
                 .create();
         //tipDialog.show();
         //查询器材种类
-        DataUtils.getDictData("EquipType", equipTypeData);
+        DataUtils.getDictData(Constant.equipTypeDict, equipTypeData);
         //查询器材状态
-        DataUtils.getDictData("EquipStatus", equipStatusData);
+        DataUtils.getDictData(Constant.equipStatusDict, equipStatusData);
         //查询仓库
         DataUtils.getStoreTypeData(storeTypeData);
         DataUtils.getStoreData(storeData);

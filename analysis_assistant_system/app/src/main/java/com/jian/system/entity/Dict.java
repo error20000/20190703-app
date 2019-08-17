@@ -17,6 +17,7 @@ public class Dict {
 	private String sDict_Describe;
 	private String sDict_Picture;
 	private String sDict_Link;
+	private String sDict_Color;
 	
 
 
@@ -92,6 +93,10 @@ public class Dict {
 	public void setsDict_Link(String sDict_Link) {
 		this.sDict_Link = sDict_Link;
 	}
-	
-	
+	public String getsDict_Color() {
+		return sDict_Color;
+	}
+	public void setsDict_Color(String sDict_Color) {
+		this.sDict_Color = sDict_Color;
+	}
 }

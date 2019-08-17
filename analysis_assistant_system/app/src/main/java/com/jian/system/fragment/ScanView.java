@@ -21,7 +21,7 @@ public class ScanView extends QMUIWindowInsetLayout {
 
     public ScanView(Context context) {
         super(context);
-        LayoutInflater.from(context).inflate(R.layout.fragment_map, this);
+        LayoutInflater.from(context).inflate(R.layout.layout_map, this);
         ButterKnife.bind(this);
         initTopBar();
     }
