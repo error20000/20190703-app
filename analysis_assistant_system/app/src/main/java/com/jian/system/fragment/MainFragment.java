@@ -130,13 +130,13 @@ public class MainFragment extends QMUIFragment {
             }
         };
 
-        HomeView homeView = new HomeView(getActivity());
-        homeView.setMainListener(listener);
-        mPages.put(Pager.Home, homeView);
+        HomeLayout homeLayout = new HomeLayout(getActivity());
+        homeLayout.setViewPagerListener(listener);
+        mPages.put(Pager.Home, homeLayout);
 
-        MapView mapView = new MapView(getActivity());
-        mapView.setMainListener(listener);
-        mPages.put(Pager.Map, mapView);
+        MapLayout mapLayout = new MapLayout(getActivity());
+        mapLayout.setViewPagerListener(listener);
+        mPages.put(Pager.Map, mapLayout);
 
         ScanView scanView = new ScanView(getActivity());
         scanView.setMainListener(listener);

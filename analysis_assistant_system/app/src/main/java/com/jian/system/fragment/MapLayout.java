@@ -4,6 +4,9 @@ package com.jian.system.fragment;
 import android.content.Context;
 import android.view.LayoutInflater;
 
+import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.Basemap;
+import com.esri.arcgisruntime.mapping.view.MapView;
 import com.jian.system.R;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
@@ -12,16 +15,16 @@ import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapView extends QMUIWindowInsetLayout {
+public class MapLayout extends QMUIWindowInsetLayout {
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
-//    @BindView(R.id.mapView)
-//    MapView mMapView;
+    @BindView(R.id.mapView)
+    MapView mMapView;
 
     private ViewPagerListener mListener;
 
-    public MapView(Context context) {
+    public MapLayout(Context context) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.layout_map, this);
         ButterKnife.bind(this);
@@ -36,14 +39,14 @@ public class MapView extends QMUIWindowInsetLayout {
 
 
     private void initMap() {
-        /*if (mMapView != null) {
+        if (mMapView != null) {
             Basemap.Type basemapType = Basemap.Type.STREETS_VECTOR;
             double latitude = 34.09042;
             double longitude = -118.71511;
             int levelOfDetail = 11;
             ArcGISMap map = new ArcGISMap(basemapType, latitude, longitude, levelOfDetail);
             mMapView.setMap(map);
-        }*/
+        }
     }
 
 
@@ -55,7 +58,7 @@ public class MapView extends QMUIWindowInsetLayout {
         }
     }
 
-    public void setMainListener(ViewPagerListener listener) {
+    public void setViewPagerListener(ViewPagerListener listener) {
         mListener = listener;
     }
 

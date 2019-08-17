@@ -41,9 +41,9 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HomeView extends QMUIWindowInsetLayout{
+public class HomeLayout extends QMUIWindowInsetLayout{
 
-    private final static String TAG = HomeView.class.getSimpleName();
+    private final static String TAG = HomeLayout.class.getSimpleName();
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -61,7 +61,7 @@ public class HomeView extends QMUIWindowInsetLayout{
 
     private final int MsgType_Msg = 1;
 
-    public HomeView(Context context) {
+    public HomeLayout(Context context) {
         super(context);
         this.context = context;
 
@@ -84,7 +84,7 @@ public class HomeView extends QMUIWindowInsetLayout{
         }
     }
 
-    public void setMainListener(ViewPagerListener listener) {
+    public void setViewPagerListener(ViewPagerListener listener) {
         mListener = listener;
     }
 

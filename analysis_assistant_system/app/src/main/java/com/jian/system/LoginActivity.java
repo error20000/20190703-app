@@ -1,7 +1,6 @@
 
 package com.jian.system;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,32 +8,24 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.config.UrlConfig;
-import com.jian.system.entity.Dict;
-import com.jian.system.entity.Equip;
 import com.jian.system.entity.User;
-import com.jian.system.fragment.HomeView;
 import com.jian.system.gesture.GesturePwdCheckActivity;
 import com.jian.system.gesture.GesturePwdResetActivity;
 import com.jian.system.gesture.GesturePwdSettingActivity;
 import com.jian.system.gesture.util.GestureUtils;
-import com.jian.system.utils.DataCacheUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.util.QMUIStatusBarHelper;
 import com.qmuiteam.qmui.widget.QMUITopBar;
-import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
