@@ -98,11 +98,6 @@ public class MainFragment extends QMUIFragment {
                 ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component_selected),
                 "地图", false
         );
-        QMUITabSegment.Tab scan = new QMUITabSegment.Tab(
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component),
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component_selected),
-                "扫一扫", false
-        );
         QMUITabSegment.Tab msg = new QMUITabSegment.Tab(
                 ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component),
                 ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component_selected),
@@ -115,7 +110,6 @@ public class MainFragment extends QMUIFragment {
         );
         mTabSegment.addTab(home)
                 .addTab(map)
-                .addTab(scan)
                 .addTab(msg)
                 .addTab(center);
     }
@@ -138,24 +132,20 @@ public class MainFragment extends QMUIFragment {
         mapLayout.setViewPagerListener(listener);
         mPages.put(Pager.Map, mapLayout);
 
-        ScanView scanView = new ScanView(getActivity());
-        scanView.setMainListener(listener);
-        mPages.put(Pager.Scan, scanView);
+        MsgLayout msgLayout = new MsgLayout(getActivity(), getActivity().getSupportFragmentManager());
+        msgLayout.setViewPagerListener(listener);
+        mPages.put(Pager.Msg, msgLayout);
 
-        MsgView msgView = new MsgView(getActivity());
-        msgView.setMainListener(listener);
-        mPages.put(Pager.Msg, msgView);
-
-        CenterView centerView = new CenterView(getActivity());
-        centerView.setMainListener(listener);
-        mPages.put(Pager.Center, centerView);
+        CenterLayout centerLayout = new CenterLayout(getActivity());
+        centerLayout.setViewPagerListener(listener);
+        mPages.put(Pager.Center, centerLayout);
 
         mViewPager.setAdapter(mPagerAdapter);
         mTabSegment.setupWithViewPager(mViewPager, false);
     }
 
     enum Pager {
-        Home, Map, Scan, Msg, Center;
+        Home, Map, Msg, Center;
 
         public static Pager getPagerFromPositon(int position) {
             switch (position) {
@@ -164,10 +154,8 @@ public class MainFragment extends QMUIFragment {
                 case 1:
                     return Map;
                 case 2:
-                    return Scan;
-                case 3:
                     return Msg;
-                case 4:
+                case 3:
                     return Center;
                 default:
                     return Home;

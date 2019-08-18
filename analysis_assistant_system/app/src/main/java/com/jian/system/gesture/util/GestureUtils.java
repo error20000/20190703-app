@@ -27,6 +27,7 @@ public class GestureUtils {
         SharedPreferences sp = context.getSharedPreferences(DEFAULT_SP_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor edit = sp.edit();
         edit.clear();
+        edit.commit();
     }
 
     public static void remove(Context context, String key) {

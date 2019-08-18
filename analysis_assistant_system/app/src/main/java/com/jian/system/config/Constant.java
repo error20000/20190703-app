@@ -13,4 +13,9 @@ public class Constant {
     public static String equipTypeDict = "EquipType";
     public static String equipStatusDict = "EquipStatus";
 
+    //消息数据字典
+    public static String msgTypeDict = "MsgType";
+    public static String msgStatusDict = "MsgStatus";
+    public static String msgLabelDict = "MsgLabel";
+
 }

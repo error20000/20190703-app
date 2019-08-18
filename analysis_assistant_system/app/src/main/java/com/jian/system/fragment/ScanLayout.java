@@ -12,19 +12,31 @@ import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CenterView extends QMUIWindowInsetLayout {
+public class ScanLayout extends QMUIWindowInsetLayout {
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
 
     private ViewPagerListener mListener;
+    private Context context;
 
-    public CenterView(Context context) {
+    public ScanLayout(Context context) {
         super(context);
-        LayoutInflater.from(context).inflate(R.layout.layout_map, this);
+        this.context = context;
+
+        LayoutInflater.from(context).inflate(R.layout.layout_scan, this);
         ButterKnife.bind(this);
+
         initTopBar();
+
+
     }
+
+
+    private void initTopBar() {
+        mTopBar.setTitle("扫一扫");
+    }
+
 
     protected void startFragment(QMUIFragment fragment) {
         if (mListener != null) {
@@ -32,13 +44,10 @@ public class CenterView extends QMUIWindowInsetLayout {
         }
     }
 
-    public void setMainListener(ViewPagerListener listener) {
+    public void setViewPagerListener(ViewPagerListener listener) {
         mListener = listener;
     }
 
 
-    private void initTopBar() {
-        mTopBar.setTitle("地图");
-    }
 
 }

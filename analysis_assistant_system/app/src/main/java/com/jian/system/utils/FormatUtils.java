@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Nfc;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -100,6 +101,20 @@ public class FormatUtils {
         SimpleDateFormat sdf = new SimpleDateFormat(formatStr);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
         return sdf.format(date);
+    }
+
+    public static Date formatDate(String formatStr, String strDate){
+        if(Utils.isNullOrEmpty(strDate)){
+            return null;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(formatStr);
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
+        try {
+            return sdf.parse(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

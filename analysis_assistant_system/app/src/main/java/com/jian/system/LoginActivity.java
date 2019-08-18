@@ -14,11 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.config.UrlConfig;
+import com.jian.system.entity.System;
 import com.jian.system.entity.User;
 import com.jian.system.gesture.GesturePwdCheckActivity;
 import com.jian.system.gesture.GesturePwdResetActivity;
 import com.jian.system.gesture.GesturePwdSettingActivity;
 import com.jian.system.gesture.util.GestureUtils;
+import com.jian.system.utils.DataCacheUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
@@ -169,6 +171,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -212,7 +215,7 @@ public class LoginActivity extends AppCompatActivity {
         GestureUtils.set(this, GestureUtils.USER_TOEKN, tokenStr);
         GestureUtils.set(this, GestureUtils.USER_INFO, data.getString("user"));
         GestureUtils.set(this, GestureUtils.USER_USERNAME, editText1.getText().toString());
-        GestureUtils.set(this, GestureUtils.USER_INFO, Utils.md5(editText2.getText().toString()));
+        GestureUtils.set(this, GestureUtils.USER_PASSWORD, Utils.md5(editText2.getText().toString()));
 
         //跳转手势界面
         if(isFirstLogin){

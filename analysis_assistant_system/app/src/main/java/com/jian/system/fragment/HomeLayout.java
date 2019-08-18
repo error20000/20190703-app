@@ -2,6 +2,7 @@
 package com.jian.system.fragment;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -14,16 +15,23 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
 import com.jian.system.adapter.BaseRecyclerAdapter;
+import com.jian.system.adapter.HomeMsgAdapter;
 import com.jian.system.adapter.HomeRvItemAdapter;
+import com.jian.system.config.Constant;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.decorator.DividerItemDecoration;
 import com.jian.system.decorator.GridDividerItemDecoration;
+import com.jian.system.entity.Dict;
+import com.jian.system.entity.Messages;
 import com.jian.system.fragment.components.AidListFragment;
 import com.jian.system.fragment.components.EquipListFragment;
+import com.jian.system.fragment.components.MsgDetailFragment;
 import com.jian.system.model.HomeRvItem;
+import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
@@ -58,6 +66,8 @@ public class HomeLayout extends QMUIWindowInsetLayout{
     private Context context;
     private HomeRvItemAdapter mItemAdapter;
     private QMUITipDialog tipDialog;
+    private List<Dict> msgTypeData = new ArrayList<>();
+    private List<Messages> msgData = new ArrayList<>();
 
     private final int MsgType_Msg = 1;
 
@@ -129,6 +139,10 @@ public class HomeLayout extends QMUIWindowInsetLayout{
                 .setTipWord("正在加载")
                 .create();
         tipDialog.show();
+
+        //查询消息种类
+        DataUtils.getDictData(Constant.msgTypeDict, msgTypeData);
+
         //查询消息
         queryMsgData();
     }
@@ -140,7 +154,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
                 params.put("page", 1);
                 params.put("rows", 5);
 
-                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryPageUrl, params);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.msgQueryPageUrl, params);
 
                 Message msg = mHandler.obtainMessage();
                 msg.what = MsgType_Msg;
@@ -202,29 +216,32 @@ public class HomeLayout extends QMUIWindowInsetLayout{
             Log.d(TAG, resObj.toJSONString());
             return;
         }
+        if(msgData == null){
+            msgData = new ArrayList<>();
+        }
+        JSONArray resData = resObj.getJSONArray("data");
+        for (int i = 0; i < resData.size(); i++) {
+            msgData.add(resData.getObject(i, Messages.class));
+        }
         //初始化消息列表
         initMsgRecyclerView();
     }
 
     private void initMsgRecyclerView() {
 
-        List<HomeRvItem> data = new ArrayList<>();
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
-
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
-
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
-
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
-
-        data.add(new HomeRvItem(EquipListFragment.class, "器材列表", R.mipmap.icon_tabbar_component));
-
-        HomeRvItemAdapter itemAdapter = new HomeRvItemAdapter(context, data);
+        HomeMsgAdapter itemAdapter = new HomeMsgAdapter(context, msgData, msgTypeData);
         itemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int pos) {
-                HomeRvItem item = mItemAdapter.getItem(pos);
-                showToast(item.getName());
+                Messages item = itemAdapter.getItem(pos);
+                //进入详情页面
+                Bundle bundle = new Bundle();
+                bundle.putString("sMsg_ID", item.getsMsg_ID());
+                bundle.putString("sMsg_AidID", item.getsMsg_AidID());
+                bundle.putString("sMsg_EquipID", item.getsMsg_EquipID());
+                MsgDetailFragment fragment = new MsgDetailFragment();
+                fragment.setArguments(bundle);
+                startFragment(fragment);
             }
         });
         //禁用RecyclerView滚动，或者重写 LinearLayoutManager  canScrollVertically

@@ -50,6 +50,7 @@ dependencies {
     implementation 'com.github.baoyachi:StepView:1.9'
     implementation project(path: ':selector')
     implementation 'com.github.florent37:materialtextfield:1.0.7'
+    implementation 'com.jzxiang.pickerview:TimePickerDialog:1.0.1'
     //qrcode
     implementation 'com.sonnyjack.permission:PermissionUtils:0.1.0'
     implementation 'com.google.zxing:core:3.3.3'

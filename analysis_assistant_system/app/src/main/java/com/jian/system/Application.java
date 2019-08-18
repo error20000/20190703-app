@@ -3,6 +3,7 @@ package com.jian.system;
 
 import android.content.Context;
 
+import com.jian.system.entity.System;
 import com.jian.system.gesture.util.GestureUtils;
 import com.qmuiteam.qmui.arch.QMUISwipeBackActivityManager;
 import com.squareup.leakcanary.LeakCanary;
@@ -26,6 +27,7 @@ public class Application extends android.app.Application {
     public static void setTokenStr(String tokenStr) {
         Application.tokenStr = tokenStr;
     }
+
 
     @Override
     public void onCreate() {

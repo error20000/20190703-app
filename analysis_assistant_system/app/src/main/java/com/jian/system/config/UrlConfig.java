@@ -2,13 +2,17 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.1.16:8065";
+    public static String baseUrl = "http://192.168.1.4:8065";
+
+    //系统
+    public static String sysQueryUrl = baseUrl + "/api/sys/app/findOne";
 
     //用户
     public static String userLoginUrl = baseUrl + "/api/user/app/login";
     public static String userLogoutUrl = baseUrl + "/api/user/app/logout";
     public static String userIsLoginUrl = baseUrl + "/api/user/app/isLogin";
     public static String userAidUrl = baseUrl + "/api/user/app/aid";
+    public static String userAllUrl = baseUrl + "/api/user/app/findAll";
 
     //查询数据字典
     public static String dictQueryUrl = baseUrl + "/api/dict/app/findList";
@@ -44,4 +48,11 @@ public class UrlConfig {
     public static String aidSearchUrl = baseUrl + "/api/aid/app/search"; //搜索
     public static String aidQueryEquipUrl = baseUrl + "/api/aid/app/equip";
 
+    //消息
+    public static String msgQueryPageUrl = baseUrl + "/api/msg/app/findPage";
+    public static String msgQueryDetailUrl = baseUrl + "/api/msg/app/findView";
+    public static String msgSearchUrl = baseUrl + "/api/msg/app/search"; //搜索
+    public static String msgHandleUrl = baseUrl + "/api/msg/app/handle";
+    public static String msgUnHandleUrl = baseUrl + "/api/msg/app/unhandle";
+    public static String msgReadUrl = baseUrl + "/api/msg/app/read";
 }

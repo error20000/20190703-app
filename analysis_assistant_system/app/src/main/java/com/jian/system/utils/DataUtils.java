@@ -5,7 +5,6 @@ import android.util.Log;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.config.UrlConfig;
-import com.jian.system.entity.Aid;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Nfc;
 import com.jian.system.entity.Store;
@@ -18,6 +17,7 @@ import java.util.Map;
 public class DataUtils {
 
     private final static String TAG = DataUtils.class.getSimpleName();
+
 
     /**
      * 根据字典分类，查询数据字典
@@ -285,4 +285,5 @@ public class DataUtils {
             }
         });
     }
+
 }
