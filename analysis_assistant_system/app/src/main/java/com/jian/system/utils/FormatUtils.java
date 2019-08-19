@@ -12,6 +12,15 @@ import java.util.TimeZone;
 
 public class FormatUtils {
 
+    public static final String Dict_Name = "Name";
+    public static final String Dict_Describe = "Describe";
+    public static final String Dict_ID = "ID";
+    public static final String Dict_Link = "Link";
+    public static final String Dict_Picture = "Picture";
+    public static final String Dict_Color = "Color";
+    public static final String Dict_UserID = "UserID";
+    public static final String Dict_UpdateUserID = "UpdateUserID";
+
     //TODO ----------------------------------------------------------------------------normal
 
     public static String formatDict(String sDict_NO, List<Dict> data){

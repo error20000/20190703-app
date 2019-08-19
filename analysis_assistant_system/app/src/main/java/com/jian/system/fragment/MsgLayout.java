@@ -147,7 +147,7 @@ public class MsgLayout extends QMUIWindowInsetLayout {
 
     private void initTopBar() {
 
-        mTopBar.addRightImageButton(R.mipmap.icon_topbar_overflow, R.id.topbar_right_change_button).setOnClickListener(new View.OnClickListener() {
+        mTopBar.addRightImageButton(R.drawable.ic_filter, R.id.topbar_right_change_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showPopupList(view);

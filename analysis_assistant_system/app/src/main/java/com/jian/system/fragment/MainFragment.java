@@ -88,24 +88,24 @@ public class MainFragment extends QMUIFragment {
         mTabSegment.setDefaultSelectedColor(selectColor);
 
         QMUITabSegment.Tab home = new QMUITabSegment.Tab(
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component),
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component_selected),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_home_background),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_home_foreground),
                 "首页", false
         );
 
         QMUITabSegment.Tab map = new QMUITabSegment.Tab(
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component),
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component_selected),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_map_background),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_map_foreground),
                 "地图", false
         );
         QMUITabSegment.Tab msg = new QMUITabSegment.Tab(
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component),
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component_selected),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_msg_background),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_msg_foreground),
                 "消息", false
         );
         QMUITabSegment.Tab center = new QMUITabSegment.Tab(
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component),
-                ContextCompat.getDrawable(getContext(), R.mipmap.icon_tabbar_component_selected),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_center_background),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_center_foreground),
                 "个人中心", false
         );
         mTabSegment.addTab(home)
@@ -141,6 +141,7 @@ public class MainFragment extends QMUIFragment {
         mPages.put(Pager.Center, centerLayout);
 
         mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setOffscreenPageLimit(5);
         mTabSegment.setupWithViewPager(mViewPager, false);
     }
 

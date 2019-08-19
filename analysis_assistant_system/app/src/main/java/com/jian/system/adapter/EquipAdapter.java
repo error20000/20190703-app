@@ -42,7 +42,7 @@ public class EquipAdapter extends BaseRecyclerAdapter<Equip> {
         String statusName = FormatUtils.formatDict(item.getsEquip_Status(), equipStatusData);
         holder.getTextView(R.id.item_state).setText(statusName);
 
-        String color = FormatUtils.formatDictDesc(item.getsEquip_Status(), equipStatusData);
+        String color = FormatUtils.formatDictCustom(item.getsEquip_Status(), equipStatusData, FormatUtils.Dict_Color);
 		color = Utils.isNullOrEmpty(color) ? "#3B7FD4" : color;
         holder.getTextView(R.id.item_state).setBackgroundColor(Color.parseColor(color));
 

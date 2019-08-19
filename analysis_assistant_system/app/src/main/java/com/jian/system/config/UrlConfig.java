@@ -36,6 +36,7 @@ public class UrlConfig {
     //仓库
     public static String storeTypeQueryUrl = baseUrl + "/api/store/app/findType";
     public static String storeQueryUrl = baseUrl + "/api/store/app/findList";
+    public static String storeQueryMapUrl = baseUrl + "/api/store/app/map";
 
     //NFC
     public static String nfcQueryUrl = baseUrl + "/api/nfc/app/findAll";
@@ -47,6 +48,7 @@ public class UrlConfig {
     public static String aidQueryDetailUrl = baseUrl + "/api/aid/app/findOne";
     public static String aidSearchUrl = baseUrl + "/api/aid/app/search"; //搜索
     public static String aidQueryEquipUrl = baseUrl + "/api/aid/app/equip";
+    public static String aidQueryMapUrl = baseUrl + "/api/aid/app/map";
 
     //消息
     public static String msgQueryPageUrl = baseUrl + "/api/msg/app/findPage";

@@ -8,8 +8,11 @@ public class System {
 	private String sSys_MapService;
 	private float lSys_MapLng;
 	private float lSys_MapLat;
-	
-	
+	private int lSys_MapLevel;
+	private int lSys_MapIconWidth;
+	private int lSys_MapIconHeight;
+
+
 	public String getsSys_ID() {
 		return sSys_ID;
 	}
@@ -34,6 +37,24 @@ public class System {
 	public void setlSys_MapLat(float lSys_MapLat) {
 		this.lSys_MapLat = lSys_MapLat;
 	}
-	
-	
+	public int getlSys_MapLevel() {
+		return lSys_MapLevel;
+	}
+	public void setlSys_MapLevel(int lSys_MapLevel) {
+		this.lSys_MapLevel = lSys_MapLevel;
+	}
+	public int getlSys_MapIconWidth() {
+		return lSys_MapIconWidth;
+	}
+	public void setlSys_MapIconWidth(int lSys_MapIconWidth) {
+		this.lSys_MapIconWidth = lSys_MapIconWidth;
+	}
+	public int getlSys_MapIconHeight() {
+		return lSys_MapIconHeight;
+	}
+	public void setlSys_MapIconHeight(int lSys_MapIconHeight) {
+		this.lSys_MapIconHeight = lSys_MapIconHeight;
+	}
+
+
 }

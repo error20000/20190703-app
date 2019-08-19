@@ -106,8 +106,8 @@ public class HomeLayout extends QMUIWindowInsetLayout{
     private void initRecyclerView() {
 
         List<HomeRvItem> data = new ArrayList<>();
-        data.add(new HomeRvItem(AidListFragment.class, "航标列表", R.mipmap.icon_tabbar_component));
-        data.add(new HomeRvItem(EquipListFragment.class, "器材管理", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(AidListFragment.class, "航标列表", R.drawable.ic_home_aid));
+        data.add(new HomeRvItem(EquipListFragment.class, "器材管理", R.drawable.ic_home_equip));
         data.add(new HomeRvItem(EquipListFragment.class, "器材扫码", R.mipmap.icon_tabbar_component));
         data.add(new HomeRvItem(EquipListFragment.class, "器材NFC", R.mipmap.icon_tabbar_component));
         data.add(new HomeRvItem(EquipListFragment.class, "电子地图", R.mipmap.icon_tabbar_component));
