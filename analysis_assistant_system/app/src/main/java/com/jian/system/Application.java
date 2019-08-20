@@ -3,12 +3,15 @@ package com.jian.system;
 
 import android.content.Context;
 
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
+
 import com.jian.system.entity.System;
 import com.jian.system.gesture.util.GestureUtils;
 import com.qmuiteam.qmui.arch.QMUISwipeBackActivityManager;
 import com.squareup.leakcanary.LeakCanary;
 
-public class Application extends android.app.Application {
+public class Application extends MultiDexApplication {
 
     private static Context context;
     private static String tokenStr;
@@ -45,5 +48,11 @@ public class Application extends android.app.Application {
         tokenStr = tokenStr == null ? "" : tokenStr;
 
         QMUISwipeBackActivityManager.init(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }

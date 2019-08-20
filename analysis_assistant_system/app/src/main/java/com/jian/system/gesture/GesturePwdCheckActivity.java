@@ -1,15 +1,20 @@
 package com.jian.system.gesture;
 
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.jian.system.LoginActivity;
+import com.jian.system.MainActivity;
 import com.jian.system.R;
 import com.jian.system.gesture.base.GestureBaseActivity;
 import com.jian.system.gesture.custom.EasyGestureLockLayout;
+import com.jian.system.gesture.util.GestureUtils;
 
 
 /**
@@ -19,6 +24,7 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
 
     TextView tv_go;
     EasyGestureLockLayout layout_parent;
+    TextView go_login;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,6 +37,18 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
     private void initView() {
         tv_go = findViewById(R.id.tv_go);
         layout_parent = findViewById(R.id.layout_parent);
+        go_login =  findViewById(R.id.go_login);
+        go_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //清空登录信息
+                GestureUtils.clear(getApplication());
+                //跳转登录界面
+                Intent intent = new Intent(getApplication(), LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
 

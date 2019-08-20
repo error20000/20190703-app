@@ -35,7 +35,7 @@
             <com.github.florent37.materialtextfield.MaterialTextField
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:mtf_image="@drawable/ic_history_black_24dp"
+                app:mtf_image="@drawable/ic_username"
                 android:layout_marginBottom="20dp"
                 app:mtf_labelColor="#666">
 
@@ -53,7 +53,7 @@
             <com.github.florent37.materialtextfield.MaterialTextField
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:mtf_image="@drawable/ic_history_black_24dp"
+                app:mtf_image="@drawable/ic_password"
                 android:layout_marginBottom="20dp"
                 app:mtf_labelColor="#666">
 

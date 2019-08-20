@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,11 +61,11 @@ public class LoginActivity extends AppCompatActivity {
         mTopBar = findViewById(R.id.topbar);
         mTopBar.setTitle("用户登录");
 
+        initLogin();
+
         //判断有无手势密码
         String restureStr = GestureUtils.get(this, GestureUtils.USER_GESTURE);
-        if(Utils.isNullOrEmpty(restureStr)){
-            initLogin();
-        }else{
+        if(!Utils.isNullOrEmpty(restureStr)){
             isFirstLogin = false;
             autoLogin();
         }
@@ -106,14 +107,8 @@ public class LoginActivity extends AppCompatActivity {
                 params.put("username", username);
                 params.put("password", password);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.userLoginUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.userLoginUrl + " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_Login);
-                message.obj = resObj;
+                message.obj = res;
                 mHandler.sendMessage(message);
             }
         });
@@ -132,14 +127,8 @@ public class LoginActivity extends AppCompatActivity {
             public void run() {
                 Map<String, Object> params = new HashMap<>();
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.userLogoutUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.userLogoutUrl + " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_Logout);
-                message.obj = resObj;
+                message.obj = res;
                 mHandler.sendMessage(message);
             }
         });
@@ -158,14 +147,8 @@ public class LoginActivity extends AppCompatActivity {
             public void run() {
                 Map<String, Object> params = new HashMap<>();
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.userIsLoginUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.userIsLoginUrl + " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_IsLogin);
-                message.obj = resObj;
+                message.obj = res;
                 mHandler.sendMessage(message);
             }
         });
@@ -175,18 +158,24 @@ public class LoginActivity extends AppCompatActivity {
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
-            JSONObject resObj = (JSONObject) msg.obj;
-            tipDialog.dismiss();
+            //处理结果
+            hideTips();
+            String str =  (String) msg.obj;
+            if(Utils.isNullOrEmpty(str)){
+                showToast("网络异常，请检查网络。");
+                return;
+            }
+            JSONObject resData = JSONObject.parseObject(str);
             //处理数据
             switch (msg.what){
                 case MsgType_Login:
-                    loginMsg(resObj);
+                    loginMsg(resData);
                     break;
                 case MsgType_Logout:
-                    logoutMsg(resObj);
+                    logoutMsg(resData);
                     break;
                 case MsgType_IsLogin:
-                    isLoginMsg(resObj);
+                    isLoginMsg(resData);
                     break;
                 default:
                     break;
@@ -195,14 +184,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+    private void hideTips(){
+        tipDialog.dismiss();
+    }
+
+    private void showToast(String msg){
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
     private void loginMsg(JSONObject resObj){
         if(resObj.getInteger("code") <= 0){
             showErrorMsg(resObj.getString("msg"));
             if(isShowPwdLogin){
                 //清空本地密码
                 GestureUtils.clear(this);
-                //初始化登录界面
-                initLogin();
             }
             return;
         }

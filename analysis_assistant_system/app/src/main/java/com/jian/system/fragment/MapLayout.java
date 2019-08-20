@@ -1,23 +1,26 @@
 package com.jian.system.fragment;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSONArray;
@@ -26,42 +29,32 @@ import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
-import com.esri.arcgisruntime.geometry.Unit;
-import com.esri.arcgisruntime.layers.ArcGISTiledLayer;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.GeoElement;
+import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
-import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
-import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.symbology.Symbol;
-import com.jian.system.Application;
 import com.jian.system.R;
-import com.jian.system.config.Constant;
 import com.jian.system.config.UrlConfig;
-import com.jian.system.entity.Aid;
-import com.jian.system.entity.StoreType;
 import com.jian.system.entity.System;
-import com.jian.system.fragment.components.AidListFragment;
-import com.jian.system.utils.DataUtils;
+import com.jian.system.fragment.components.AidDetailFragment;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
+import com.jian.system.view.UrlImageView;
 import com.qmuiteam.qmui.arch.QMUIFragment;
+import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
-import com.sonnyjack.library.qrcode.QrCodeUtils;
-import com.sonnyjack.permission.IRequestPermissionCallBack;
-import com.sonnyjack.permission.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,62 +99,85 @@ public class MapLayout extends QMUIWindowInsetLayout {
         LayoutInflater.from(context).inflate(R.layout.layout_map, this);
         ButterKnife.bind(this);
 
-        /*locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        String provider = LocationManager.NETWORK_PROVIDER;// 指定LocationManager的定位方法
-        //NETWORK_PROVIDER 网络定位、GPS_PROVIDER GPS定位
-        Location location = locationManager.getLastKnownLocation(provider);// 调用getLastKnownLocation()方法获取当前的位置信息
-        double lat = location.getLatitude();//获取纬度
-        double lng = location.getLongitude();//获取经度*/
-        //initLocation();
-
+        initLocation();
 
         initTopBar();
         initData();
     }
 
     private void initTopBar() {
+
+        mTopBar.addRightImageButton(R.drawable.ic_refresh, R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                storeTypeData = null;
+                aidData = null;
+                initData();
+            }
+        });
+
         mTopBar.setTitle("电子地图");
     }
 
-    @SuppressLint("MissingPermission")
-    private void initLocation() {
+    private void initLocation(){
+        //获取位置服务
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);//高精度
-        criteria.setAltitudeRequired(false);//无海拔要求   criteria.setBearingRequired(false);//无方位要求
-        criteria.setCostAllowed(true);//允许产生资费   criteria.setPowerRequirement(Criteria.POWER_LOW);//低功耗
-
-        // 获取最佳服务对象
+        //ACCURACY_HIGH/ACCURACY_LOW精度选择
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        //高度
+        criteria.setAltitudeRequired(true);
+        //方位信息
+        criteria.setBearingRequired(true);
+        //是否允许付费
+        criteria.setCostAllowed(true);
+        //对电量的要求
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        //速度
+        criteria.setSpeedRequired(true);
+        //获取最佳服务
         String provider = locationManager.getBestProvider(criteria, true);
+        Log.e(TAG, "provider:" + provider);
+        //权限检查
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "没有位置服务权限");
+            return;
+        }
+        //获取到了位置
         location = locationManager.getLastKnownLocation(provider);
-        Log.d("location", location+"");
-        //Log.d("getLatitude", location.getLatitude()+"");
-        //Log.d("getLongitude", location.getLongitude()+"");
-
-        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000, 60*1000, gpsLocationListener);
-        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60*1000, 60*1000, networkListener);
-
-        /*ArrayList<String> permissionList = new ArrayList<>();
-        permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        permissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        PermissionUtils.getInstances().requestPermission(context, permissionList, new IRequestPermissionCallBack() {
-            @SuppressLint("MissingPermission")
+        locateResult(location);
+        //开启地理位置监听定位类型、毫秒、米、监听时间
+        locationManager.requestLocationUpdates(provider, 3000, 1, new LocationListener() {
             @Override
-            public void onGranted() {
+            public void onLocationChanged(Location location) {
+                //位置变化，获取最新的位置
+                locateResult(location);
             }
 
             @Override
-            public void onDenied() {
-                Toast.makeText(context, "请在应用管理中打开定位权限", Toast.LENGTH_SHORT).show();
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
             }
-        });*/
 
+            @Override
+            public void onProviderEnabled(String s) {
 
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+        });
     }
 
+    private void locateResult(Location location){
+        Log.d(TAG, "location getLongitude" + location.getLongitude());
+        Log.d(TAG, "location getLatitude" + location.getLatitude());
+        this.location = location;
+    }
 
     private void initMap() {
-
         if(system == null){
             tipDialog = new QMUITipDialog.Builder(getContext())
                     .setIconType(QMUITipDialog.Builder.ICON_TYPE_FAIL)
@@ -173,8 +189,8 @@ public class MapLayout extends QMUIWindowInsetLayout {
 
         if (mMapView != null) {
             Basemap.Type basemapType = Basemap.Type.TOPOGRAPHIC;
-            double latitude = system.getlSys_MapLat();
-            double longitude = system.getlSys_MapLng();
+            double latitude = location == null ? system.getlSys_MapLat() : location.getLatitude();
+            double longitude = location == null ? system.getlSys_MapLng() : location.getLongitude();
             int levelOfDetail = system.getlSys_MapLevel();
             ArcGISMap map = new ArcGISMap(basemapType, latitude, longitude, levelOfDetail);
             mMapView.setMap(map);
@@ -199,7 +215,7 @@ public class MapLayout extends QMUIWindowInsetLayout {
                                 List<IdentifyGraphicsOverlayResult> identifyLayerResults = listListenableFuture.get();
                                 for (IdentifyGraphicsOverlayResult identifyLayerResult : identifyLayerResults) {
                                     for (final GeoElement geoElement : identifyLayerResult.getGraphics()) {
-                                        showDetail(geoElement);
+                                        showDetail(e, geoElement);
                                     }
                                 }
                             } catch (InterruptedException e) {
@@ -267,27 +283,116 @@ public class MapLayout extends QMUIWindowInsetLayout {
         });
     }
 
-    private void showDetail(GeoElement element){
+    private void showDetail(MotionEvent event, GeoElement element){
         String id = String.valueOf(element.getAttributes().get("id"));
         Log.d(TAG, "id -->"+id);
         String type = String.valueOf(element.getAttributes().get("type"));
         int index = Integer.parseInt(String.valueOf(element.getAttributes().get("index")));
         switch (type){
             case PointType_Aid:
-                showAidDetail(aidData.get(index));
+                showAidDetail(event, aidData.get(index));
                 break;
             case PointType_Store:
-                showStoreDetail(storeTypeData.get(index));
+                showStoreDetail(event, storeTypeData.get(index));
                 break;
         }
     }
 
-    private void showAidDetail(JSONObject node){
+    private void showAidDetail(MotionEvent event, JSONObject node){
         Log.d(TAG, "id ==>"+node.get("sAid_ID"));
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.layout_map_callout_aid, null);
+        //设置属性
+        TextView title = view.findViewById(R.id.callout_title);
+        title.setText(node.getString("sAid_Name"));
+        TextView station = view.findViewById(R.id.callout_station);
+        station.setText(node.getString("sAid_StationName"));
+        TextView no = view.findViewById(R.id.callout_no);
+        no.setText(node.getString("sAid_NO"));
+        TextView location = view.findViewById(R.id.callout_location);
+        String lngStr = node.getString("lAid_Lng");
+        String latStr = node.getString("lAid_Lat");
+        location.setText(lngStr+" ~ "+latStr);
+        ImageView icon = view.findViewById(R.id.callout_icon);
+        UrlImageView urlImg = new UrlImageView(context);
+        urlImg.setImageURL(UrlConfig.baseUrl + "/"+ node.getString("sAid_IconUrl"));
+        icon.setImageDrawable(urlImg.getDrawable());
+
+        double lng = node.getDouble("lAid_Lng");
+        double lat = node.getDouble("lAid_Lat");
+        Point point = new Point(lng, lat, SpatialReferences.getWgs84());
+        Callout callout = mMapView.getCallout();
+        //callout.setStyle(R.xml.calloutstyle);
+        callout.show(view, point);
+        //事件
+        view.findViewById(R.id.callout_close).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calloutClose(callout);
+            }
+        });
+        view.findViewById(R.id.callout_show_detail).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoDetail(callout, node.getString("sAid_ID"), PointType_Aid);
+            }
+        });
     }
 
-    private void showStoreDetail(JSONObject node){
+    private void gotoDetail(Callout callout, String id, String type){
+        switch (type){
+            case PointType_Aid:
+                Bundle bundle = new Bundle();
+                bundle.putString("sAid_ID", id);
+                AidDetailFragment fragment = new AidDetailFragment();
+                fragment.setArguments(bundle);
+                startFragment(fragment);
+                break;
+            case PointType_Store:
+
+                break;
+        }
+    }
+
+    private void calloutClose(Callout callout){
+        if(callout != null){
+            callout.dismiss();
+        }
+    }
+
+    private void showStoreDetail(MotionEvent event, JSONObject node){
         Log.d(TAG, "id ==>"+node.get("sStoreType_ID"));
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.layout_map_callout_store, null);
+        //设置属性
+        TextView title = view.findViewById(R.id.callout_title);
+        title.setText(node.getString("sStoreType_Name"));
+        TextView station = view.findViewById(R.id.callout_station);
+        station.setText(node.getString("sStoreType_StationName"));
+        TextView location = view.findViewById(R.id.callout_location);
+        String lngStr = node.getString("lStoreType_Lng");
+        String latStr = node.getString("lStoreType_Lat");
+        location.setText(lngStr+" ~ "+latStr);
+
+        double lng = node.getDouble("lStoreType_Lng");
+        double lat = node.getDouble("lStoreType_Lat");
+        Point point = new Point(lng, lat, SpatialReferences.getWgs84());
+        Callout callout = mMapView.getCallout();
+        //callout.setStyle(R.xml.calloutstyle);
+        callout.show(view, point);
+        //事件
+        view.findViewById(R.id.callout_close).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calloutClose(callout);
+            }
+        });
+        view.findViewById(R.id.callout_show_detail).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoDetail(callout, node.getString("sStoreType_ID"), PointType_Store);
+            }
+        });
 
     }
 
@@ -357,9 +462,6 @@ public class MapLayout extends QMUIWindowInsetLayout {
             if(Utils.isNullOrEmpty(url)){
                 url = node.getString("sAid_TypeIcon");
             }
-            if(Utils.isNullOrEmpty(url)){
-                url = node.getString("sAid_TypeIcon");
-            }
             //创建点
             Map<String, Object> attrs = new HashMap<>();
             attrs.put("id", node.getString("sAid_ID"));
@@ -370,6 +472,7 @@ public class MapLayout extends QMUIWindowInsetLayout {
             if(Utils.isNullOrEmpty(url)){
                 createPointGraphicsByImg(lng, lat, attrs);
             }else{
+                url = UrlConfig.baseUrl +"/"+ url;
                 createPointGraphicsByUrl(lng, lat, url, attrs);
             }
         }

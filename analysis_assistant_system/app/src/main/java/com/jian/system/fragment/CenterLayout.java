@@ -42,6 +42,7 @@ public class CenterLayout extends QMUIWindowInsetLayout {
     QMUIGroupListSectionHeaderFooterView mSplit2;
 
 
+    private final static String TAG = CenterLayout.class.getSimpleName();
     private ViewPagerListener mListener;
     String  title = "个人中心";
     private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
@@ -65,6 +66,7 @@ public class CenterLayout extends QMUIWindowInsetLayout {
 
     private void initData(){
         String userInfo = GestureUtils.get(context, GestureUtils.USER_INFO);
+        Log.d(TAG, "userInfo ==>" + userInfo);
         if(!Utils.isNullOrEmpty(userInfo)){
             User user = JSONObject.parseObject(userInfo, User.class);
             String nickName = Utils.isNullOrEmpty(user.getsUser_Nick()) ? user.getsUser_UserName() : user.getsUser_Nick();

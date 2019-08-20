@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -57,4 +58,6 @@ dependencies {
     implementation project(path: ':qrcode')
     //arcgis
     implementation 'com.esri.arcgisruntime:arcgis-android:100.5.0'
+    //multidex
+    implementation 'com.android.support:multidex:1.0.1'
 }

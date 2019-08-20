@@ -23,6 +23,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.util.Hashtable;
 
+import static android.graphics.Canvas.*;
+
 /**
  * Created by admin on 2016/11/3.
  */
@@ -150,7 +152,7 @@ public class QrCodeUtils {
             canvas.drawBitmap(src, 0, 0, null);
             canvas.scale(scaleFactor, scaleFactor, srcWidth / 2, srcHeight / 2);
             canvas.drawBitmap(content, (srcWidth - contentWidth) / 2, (srcHeight - contentHeight) / 2, null);
-            canvas.save(Canvas.ALL_SAVE_FLAG);
+            canvas.save();
             canvas.restore();
         } catch (Exception e) {
             bitmap = null;

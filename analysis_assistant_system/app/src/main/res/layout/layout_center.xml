@@ -104,6 +104,11 @@
             app:qmui_commonList_titleColor="@color/qmui_s_link_color"
             app:qmui_orientation="vertical" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@drawable/qmui_divider_top_bitmap"/>
+
     </LinearLayout>
 
     <com.qmuiteam.qmui.widget.QMUITopBarLayout

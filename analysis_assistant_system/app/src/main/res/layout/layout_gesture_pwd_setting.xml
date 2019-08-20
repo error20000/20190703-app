@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="为了您的账户安全，请设置手势密码"
+        android:text="请设置手势密码"
         android:textColor="#F8A916"
         android:textSize="13sp" />
 
