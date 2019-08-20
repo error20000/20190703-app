@@ -126,6 +126,23 @@ public class FormatUtils {
         return null;
     }
 
+    public static String formatDegree(double degree){
+        return formatDegree(String.valueOf(degree));
+    }
+
+    public static String formatDegree(String degree){
+        String[] array = degree.split("[.]");
+        String degrees = array[0];//得到度
+
+        Double m = Double.parseDouble("0." + array[1]) * 60;
+        String[] array1 = m.toString().split("[.]");
+        String minutes = array1[0];//得到分
+
+        Double s = Double.parseDouble("0."+array1[1]) * 60;
+        String[] array2 = s.toString().split("[.]");
+        String seconds = array2[0];//得到秒
+        return degrees+"°"+minutes+"'"+seconds+"\"";
+    }
 
     //TODO ----------------------------------------------------------------------------person
 

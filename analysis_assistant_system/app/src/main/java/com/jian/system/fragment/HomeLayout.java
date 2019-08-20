@@ -29,6 +29,7 @@ import com.jian.system.entity.Dict;
 import com.jian.system.entity.Messages;
 import com.jian.system.fragment.components.AidListFragment;
 import com.jian.system.fragment.components.EquipListFragment;
+import com.jian.system.fragment.components.MapFragment;
 import com.jian.system.fragment.components.MsgDetailFragment;
 import com.jian.system.model.HomeRvItem;
 import com.jian.system.utils.DataUtils;
@@ -110,7 +111,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
         data.add(new HomeRvItem(EquipListFragment.class, "器材管理", R.drawable.ic_home_equip));
         data.add(new HomeRvItem(EquipListFragment.class, "器材扫码", R.mipmap.icon_tabbar_component));
         data.add(new HomeRvItem(EquipListFragment.class, "器材NFC", R.mipmap.icon_tabbar_component));
-        data.add(new HomeRvItem(EquipListFragment.class, "电子地图", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(MapFragment.class, "电子地图", R.mipmap.icon_tabbar_component));
         data.add(new HomeRvItem(EquipListFragment.class, "消息中心", R.mipmap.icon_tabbar_component));
 
         mItemAdapter = new HomeRvItemAdapter(context, data);

@@ -2,7 +2,7 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.106.67:8065";
+    public static String baseUrl = "http://192.168.1.4:8065";
 
     //系统
     public static String sysQueryUrl = baseUrl + "/api/sys/app/findOne";

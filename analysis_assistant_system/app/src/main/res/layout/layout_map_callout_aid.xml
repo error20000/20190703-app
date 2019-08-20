@@ -65,10 +65,16 @@
                 android:text="编码：" />
 
             <TextView
-                android:id="@+id/callout_location"
+                android:id="@+id/callout_lng"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="坐标：" />
+                android:text="经度：" />
+
+            <TextView
+                android:id="@+id/callout_lat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="纬度：" />
 
         </LinearLayout>
 
