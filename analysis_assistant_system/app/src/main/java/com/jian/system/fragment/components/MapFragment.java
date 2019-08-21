@@ -23,8 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -85,8 +87,10 @@ public class MapFragment extends QMUIFragment {
     MapView mMapView;
 
     private final static String TAG = MapLayout.class.getSimpleName();
+    private String title = "电子地图";
     private QMUITipDialog tipDialog;
     private ViewPagerListener mListener;
+    private View cacheView;
     private System system;
     private LocationManager locationManager;
     private Location location;
@@ -106,7 +110,9 @@ public class MapFragment extends QMUIFragment {
 
     @Override
     public void onPause() {
+        Log.e("ddddddddddd", "onPause");
         if (mMapView != null) {
+            Log.e("ddddddddddd", "mMapView onPause");
             mMapView.pause();
         }
         super.onPause();
@@ -114,22 +120,34 @@ public class MapFragment extends QMUIFragment {
 
     @Override
     public void onResume() {
-        super.onResume();
+        Log.e("ddddddddddd", "onResume");
         if (mMapView != null) {
+            Log.e("ddddddddddd", "mMapView onResume");
             mMapView.resume();
         }
+        super.onResume();
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        Log.e("ddddddddddd", "onDestroyView");
+        if (mMapView != null) {
+            Log.e("ddddddddddd", "mMapView onDestroyView");
+            mMapView.dispose();
+        }
+        super.onDestroyView();
     }
 
     @Override
-    public void onDestroy() {
-        if (mMapView != null) {
-            mMapView.dispose();
-        }
-        super.onDestroy();
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e("ddddddddddd", "onCreateView2222222222222222222");
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public View onCreateView() {
+        Log.e("ddddddddddd", "onCreateView");
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_map, null);
         ButterKnife.bind(this, rootView);
 
@@ -137,6 +155,8 @@ public class MapFragment extends QMUIFragment {
 
         initTopBar();
         initData();
+
+        cacheView = rootView;
         return rootView;
     }
 
@@ -151,7 +171,7 @@ public class MapFragment extends QMUIFragment {
             }
         });
 
-        mTopBar.setTitle("电子地图");
+        mTopBar.setTitle(title);
     }
 
     private void initLocation(){
@@ -387,6 +407,7 @@ public class MapFragment extends QMUIFragment {
                 AidDetailFragment fragment = new AidDetailFragment();
                 fragment.setArguments(bundle);
                 startFragment(fragment);
+                //startFragmentAndDestroyCurrent(fragment);
                 break;
             case PointType_Store:
 

@@ -109,7 +109,7 @@ public class MainFragment extends QMUIFragment {
                 "个人中心", false
         );
         mTabSegment.addTab(home)
-                .addTab(map)
+                //.addTab(map)
                 .addTab(msg)
                 .addTab(center);
     }
@@ -124,13 +124,13 @@ public class MainFragment extends QMUIFragment {
             }
         };
 
-        HomeLayout homeLayout = new HomeLayout(getActivity());
+        HomeLayout homeLayout = new HomeLayout(getActivity(), getActivity().getSupportFragmentManager());
         homeLayout.setViewPagerListener(listener);
         mPages.put(Pager.Home, homeLayout);
 
-        MapLayout mapLayout = new MapLayout(getActivity());
+        /*MapLayout mapLayout = new MapLayout(getActivity());
         mapLayout.setViewPagerListener(listener);
-        mPages.put(Pager.Map, mapLayout);
+        mPages.put(Pager.Map, mapLayout);*/
 
         MsgLayout msgLayout = new MsgLayout(getActivity(), getActivity().getSupportFragmentManager());
         msgLayout.setViewPagerListener(listener);
@@ -146,17 +146,17 @@ public class MainFragment extends QMUIFragment {
     }
 
     enum Pager {
-        Home, Map, Msg, Center;
+        Home, /*Map,*/ Msg, Center;
 
         public static Pager getPagerFromPositon(int position) {
             switch (position) {
                 case 0:
                     return Home;
+                /*case 1:
+                    return Map;*/
                 case 1:
-                    return Map;
-                case 2:
                     return Msg;
-                case 3:
+                case 2:
                     return Center;
                 default:
                     return Home;

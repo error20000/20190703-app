@@ -55,6 +55,7 @@ import com.esri.arcgisruntime.symbology.Symbol;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.entity.System;
 import com.jian.system.fragment.MapLayout;
+import com.jian.system.fragment.TestFragment;
 import com.jian.system.fragment.ViewPagerListener;
 import com.jian.system.fragment.components.AidDetailFragment;
 import com.jian.system.gesture.GesturePwdCheckActivity;
@@ -110,6 +111,7 @@ public class MapActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        Log.e("xxxxxxxxxxxxxxxxx", "onPause");
         if (mMapView != null) {
             mMapView.pause();
         }
@@ -118,14 +120,16 @@ public class MapActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        super.onResume();
+        Log.e("xxxxxxxxxxxxxxxxx", "onResume");
         if (mMapView != null) {
             mMapView.resume();
         }
+        super.onResume();
     }
 
     @Override
     protected void onDestroy() {
+        Log.e("xxxxxxxxxxxxxxxxx", "onDestroy");
         if (mMapView != null) {
             mMapView.dispose();
         }
@@ -134,6 +138,7 @@ public class MapActivity extends AppCompatActivity {
 
     @Override
     public void  onCreate(Bundle savedInstanceState) {
+        Log.e("xxxxxxxxxxxxxxxxx", "onCreate");
         super.onCreate(savedInstanceState);
         View rootView = LayoutInflater.from(this).inflate(R.layout.layout_map, null);
         ButterKnife.bind(this, rootView);
@@ -390,13 +395,14 @@ public class MapActivity extends AppCompatActivity {
             case PointType_Aid:
                 Bundle bundle = new Bundle();
                 bundle.putString("sAid_ID", id);
-                AidDetailFragment fragment = new AidDetailFragment();
+                //AidDetailFragment fragment = new AidDetailFragment();
+                TestFragment  fragment = new TestFragment();
                 fragment.setArguments(bundle);
 
                 getSupportFragmentManager()
                         .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
                         .addToBackStack("AidDetailFragment")
-                        .add(R.id.fl_container, fragment)
                         .commit();
 
                 break;

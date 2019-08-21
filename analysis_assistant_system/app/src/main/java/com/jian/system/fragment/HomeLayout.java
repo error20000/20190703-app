@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -65,6 +67,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
 
     private ViewPagerListener mListener;
     private Context context;
+    private FragmentManager manager;
     private HomeRvItemAdapter mItemAdapter;
     private QMUITipDialog tipDialog;
     private List<Dict> msgTypeData = new ArrayList<>();
@@ -72,9 +75,10 @@ public class HomeLayout extends QMUIWindowInsetLayout{
 
     private final int MsgType_Msg = 1;
 
-    public HomeLayout(Context context) {
+    public HomeLayout(Context context, FragmentManager manager) {
         super(context);
         this.context = context;
+        this.manager = manager;
 
         LayoutInflater.from(context).inflate(R.layout.layout_home, this);
         ButterKnife.bind(this);
@@ -111,7 +115,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
         data.add(new HomeRvItem(EquipListFragment.class, "器材管理", R.drawable.ic_home_equip));
         data.add(new HomeRvItem(EquipListFragment.class, "器材扫码", R.mipmap.icon_tabbar_component));
         data.add(new HomeRvItem(EquipListFragment.class, "器材NFC", R.mipmap.icon_tabbar_component));
-        data.add(new HomeRvItem(MapFragment.class, "电子地图", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(MapFragment.class, "电子地图", R.drawable.ic_map_foreground));
         data.add(new HomeRvItem(EquipListFragment.class, "消息中心", R.mipmap.icon_tabbar_component));
 
         mItemAdapter = new HomeRvItemAdapter(context, data);

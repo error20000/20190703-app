@@ -4,16 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.esri.arcgisruntime.mapping.view.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </com.esri.arcgisruntime.mapping.view.MapView>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_container"/>
+        android:id="@+id/fragment_container">
+
+        <com.esri.arcgisruntime.mapping.view.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </com.esri.arcgisruntime.mapping.view.MapView>
+
+    </FrameLayout>
 
     <com.qmuiteam.qmui.widget.QMUITopBarLayout
         android:id="@+id/topbar"

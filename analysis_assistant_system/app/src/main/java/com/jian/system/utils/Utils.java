@@ -2,6 +2,7 @@ package com.jian.system.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -143,6 +144,7 @@ public class Utils {
 			//关闭数据流
 			is.close();
 		}catch(Exception e){
+			Log.e("Utils", "URL ==> " + url);
 			e.printStackTrace();
 		}
 
