@@ -118,7 +118,7 @@ public class MapFragment extends QMUIFragment {
         super.onPause();
     }
 
-    @Override
+   @Override
     public void onResume() {
         Log.e("ddddddddddd", "onResume");
         if (mMapView != null) {
@@ -142,22 +142,32 @@ public class MapFragment extends QMUIFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.e("ddddddddddd", "onCreateView2222222222222222222");
+        if(cacheView != null){
+            Log.e("ddddddddddd", "cacheView2222222222222222222");
+            init();
+        }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public View onCreateView() {
         Log.e("ddddddddddd", "onCreateView");
-        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_map, null);
-        ButterKnife.bind(this, rootView);
+        if(cacheView == null){
+            Log.e("ddddddddddd", "cacheView");
+            View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_map, null);
+            ButterKnife.bind(this, rootView);
 
+            init();
+
+            cacheView = rootView;
+        }
+        return cacheView;
+    }
+
+    private void init(){
         initLocation();
-
         initTopBar();
         initData();
-
-        cacheView = rootView;
-        return rootView;
     }
 
     private void initTopBar() {

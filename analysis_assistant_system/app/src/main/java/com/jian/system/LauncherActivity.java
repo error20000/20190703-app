@@ -15,7 +15,7 @@ public class LauncherActivity extends Activity {
             finish();
             return;
         }
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, TestActivity.class);
         startActivity(intent);
         finish();
     }
