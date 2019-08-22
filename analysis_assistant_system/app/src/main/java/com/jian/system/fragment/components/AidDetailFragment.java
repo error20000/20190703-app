@@ -47,6 +47,7 @@ public class AidDetailFragment extends QMUIFragment {
     private String title = "航标详情";
 
     private String sAid_ID;
+    private String from;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -62,6 +63,7 @@ public class AidDetailFragment extends QMUIFragment {
 
         Bundle bundle = this.getArguments();
         sAid_ID = bundle.getString("sAid_ID");
+        from =  bundle.getString("from");
 
         initTopBar();
         initTabAndPager();
@@ -73,7 +75,11 @@ public class AidDetailFragment extends QMUIFragment {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popBackStack();
+                if("map".equals(from)){
+                    getFragmentManager().popBackStack();
+                }else{
+                    popBackStack();
+                }
             }
         });
 

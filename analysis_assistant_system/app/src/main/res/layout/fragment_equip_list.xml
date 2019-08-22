@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="?attr/qmui_topbar_height"
         android:fitsSystemWindows="true"
+        android:background="@color/qmui_config_color_white"
         android:orientation="vertical">
 
         <com.qmuiteam.qmui.widget.pullRefreshLayout.QMUIPullRefreshLayout

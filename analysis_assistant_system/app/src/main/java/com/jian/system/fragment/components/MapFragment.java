@@ -86,7 +86,7 @@ public class MapFragment extends QMUIFragment {
     @BindView(R.id.mapView)
     MapView mMapView;
 
-    private final static String TAG = MapLayout.class.getSimpleName();
+    private final static String TAG = MapFragment.class.getSimpleName();
     private String title = "电子地图";
     private QMUITipDialog tipDialog;
     private ViewPagerListener mListener;
@@ -94,6 +94,7 @@ public class MapFragment extends QMUIFragment {
     private System system;
     private LocationManager locationManager;
     private Location location;
+    private int contentId = R.id.map_container;
 
     private GraphicsOverlay mGraphicsOverlay;
 
@@ -110,9 +111,7 @@ public class MapFragment extends QMUIFragment {
 
     @Override
     public void onPause() {
-        Log.e("ddddddddddd", "onPause");
         if (mMapView != null) {
-            Log.e("ddddddddddd", "mMapView onPause");
             mMapView.pause();
         }
         super.onPause();
@@ -120,9 +119,7 @@ public class MapFragment extends QMUIFragment {
 
    @Override
     public void onResume() {
-        Log.e("ddddddddddd", "onResume");
         if (mMapView != null) {
-            Log.e("ddddddddddd", "mMapView onResume");
             mMapView.resume();
         }
         super.onResume();
@@ -131,46 +128,34 @@ public class MapFragment extends QMUIFragment {
 
     @Override
     public void onDestroyView() {
-        Log.e("ddddddddddd", "onDestroyView");
         if (mMapView != null) {
-            Log.e("ddddddddddd", "mMapView onDestroyView");
             mMapView.dispose();
         }
         super.onDestroyView();
     }
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.e("ddddddddddd", "onCreateView2222222222222222222");
-        if(cacheView != null){
-            Log.e("ddddddddddd", "cacheView2222222222222222222");
-            init();
-        }
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
 
     @Override
     public View onCreateView() {
-        Log.e("ddddddddddd", "onCreateView");
-        if(cacheView == null){
-            Log.e("ddddddddddd", "cacheView");
-            View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_map, null);
-            ButterKnife.bind(this, rootView);
+        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_map, null);
+        ButterKnife.bind(this, rootView);
+        rootView.setId(contentId);
 
-            init();
-
-            cacheView = rootView;
-        }
-        return cacheView;
-    }
-
-    private void init(){
         initLocation();
         initTopBar();
         initData();
+
+        return rootView;
     }
 
     private void initTopBar() {
+
+        mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popBackStack();
+            }
+        });
 
         mTopBar.addRightImageButton(R.drawable.ic_refresh, R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener(){
             @Override
@@ -414,10 +399,15 @@ public class MapFragment extends QMUIFragment {
             case PointType_Aid:
                 Bundle bundle = new Bundle();
                 bundle.putString("sAid_ID", id);
+                bundle.putString("from", "map");
                 AidDetailFragment fragment = new AidDetailFragment();
                 fragment.setArguments(bundle);
-                startFragment(fragment);
+                //startFragment(fragment);
                 //startFragmentAndDestroyCurrent(fragment);
+                getFragmentManager().beginTransaction()
+                        .add(contentId, fragment, "MapFragment_Aid")
+                        .addToBackStack("MapFragment_Aid")
+                        .commit();
                 break;
             case PointType_Store:
 

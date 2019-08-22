@@ -12,4 +12,7 @@
     <!-- equip -->
     <item name="equip_no_edit" type="id"/>
     <item name="equip_name_edit" type="id"/>
+
+    <!-- map -->
+    <item name="map_container" type="id"/>
 </resources>
