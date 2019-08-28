@@ -8,6 +8,7 @@ import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -74,6 +75,7 @@ public class NfcActivity extends Activity {
             return;
         }
         Toast.makeText(this,"支持NFC功能!",Toast.LENGTH_SHORT).show();
+        NfcUtils.mPendingIntent = PendingIntent.getActivity(this,0,new Intent(this,getClass()),0);//创建PendingIntent对象,当检测到一个Tag标签就会执行此Intent
     }
 
 
@@ -94,6 +96,14 @@ public class NfcActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log.e(TAG, "--------------NFC-------------" );
+        Tag mTag=intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);//获取到Tag标签对象
+        String[] techList=mTag.getTechList();
+        System.out.println("标签支持的tachnology类型：");
+        for (String tech:techList){
+            System.out.println(tech);
+
+        }
+
         processIntent(intent);
     }
 
