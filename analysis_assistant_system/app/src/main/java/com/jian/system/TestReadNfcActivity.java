@@ -40,12 +40,7 @@ public class TestReadNfcActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
-    }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         mNfcAdapter= NfcAdapter.getDefaultAdapter(this);//设备的NfcAdapter对象
         if(mNfcAdapter==null){//判断设备是否支持NFC功能
             Toast.makeText(this,"设备不支持NFC功能!",Toast.LENGTH_SHORT).show();
@@ -64,14 +59,22 @@ public class TestReadNfcActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mNfcAdapter= NfcUtils.checkNfc(this);
+        mPendingIntent = PendingIntent.getActivity(this,0,new Intent(this,getClass()),0);//创建PendingIntent对象,当检测到一个Tag标签就会执行此Intent
+    }
+
+
 
     //在onResume中开启前台调度
     @Override
     protected void onResume() {
         super.onResume();
         //设定intentfilter和tech-list。如果两个都为null就代表优先接收任何形式的TAG action。也就是说系统会主动发TAG intent。
-        if (mPendingIntent != null) {
-            mPendingIntent.enableForegroundDispatch(this, mPendingIntent, null, null);
+        if (mNfcAdapter != null) {
+            mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         }
         Log.e(TAG, "onResume");
     }
@@ -125,8 +128,8 @@ public class TestReadNfcActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.e(TAG, "onPause");
-        if (NfcUtils.mNfcAdapter != null) {
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
+        if (mNfcAdapter != null) {
+            mNfcAdapter.disableForegroundDispatch(this);
         }
     }
 
@@ -134,7 +137,7 @@ public class TestReadNfcActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.e(TAG, "onDestroy");
-        NfcUtils.mNfcAdapter = null;
+        mNfcAdapter = null;
     }
 
 
@@ -147,6 +150,10 @@ public class TestReadNfcActivity extends AppCompatActivity {
         Ndef ndef = Ndef.get(detectedTag);
         Log.e(TAG, ndef.getType() + "\nmaxsize:" + ndef.getMaxSize() + "bytes\n\n");
         readNfcTag(intent);
+        readNFCId(intent);
+        String str = NfcUtils.readNfcTag(intent);
+        System.out.println(str);
+//        NfcUtils.writeTextToTag("testtest2", intent);
     }
     /**
      * 读取NFC标签文本数据
@@ -171,6 +178,7 @@ public class TestReadNfcActivity extends AppCompatActivity {
                     Log.e(TAG, textRecord + "\n\ntext\n" + contentSize + " bytes");
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -212,4 +220,26 @@ public class TestReadNfcActivity extends AppCompatActivity {
         }
     }
 
+    private void readNFCId(Intent intent){
+        byte[] bytesId = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        byte[] dataId = tag.getId();
+        Log.e("dataId",dataId+"");
+        String strId = bytesToHexString(dataId);// 字符序列转换为16进制字符串
+         Log.e("strId",strId+"");
+    }
+    private String bytesToHexString(byte[] src) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        char[] buffer = new char[2];
+        for (int i = 0; i < src.length; i++) {
+            buffer[0] = Character.toUpperCase(Character.forDigit((src[i] >>> 4) & 0x0F, 16));
+            buffer[1] = Character.toUpperCase(Character.forDigit(src[i] & 0x0F, 16));
+            System.out.println(buffer);
+            stringBuilder.append(buffer);
+        }
+        return stringBuilder.toString();
+    }
 }

@@ -3,8 +3,11 @@ package com.jian.system.nfc;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.jian.system.utils.NfcUtils;
 
 public class BaseNfcActivity extends AppCompatActivity {
     private NfcAdapter mNfcAdapter;
@@ -15,7 +18,7 @@ public class BaseNfcActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        mNfcAdapter = NfcUtils.checkNfc(this);
         //一旦截获NFC消息，就会通过PendingIntent调用窗口
         mPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()), 0);
     }
@@ -40,4 +43,9 @@ public class BaseNfcActivity extends AppCompatActivity {
             mNfcAdapter.disableForegroundDispatch(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mNfcAdapter = null;
+    }
 }
