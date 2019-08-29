@@ -11,6 +11,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -70,8 +71,10 @@ public class NfcActivity extends Activity {
             return;
         }
         if (!mNfcAdapter.isEnabled()){//判断设备NFC功能是否打开
-            Toast.makeText(this,"请到系统设置中打开NFC功能!",Toast.LENGTH_SHORT).show();
-            finish();
+            /*Toast.makeText(this,"请到系统设置中打开NFC功能!",Toast.LENGTH_SHORT).show();
+            finish();*/
+            Intent setNfc= new Intent(Settings.ACTION_NFC_SETTINGS);
+            startActivity(setNfc);
             return;
         }
         Toast.makeText(this,"支持NFC功能!",Toast.LENGTH_SHORT).show();
