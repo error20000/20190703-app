@@ -143,7 +143,7 @@ public class NfcUtils {
     /**
      * 读取nfcID
      */
-    public static String readNFCId(Intent intent) throws UnsupportedEncodingException {
+    public static String readNFCId(Intent intent) {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         String id = ByteArrayToHexString(tag.getId());
         return id;

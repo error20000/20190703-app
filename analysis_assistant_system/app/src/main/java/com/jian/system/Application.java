@@ -18,6 +18,8 @@ public class Application extends MultiDexApplication {
 
     public static final int Scan_Search_Request_Code = 100;
     public static final int Scan_Add_Request_Code = 200;
+    public static final int Nfc_Search_Request_Code = 300;
+    public static final int Nfc_Add_Request_Code = 400;
 
     public static Context getContext() {
         return context;

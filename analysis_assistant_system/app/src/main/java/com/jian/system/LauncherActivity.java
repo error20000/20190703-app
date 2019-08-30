@@ -15,7 +15,7 @@ public class LauncherActivity extends Activity {
             finish();
             return;
         }
-        Intent intent = new Intent(this, TestReadNfcActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }

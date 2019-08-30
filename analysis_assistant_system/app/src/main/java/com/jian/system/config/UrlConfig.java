@@ -21,6 +21,7 @@ public class UrlConfig {
     //器材
     public static String equipQueryPageUrl = baseUrl + "/api/equip/app/findPage";
     public static String equipQueryDetailUrl = baseUrl + "/api/equip/app/findOne";
+    public static String equipQueryNfcUrl = baseUrl + "/api/equip/app/nfc";
     public static String equipQueryHistoryUrl = baseUrl + "/api/equip/app/history"; //历史
     public static String equipSearchUrl = baseUrl + "/api/equip/app/search"; //搜索
     public static String equipAddUrl = baseUrl + "/api/equip/app/add"; //新增
@@ -42,6 +43,7 @@ public class UrlConfig {
     //NFC
     public static String nfcQueryUrl = baseUrl + "/api/nfc/app/findAll";
     public static String nfcUnusedQueryUrl = baseUrl + "/api/nfc/app/unbind";
+    public static String nfcFindAndAddUrl = baseUrl + "/api/nfc/app/findAndAdd";
 
     //航标
     public static String aidQueryAllUrl = baseUrl + "/api/aid/app/findAll";

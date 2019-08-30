@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.google.zxing.client.android.CaptureActivity;
 import com.jian.system.Application;
 import com.jian.system.R;
 import com.jian.system.adapter.BaseRecyclerAdapter;
@@ -35,6 +36,7 @@ import com.jian.system.config.UrlConfig;
 import com.jian.system.decorator.DividerItemDecoration;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Equip;
+import com.jian.system.nfc.NfcActivity;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
@@ -73,6 +75,7 @@ public class EquipListFragment extends QMUIFragment {
     private final int MsgType_LOADMORE = 1;
     private final int MsgType_REFRESH = 2;
     private final int MsgType_SEARCH = 3;
+    private final int MsgType_NFC = 4;
 
     //search
     List<Equip> sdata = new ArrayList<>();
@@ -296,6 +299,12 @@ public class EquipListFragment extends QMUIFragment {
                     //进入详情
                     intoDetail(str);
                     break;
+                case Application.Nfc_Search_Request_Code:
+                    String result = data.getStringExtra(NfcActivity.NFC_RESULT);
+                    Log.d("onActivityResult", result);
+                    //查询数据
+                    nfcData(result);
+                    break;
             }
         }
     }
@@ -304,7 +313,9 @@ public class EquipListFragment extends QMUIFragment {
      * NFC扫描
      */
     private void scanNFC() {
-
+        Intent intent = new Intent(getActivity(), NfcActivity.class);
+        intent.putExtra(NfcActivity.NFC_TYPE, NfcActivity.NFC_TYPE_SEARCH);
+        startActivityForResult(intent, Application.Nfc_Search_Request_Code);
     }
 
 
@@ -369,6 +380,9 @@ public class EquipListFragment extends QMUIFragment {
                 case MsgType_SEARCH:
                     handleSearch(resObj);
                     break;
+                case MsgType_NFC:
+                    handleNFC(resObj);
+                    break;
             }
         }
     };
@@ -421,6 +435,36 @@ public class EquipListFragment extends QMUIFragment {
         });
     }
 
+    private void nfcData(String sNfc_NO){
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<>();
+                params.put("sNfc_NO", sNfc_NO);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryNfcUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, UrlConfig.equipQueryPageUrl + " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+                Message msg = mHandler.obtainMessage();
+                msg.what = MsgType_NFC;
+                msg.obj = resObj;
+                mSearchHandler.sendMessage(msg);
+            }
+        });
+    }
+
+    private void handleNFC(JSONObject resObj){
+        JSONObject resData = resObj.getJSONObject("data");
+        if(resData == null){
+            Toast.makeText(getActivity(), "未查询到器材信息", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Log.d(TAG, resObj.getString("data"));
+        //跳转详情
+        intoDetail(resData.getString("sEquip_ID"));
+    }
 
     private void searchData(String keywords){
         ThreadUtils.execute(new Runnable() {

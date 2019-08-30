@@ -35,6 +35,7 @@ import com.jian.system.entity.Nfc;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
 import com.jian.system.gesture.util.GestureUtils;
+import com.jian.system.nfc.NfcActivity;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
@@ -87,6 +88,7 @@ public class EquipAddFragment extends QMUIFragment {
     private QMUICommonListItemView equipStore;
 
     private final int MsgType_Add = 0;
+    private final int MsgType_Nfc_Add = 1;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -234,6 +236,12 @@ public class EquipAddFragment extends QMUIFragment {
                     EditText editTextNo = equipNo.getAccessoryContainerView().findViewById(R.id.item_edit_text);
                     editTextNo.setText(str);
                     break;
+                case Application.Nfc_Add_Request_Code:
+                    String result = data.getStringExtra(NfcActivity.NFC_RESULT);
+                    Log.d("onActivityResult", result);
+                    //查询NFC
+                    nfcFindAndAdd(result);
+                    break;
             }
         }
     }
@@ -242,7 +250,9 @@ public class EquipAddFragment extends QMUIFragment {
      * NFC扫描
      */
     private void scanNFC() {
-
+        Intent intent = new Intent(getActivity(), NfcActivity.class);
+        intent.putExtra(NfcActivity.NFC_TYPE, NfcActivity.NFC_TYPE_ADD);
+        startActivityForResult(intent, Application.Nfc_Add_Request_Code);
     }
 
     private View.OnClickListener mOnClickListenerGroup = new View.OnClickListener() {
@@ -382,12 +392,21 @@ public class EquipAddFragment extends QMUIFragment {
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
+            //处理结果
             hideTips();
-            JSONObject resData = (JSONObject) msg.obj;
+            String str =  (String) msg.obj;
+            if(Utils.isNullOrEmpty(str)){
+                showToast("网络异常，请检查网络。");
+                return;
+            }
+            JSONObject resData = JSONObject.parseObject(str);
             //处理数据
             switch (msg.what){
                 case MsgType_Add:
                     handleAdd(resData);
+                    break;
+                case MsgType_Nfc_Add:
+                    handleNFC(resData);
                     break;
             }
         }
@@ -437,14 +456,8 @@ public class EquipAddFragment extends QMUIFragment {
             public void run() {
                 Map<String, Object> params = JSONObject.parseObject(JSONObject.toJSONString(equip), new TypeReference<Map<String, Object>>(){});
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipAddUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_Add);
-                message.obj = resObj;
+                message.obj = res;
                 mHandler.sendMessage(message);
             }
         });
@@ -458,4 +471,30 @@ public class EquipAddFragment extends QMUIFragment {
         popBackStack();
     }
 
+    private void nfcFindAndAdd(String sNfc_NO){
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<>();
+                params.put("sNfc_NO", sNfc_NO);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.nfcFindAndAddUrl, params);
+                Message msg = mHandler.obtainMessage();
+                msg.what = MsgType_Nfc_Add;
+                msg.obj = res;
+                mHandler.sendMessage(msg);
+            }
+        });
+    }
+
+    private void handleNFC(JSONObject resObj){
+        JSONObject resData = resObj.getJSONObject("data");
+        if(resData == null){
+            Toast.makeText(getActivity(), "NFC标签已被使用，请重新选择。", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Log.d(TAG, resObj.getString("data"));
+        //填入NO
+        equipNfc.setDetailText(resData.getString("sNfc_Name"));
+        equip.setsEquip_NfcID(resData.getString("sNfc_ID"));
+    }
 }
