@@ -16,6 +16,14 @@ public class Equip {
 	private String sEquip_NfcID;
 	private String sEquip_AidID;
 	private Date dEquip_CreateDate;
+	private String sEquip_Icon;
+	private String sEquip_Manufacturer;
+	private String sEquip_MModel;
+	private Date dEquip_ArrivalDate;
+	private Date dEquip_UseDate;
+	private Date dEquip_StoreDate;
+	private String sEquip_MBrand;
+	private Date dEquip_DumpDate;
 	
 	
 	public String getsEquip_ID() {
@@ -90,5 +98,52 @@ public class Equip {
 	public void setsEquip_Status(String sEquip_Status) {
 		this.sEquip_Status = sEquip_Status;
 	}
-	
+	public String getsEquip_Icon() {
+		return sEquip_Icon;
+	}
+	public void setsEquip_Icon(String sEquip_Icon) {
+		this.sEquip_Icon = sEquip_Icon;
+	}
+	public String getsEquip_Manufacturer() {
+		return sEquip_Manufacturer;
+	}
+	public void setsEquip_Manufacturer(String sEquip_Manufacturer) {
+		this.sEquip_Manufacturer = sEquip_Manufacturer;
+	}
+	public String getsEquip_MModel() {
+		return sEquip_MModel;
+	}
+	public void setsEquip_MModel(String sEquip_MModel) {
+		this.sEquip_MModel = sEquip_MModel;
+	}
+	public Date getdEquip_ArrivalDate() {
+		return dEquip_ArrivalDate;
+	}
+	public void setdEquip_ArrivalDate(Date dEquip_ArrivalDate) {
+		this.dEquip_ArrivalDate = dEquip_ArrivalDate;
+	}
+	public Date getdEquip_UseDate() {
+		return dEquip_UseDate;
+	}
+	public void setdEquip_UseDate(Date dEquip_UseDate) {
+		this.dEquip_UseDate = dEquip_UseDate;
+	}
+	public Date getdEquip_StoreDate() {
+		return dEquip_StoreDate;
+	}
+	public void setdEquip_StoreDate(Date dEquip_StoreDate) {
+		this.dEquip_StoreDate = dEquip_StoreDate;
+	}
+	public String getsEquip_MBrand() {
+		return sEquip_MBrand;
+	}
+	public void setsEquip_MBrand(String sEquip_MBrand) {
+		this.sEquip_MBrand = sEquip_MBrand;
+	}
+	public Date getdEquip_DumpDate() {
+		return dEquip_DumpDate;
+	}
+	public void setdEquip_DumpDate(Date dEquip_DumpDate) {
+		this.dEquip_DumpDate = dEquip_DumpDate;
+	}
 }

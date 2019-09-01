@@ -37,9 +37,13 @@ import com.jian.system.entity.StoreType;
 import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.nfc.NfcActivity;
 import com.jian.system.utils.DataUtils;
+import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
+import com.jzxiang.pickerview.TimePickerDialog;
+import com.jzxiang.pickerview.data.Type;
+import com.jzxiang.pickerview.listener.OnDateSetListener;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIResHelper;
@@ -53,6 +57,7 @@ import com.sonnyjack.permission.IRequestPermissionCallBack;
 import com.sonnyjack.permission.PermissionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +91,10 @@ public class EquipAddFragment extends QMUIFragment {
     private QMUICommonListItemView equipType;
     private QMUICommonListItemView equipNfc;
     private QMUICommonListItemView equipStore;
+    private QMUICommonListItemView equipManufacturer;
+    private QMUICommonListItemView equipMMode;
+    private QMUICommonListItemView equipMBrand;
+    private QMUICommonListItemView equipArrivalDate;
 
     private final int MsgType_Add = 0;
     private final int MsgType_Nfc_Add = 1;
@@ -190,6 +199,64 @@ public class EquipAddFragment extends QMUIFragment {
         equipStore.setDetailText("--请选择仓库--");
         equipStore.setTag(5);
 
+        equipManufacturer = mGroupListView.createItemView("生产厂家");
+        equipManufacturer.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        equipManufacturer.setDetailText("--请选择--");
+        equipManufacturer.setImageDrawable(getResources().getDrawable(R.mipmap.ic_required));
+        equipManufacturer.setTag(6);
+
+        equipMMode = mGroupListView.createItemView("厂方型号");
+        equipMMode.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
+        equipMMode.addAccessoryCustomView(newEditText());
+        equipMMode.setImageDrawable(getResources().getDrawable(R.mipmap.ic_required));
+        equipMMode.setTag(7);
+
+        equipMBrand = mGroupListView.createItemView("品牌");
+        equipMBrand.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
+        equipMBrand.addAccessoryCustomView(newEditText());
+        equipMBrand.setImageDrawable(getResources().getDrawable(R.mipmap.ic_required));
+        equipMBrand.setTag(8);
+
+        equipArrivalDate = mGroupListView.createItemView("到货日期");
+        equipArrivalDate.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        equipArrivalDate.setDetailText("--请选择--");
+        equipArrivalDate.setTag(9);
+        equipArrivalDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimePickerDialog mDialogTime = new TimePickerDialog.Builder()
+                        .setCallBack(new OnDateSetListener() {
+                            @Override
+                            public void onDateSet(TimePickerDialog timePickerView, long millseconds) {
+                                Date date = new Date(millseconds);
+                                String str = FormatUtils.formatDate("yyyy-MM-dd", date);
+                                Date temp = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", str + " 00:00:00");
+                                equipArrivalDate.setDetailText(str);
+                                equip.setdEquip_ArrivalDate(temp);
+                            }
+                        })
+                        .setCancelStringId("取消")
+                        .setSureStringId("确定")
+                        .setTitleStringId("选择日期")
+                        .setYearText("年")
+                        .setMonthText("月")
+                        .setDayText("日")
+                        .setHourText("时")
+                        .setMinuteText("分")
+                        .setCyclic(false)
+                        //.setMinMillseconds(System.currentTimeMillis())
+                        //.setMaxMillseconds(System.currentTimeMillis() + tenYears)
+                        .setCurrentMillseconds(System.currentTimeMillis())
+                        .setThemeColor(getResources().getColor(R.color.app_color_blue))
+                        .setType(Type.YEAR_MONTH_DAY)
+                        .setWheelItemTextNormalColor(getResources().getColor(R.color.timetimepicker_default_text_color))
+                        .setWheelItemTextSelectorColor(getResources().getColor(R.color.timepicker_toolbar_bg))
+                        .setWheelItemTextSize(12)
+                        .build();
+                mDialogTime.show(getFragmentManager(), "arrivalDate");
+            }
+        });
+
         QMUIGroupListView.newSection(getContext())
                 .setTitle("基础信息")
                 .addItemView(equipNo, null)
@@ -197,10 +264,25 @@ public class EquipAddFragment extends QMUIFragment {
                 .addItemView(equipType, mOnClickListenerGroup)
                 .addItemView(equipNfc, mOnClickListenerGroup)
                 .addItemView(equipStore, mOnClickListenerGroup)
+                .addItemView(equipManufacturer, mOnClickListenerGroup)
+                .addItemView(equipMMode, null)
+                .addItemView(equipMBrand, null)
+                .addItemView(equipArrivalDate, null)
                 .addTo(mGroupListView);
 
     }
 
+    private EditText newEditText(){
+        EditText editText = new EditText(getContext());
+        editText.setLayoutParams(new ViewGroup.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        editText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 260));
+        editText.setBackgroundDrawable(null);
+        editText.setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_gray_5));
+        editText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ));
+        editText.setSingleLine();
+        editText.setHint("--请输入--");
+        return editText;
+    }
 
     /**
      * 扫描二维码（先请求权限，用第三方库）
@@ -274,6 +356,15 @@ public class EquipAddFragment extends QMUIFragment {
                                     viewList.getDetailTextView().setText(typeNames[which]);
                                     equip.setsEquip_Type(equipTypeData.get(which).getsDict_NO());
                                     dialog.dismiss();
+                                    //
+                                    Log.e(TAG, mGroupListView.getSection(0).toString());
+                                    //mGroupListView.getSection(0).setTitle("dddddddddd");
+                                    //mGroupListView.getSection(0).addItemView(equipManufacturer, null);
+                                    /*mGroupListView.getSection(0)
+                                            .addItemView(equipManufacturer, null)
+                                            .addTo(mGroupListView);*/
+
+                                    equipStore.setVisibility(View.VISIBLE);
                                 }
                             })
                             .create(mCurrentDialogStyle).show();

@@ -27,7 +27,7 @@ public class NfcActivity extends BaseNfcActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.layout_main);
+        setContentView(R.layout.activity_nfc_read);
 
         Bundle bundle = getIntent().getExtras();
         nfcType = bundle.getString(NFC_TYPE);
