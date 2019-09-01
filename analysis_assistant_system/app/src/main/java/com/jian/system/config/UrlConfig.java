@@ -2,7 +2,7 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.43.20:8065";
+    public static String baseUrl = "http://192.168.1.18:8065";
 //    public static String baseUrl = "http://gztest.yunh.xyz:8085";
 
     //系统
