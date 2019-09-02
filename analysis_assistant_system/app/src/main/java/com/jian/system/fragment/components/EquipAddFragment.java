@@ -82,6 +82,7 @@ public class EquipAddFragment extends QMUIFragment {
     private Equip equip = new Equip();
     private List<Dict> equipTypeData = new ArrayList<>();
     private List<Dict> equipStatusData = new ArrayList<>();
+    private List<Dict> equipManufacturerData = new ArrayList<>();
     private List<StoreType> storeTypeData = new ArrayList<>();
     private List<Store> storeData = new ArrayList<>();
     private List<Nfc> nfcUnusedData = new ArrayList<>();
@@ -96,29 +97,29 @@ public class EquipAddFragment extends QMUIFragment {
     private QMUICommonListItemView equipMBrand;
     private QMUICommonListItemView equipArrivalDate;
     //Ais
-    private List<Dict> equipAisMMSIXOptios = new ArrayList<>();
+    private List<Dict> equipAisMMSIXOptions = new ArrayList<>();
     private QMUICommonListItemView equipAisMMSIX;
     //Radar
-    private List<Dict> equipRadarNOOptios = new ArrayList<>();
-    private List<Dict> equipRadarBandOptios = new ArrayList<>();
+    private List<Dict> equipRadarNOOptions = new ArrayList<>();
+    private List<Dict> equipRadarBandOptions = new ArrayList<>();
     private QMUICommonListItemView equipRadarNO;
     private QMUICommonListItemView equipRadarBand;
     //Telemetry
-    private List<Dict> equipTelemetryModeOptios = new ArrayList<>();
+    private List<Dict> equipTelemetryModeOptions = new ArrayList<>();
     private QMUICommonListItemView equipTelemetryNO;
     private QMUICommonListItemView equipTelemetrySIM;
     private QMUICommonListItemView equipTelemetryMode;
     private QMUICommonListItemView equipTelemetryVolt;
     private QMUICommonListItemView equipTelemetryWatt;
     //Battery
-    private List<Dict> equipBatteryTypeOptios = new ArrayList<>();
+    private List<Dict> equipBatteryTypeOptions = new ArrayList<>();
     private QMUICommonListItemView equipBatteryNO;
     private QMUICommonListItemView equipBatteryType;
     private QMUICommonListItemView equipBatteryVolt;
     private QMUICommonListItemView equipBatteryWatt;
     private QMUICommonListItemView equipBatteryConnect;
     //SolarEnergy
-    private List<Dict> equipSolarTypeOptios = new ArrayList<>();
+    private List<Dict> equipSolarTypeOptions = new ArrayList<>();
     private QMUICommonListItemView equipSolarNO;
     private QMUICommonListItemView equipSolarType;
     private QMUICommonListItemView equipSolarVolt;
@@ -129,8 +130,9 @@ public class EquipAddFragment extends QMUIFragment {
     //ViceLamp
     private QMUICommonListItemView equipVLampWatt;
     //Lamp
-    private List<Dict> equipLampTypeOptios = new ArrayList<>();
-    private List<Dict> equipLampLensOptios = new ArrayList<>();
+    private List<Dict> equipLampTypeOptions = new ArrayList<>();
+    private List<Dict> equipLampLensOptions = new ArrayList<>();
+    private List<Dict> equipLampTelemetryOptions = new ArrayList<>();
     private QMUICommonListItemView equipLampNO;
     private QMUICommonListItemView equipLampType;
     private QMUICommonListItemView equipLampLens;
@@ -204,7 +206,7 @@ public class EquipAddFragment extends QMUIFragment {
         equipNoImage.setImageDrawable(equipNoDrawable);
         equipNo.addAccessoryCustomView(equipNoLayout);
         equipNo.setImageDrawable(getResources().getDrawable(R.mipmap.ic_required));
-        equipNo.setTag(1);
+        equipNo.setTag("equipNo");
         equipNoImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -223,13 +225,13 @@ public class EquipAddFragment extends QMUIFragment {
         equipNameEditText.setSingleLine();
         equipNameEditText.setHint("--请输入名称--");
         equipName.addAccessoryCustomView(equipNameEditText);
-        equipName.setTag(2);
+        equipName.setTag("equipName");
 
         equipType = mGroupListView.createItemView("器材类型");
         equipType.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipType.setDetailText("--请选择类型--");
         equipType.setImageDrawable(getResources().getDrawable(R.mipmap.ic_required));
-        equipType.setTag(3);
+        equipType.setTag("equipType");
 
         equipNfc = mGroupListView.createItemView("NFC标签ID");
         equipNfc.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
@@ -239,7 +241,7 @@ public class EquipAddFragment extends QMUIFragment {
         equipNfcDrawable.setTint(ContextCompat.getColor(getActivity(), R.color.app_color_blue));
         equipNfcImage.setImageDrawable(equipNfcDrawable);
         equipNfc.addAccessoryCustomView(equipNfcImage);
-        equipNfc.setTag(4);
+        equipNfc.setTag("equipNfc");
         equipNfcImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -250,12 +252,12 @@ public class EquipAddFragment extends QMUIFragment {
         equipStore = mGroupListView.createItemView("仓库");
         equipStore.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipStore.setDetailText("--请选择仓库--");
-        equipStore.setTag(5);
+        equipStore.setTag("equipStore");
 
         equipManufacturer = mGroupListView.createItemView("生产厂家");
         equipManufacturer.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipManufacturer.setDetailText("--请选择--");
-        equipManufacturer.setTag(6);
+        equipManufacturer.setTag("equipManufacturer");
 
         equipMMode = mGroupListView.createItemView("厂方型号");
         equipMMode.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
@@ -489,12 +491,42 @@ public class EquipAddFragment extends QMUIFragment {
                 .addItemView(equipMMode, null)
                 .addItemView(equipMBrand, null)
                 .addItemView(equipArrivalDate, null)
-
+                //ais
                 .addItemView(equipAisMMSIX, null)
-
+                //radar
                 .addItemView(equipRadarNO, null)
                 .addItemView(equipRadarBand, null)
-                
+                //Telemetry
+                .addItemView(equipTelemetryNO, null)
+                .addItemView(equipTelemetrySIM, null)
+                .addItemView(equipTelemetryMode, null)
+                .addItemView(equipTelemetryVolt, null)
+                .addItemView(equipTelemetryWatt, null)
+                //Battery
+                .addItemView(equipBatteryNO, null)
+                .addItemView(equipBatteryType, null)
+                .addItemView(equipBatteryVolt, null)
+                .addItemView(equipBatteryWatt, null)
+                .addItemView(equipBatteryConnect, null)
+                //SolarEnergy
+                .addItemView(equipSolarNO, null)
+                .addItemView(equipSolarType, null)
+                .addItemView(equipSolarVolt, null)
+                .addItemView(equipSolarWatt, null)
+                .addItemView(equipSolarConnect, null)
+                //SpareLamp
+                .addItemView(equipSLampWatt, null)
+                //SolarEnergy
+                .addItemView(equipVLampWatt, null)
+                //Lamp
+                .addItemView(equipLampNO, null)
+                .addItemView(equipLampType, null)
+                .addItemView(equipLampLens, null)
+                .addItemView(equipLampInputVolt, null)
+                .addItemView(equipLampWatt, null)
+                .addItemView(equipLampTelemetryFlag, null)
+                .addItemView(equipLampTelemetry, null)
+
                 .addTo(mGroupListView);
 
     }
@@ -572,8 +604,8 @@ public class EquipAddFragment extends QMUIFragment {
             public void onClick(View view) {
                 QMUICommonListItemView viewList = (QMUICommonListItemView) view;
                 Log.d(TAG, "选项：" + viewList.getText().toString() + " 点击了");
-                switch ((int) viewList.getTag()) {
-                    case 3: //type
+                switch ((String) viewList.getTag()) {
+                    case "equipType": //type
                         String[] typeNames = new String[equipTypeData.size()];
                         for (int i = 0; i < equipTypeData.size(); i++) {
                             typeNames[i] = equipTypeData.get(i).getsDict_Name();
@@ -627,13 +659,17 @@ public class EquipAddFragment extends QMUIFragment {
                                         //显示
                                         switch (type.getsDict_NO()){
                                             case EquipType_AIS:
+                                                DataUtils.getDictData(Constant.equipAisMMSIXDict, equipAisMMSIXOptions);
                                                 equipAisMMSIX.setVisibility(View.VISIBLE);
                                                 break;
                                             case EquipType_Radar:
+                                                DataUtils.getDictData(Constant.equipRadarNODict, equipRadarNOOptions);
+                                                DataUtils.getDictData(Constant.equipRadarBandDict, equipRadarBandOptions);
                                                 equipRadarNO.setVisibility(View.VISIBLE);
                                                 equipRadarBand.setVisibility(View.VISIBLE);
                                                 break;
                                             case EquipType_Telemetry:
+                                                DataUtils.getDictData(Constant.equipTelemetryModeDict, equipTelemetryModeOptions);
                                                 equipTelemetryNO.setVisibility(View.VISIBLE);
                                                 equipTelemetrySIM.setVisibility(View.VISIBLE);
                                                 equipTelemetryMode.setVisibility(View.VISIBLE);
@@ -641,6 +677,7 @@ public class EquipAddFragment extends QMUIFragment {
                                                 equipTelemetryWatt.setVisibility(View.VISIBLE);
                                                 break;
                                             case EquipType_Battery:
+                                                DataUtils.getDictData(Constant.equipBatteryTypeDict, equipBatteryTypeOptions);
                                                 equipBatteryNO.setVisibility(View.VISIBLE);
                                                 equipBatteryType.setVisibility(View.VISIBLE);
                                                 equipBatteryVolt.setVisibility(View.VISIBLE);
@@ -648,6 +685,7 @@ public class EquipAddFragment extends QMUIFragment {
                                                 equipBatteryConnect.setVisibility(View.VISIBLE);
                                                 break;
                                             case EquipType_SolarEnergy:
+                                                DataUtils.getDictData(Constant.equipSolarTypeDict, equipSolarTypeOptions);
                                                 equipSolarNO.setVisibility(View.VISIBLE);
                                                 equipSolarType.setVisibility(View.VISIBLE);
                                                 equipSolarVolt.setVisibility(View.VISIBLE);
@@ -661,6 +699,9 @@ public class EquipAddFragment extends QMUIFragment {
                                                 equipVLampWatt.setVisibility(View.VISIBLE);
                                                 break;
                                             case EquipType_Lamp:
+                                                DataUtils.getDictData(Constant.equipLampTypeDict, equipLampTypeOptions);
+                                                DataUtils.getDictData(Constant.equipLampLensDict, equipLampLensOptions);
+                                                DataUtils.getDictData(Constant.equipLampTelemetryDict, equipLampTelemetryOptions);
                                                 equipLampNO.setVisibility(View.VISIBLE);
                                                 equipLampType.setVisibility(View.VISIBLE);
                                                 equipLampLens.setVisibility(View.VISIBLE);
@@ -674,10 +715,10 @@ public class EquipAddFragment extends QMUIFragment {
                                 })
                                 .create(mCurrentDialogStyle).show();
                         break;
-                    case 4: //nfc标签
-                        String[] nfcNames = new String[nfcUnusedData.size()];
-                        for (int i = 0; i < nfcUnusedData.size(); i++) {
-                            nfcNames[i] = nfcUnusedData.get(i).getsNfc_Name();
+                    case "equipNfc": //nfc标签
+                        String[] nfcNames = new String[equipManufacturerData.size()];
+                        for (int i = 0; i < equipManufacturerData.size(); i++) {
+                            nfcNames[i] = equipManufacturerData.get(i).getsDict_Name();
                         }
                         new QMUIDialog.CheckableDialogBuilder(getActivity())
                                 .setTitle("请选择")
@@ -691,7 +732,7 @@ public class EquipAddFragment extends QMUIFragment {
                                 })
                                 .create(mCurrentDialogStyle).show();
                         break;
-                    case 5: //仓库
+                    case "equipStore": //仓库
                         Selector selector = new Selector(getActivity(), 4);
                         selector.setDataProvider(new DataProvider() {
                             @Override
@@ -783,6 +824,23 @@ public class EquipAddFragment extends QMUIFragment {
                         selectorDialog.init(getActivity(), selector);
                         selectorDialog.show();
                         break;
+                    case "equipManufacturer":
+                        String[] mNames = new String[equipManufacturerData.size()];
+                        for (int i = 0; i < equipManufacturerData.size(); i++) {
+                            mNames[i] = equipManufacturerData.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(mNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(mNames[which]);
+                                        equip.setsEquip_Manufacturer(equipManufacturerData.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
                 }
             }
         };
@@ -823,6 +881,8 @@ public class EquipAddFragment extends QMUIFragment {
         DataUtils.getDictData(Constant.equipTypeDict, equipTypeData);
         //查询器材状态
         DataUtils.getDictData(Constant.equipStatusDict, equipStatusData);
+        //查询器材厂家
+        DataUtils.getDictData(Constant.equipManufacturerDict, equipManufacturerData);
         //查询仓库
         DataUtils.getStoreTypeData(storeTypeData);
         DataUtils.getStoreData(storeData);

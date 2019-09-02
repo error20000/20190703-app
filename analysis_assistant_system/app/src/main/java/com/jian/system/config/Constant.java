@@ -12,6 +12,16 @@ public class Constant {
     //器材数据字典
     public static String equipTypeDict = "EquipType";
     public static String equipStatusDict = "EquipStatus";
+    public static String equipManufacturerDict = "EquipManufacturer";
+    public static String equipAisMMSIXDict = "EquipAisMMSIX";
+    public static String equipRadarNODict = "EquipRadarNO";
+    public static String equipRadarBandDict = "EquipRadarBand";
+    public static String equipTelemetryModeDict = "EquipTelemetryMode";
+    public static String equipBatteryTypeDict = "EquipBatteryType";
+    public static String equipSolarTypeDict = "EquipSolarEnergyType";
+    public static String equipLampTypeDict = "EquipLampType";
+    public static String equipLampLensDict = "EquipLampLens";
+    public static String equipLampTelemetryDict = "EquipLampTelemetry";
 
     //消息数据字典
     public static String msgTypeDict = "MsgType";
