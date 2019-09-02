@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_main"
+<com.qmuiteam.qmui.widget.QMUIWindowInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#FFFFFF">
+    android:id="@+id/nfc_container">
 
     <TextView
         android:id="@+id/textView"
-        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="请将NFC标签或者贴纸靠近手机背面"/>
+        android:layout_marginTop="?attr/qmui_topbar_height"
+        android:gravity="center"
+        android:text="请将NFC标签或者贴纸靠近手机背面" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@id/textView"
-        android:src="@mipmap/nfc_read"/>
+        android:src="@mipmap/nfc_read" />
 
-</RelativeLayout>
+</com.qmuiteam.qmui.widget.QMUIWindowInsetLayout>

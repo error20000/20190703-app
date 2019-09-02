@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -80,6 +81,7 @@ public class EquipAddFragment extends QMUIFragment {
     private QMUITipDialog tipDialog;
     private BottomDialog selectorDialog;
     private Equip equip = new Equip();
+    private Map<String, Object> equipInfo = new HashMap<>();
     private List<Dict> equipTypeData = new ArrayList<>();
     private List<Dict> equipStatusData = new ArrayList<>();
     private List<Dict> equipManufacturerData = new ArrayList<>();
@@ -262,17 +264,17 @@ public class EquipAddFragment extends QMUIFragment {
         equipMMode = mGroupListView.createItemView("厂方型号");
         equipMMode.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipMMode.addAccessoryCustomView(newEditText());
-        equipMMode.setTag(7);
+        equipMMode.setTag("equipMMode");
 
         equipMBrand = mGroupListView.createItemView("品牌");
         equipMBrand.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipMBrand.addAccessoryCustomView(newEditText());
-        equipMBrand.setTag(8);
+        equipMBrand.setTag("equipMBrand");
 
         equipArrivalDate = mGroupListView.createItemView("到货日期");
         equipArrivalDate.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipArrivalDate.setDetailText("--请选择--");
-        equipArrivalDate.setTag(9);
+        equipArrivalDate.setTag("equipArrivalDate");
         equipArrivalDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -313,170 +315,181 @@ public class EquipAddFragment extends QMUIFragment {
         equipAisMMSIX = mGroupListView.createItemView("MMSIX号");
         equipAisMMSIX.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipAisMMSIX.setDetailText("--请选择--");
-        equipAisMMSIX.setTag(10);
+        equipAisMMSIX.setTag("equipAisMMSIX");
         equipAisMMSIX.setVisibility(View.GONE);
 
         // ------------------------------------------------------------------------------ Radar
         equipRadarNO = mGroupListView.createItemView("雷达应答器编码");
         equipRadarNO.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipRadarNO.setDetailText("--请选择--");
-        equipRadarNO.setTag(11);
+        equipRadarNO.setTag("equipRadarNO");
         equipRadarNO.setVisibility(View.GONE);
 
         equipRadarBand = mGroupListView.createItemView("雷达应答器波段");
         equipRadarBand.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipRadarBand.setDetailText("--请选择--");
-        equipRadarBand.setTag(12);
+        equipRadarBand.setTag("equipRadarBand");
         equipRadarBand.setVisibility(View.GONE);
 
         // ------------------------------------------------------------------------------ Telemetry
         equipTelemetryNO = mGroupListView.createItemView("遥控遥测编码");
         equipTelemetryNO.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipTelemetryNO.addAccessoryCustomView(newEditText());
-        equipTelemetryNO.setTag(13);
+        equipTelemetryNO.setTag("equipTelemetryNO");
         equipTelemetryNO.setVisibility(View.GONE);
 
         equipTelemetrySIM = mGroupListView.createItemView("SIM(MMIS)卡号");
         equipTelemetrySIM.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipTelemetrySIM.addAccessoryCustomView(newEditText());
-        equipTelemetrySIM.setTag(14);
+        equipTelemetrySIM.setTag("equipTelemetrySIM");
         equipTelemetrySIM.setVisibility(View.GONE);
 
         equipTelemetryMode = mGroupListView.createItemView("遥控遥测方式");
         equipTelemetryMode.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipTelemetryMode.setDetailText("--请选择--");
-        equipTelemetryMode.setTag(15);
+        equipTelemetryMode.setTag("equipTelemetryMode");
         equipTelemetryMode.setVisibility(View.GONE);
 
         equipTelemetryVolt = mGroupListView.createItemView("电压（V）");
         equipTelemetryVolt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipTelemetryVolt.addAccessoryCustomView(newEditText());
-        equipTelemetryVolt.setTag(16);
+        equipTelemetryVolt.setTag("equipTelemetryVolt");
         equipTelemetryVolt.setVisibility(View.GONE);
 
         equipTelemetryWatt = mGroupListView.createItemView("功率（W）");
         equipTelemetryWatt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipTelemetryWatt.addAccessoryCustomView(newEditText());
-        equipTelemetryWatt.setTag(17);
+        equipTelemetryWatt.setTag("equipTelemetryWatt");
         equipTelemetryWatt.setVisibility(View.GONE);
 
         // ------------------------------------------------------------------------------ Battery
         equipBatteryNO = mGroupListView.createItemView("编码");
         equipBatteryNO.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipBatteryNO.addAccessoryCustomView(newEditText());
-        equipBatteryNO.setTag(18);
+        equipBatteryNO.setTag("equipBatteryNO");
         equipBatteryNO.setVisibility(View.GONE);
 
         equipBatteryType = mGroupListView.createItemView("种类");
         equipBatteryType.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipBatteryType.setDetailText("--请选择--");
-        equipBatteryType.setTag(19);
+        equipBatteryType.setTag("equipBatteryType");
         equipBatteryType.setVisibility(View.GONE);
 
         equipBatteryVolt = mGroupListView.createItemView("工作电压（V）");
         equipBatteryVolt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipBatteryVolt.addAccessoryCustomView(newEditText());
-        equipBatteryVolt.setTag(20);
+        equipBatteryVolt.setTag("equipBatteryVolt");
         equipBatteryVolt.setVisibility(View.GONE);
 
         equipBatteryWatt = mGroupListView.createItemView("容量（W）");
         equipBatteryWatt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipBatteryWatt.addAccessoryCustomView(newEditText());
-        equipBatteryWatt.setTag(21);
+        equipBatteryWatt.setTag("equipBatteryWatt");
         equipBatteryWatt.setVisibility(View.GONE);
 
         equipBatteryConnect = mGroupListView.createItemView("连接方式");
         equipBatteryConnect.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipBatteryConnect.addAccessoryCustomView(newEditText());
-        equipBatteryConnect.setTag(22);
+        equipBatteryConnect.setTag("equipBatteryConnect");
         equipBatteryConnect.setVisibility(View.GONE);
 
         // ------------------------------------------------------------------------------ Solar
         equipSolarNO = mGroupListView.createItemView("编码");
         equipSolarNO.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipSolarNO.addAccessoryCustomView(newEditText());
-        equipSolarNO.setTag(23);
+        equipSolarNO.setTag("equipSolarNO");
         equipSolarNO.setVisibility(View.GONE);
 
         equipSolarType = mGroupListView.createItemView("种类");
         equipSolarType.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipSolarType.setDetailText("--请选择--");
-        equipSolarType.setTag(24);
+        equipSolarType.setTag("equipSolarType");
         equipSolarType.setVisibility(View.GONE);
 
         equipSolarVolt = mGroupListView.createItemView("额定电压（V）");
         equipSolarVolt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipSolarVolt.addAccessoryCustomView(newEditText());
-        equipSolarVolt.setTag(25);
+        equipSolarVolt.setTag("equipSolarVolt");
         equipSolarVolt.setVisibility(View.GONE);
 
         equipSolarWatt = mGroupListView.createItemView("功率（W）");
         equipSolarWatt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipSolarWatt.addAccessoryCustomView(newEditText());
-        equipSolarWatt.setTag(26);
+        equipSolarWatt.setTag("equipSolarWatt");
         equipSolarWatt.setVisibility(View.GONE);
 
         equipSolarConnect = mGroupListView.createItemView("连接方式");
         equipSolarConnect.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipSolarConnect.addAccessoryCustomView(newEditText());
-        equipSolarConnect.setTag(27);
+        equipSolarConnect.setTag("equipSolarConnect");
         equipSolarConnect.setVisibility(View.GONE);
 
         // ------------------------------------------------------------------------------ SpareLamp
         equipSLampWatt = mGroupListView.createItemView("功率（W）");
-        equipSLampWatt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        equipSLampWatt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipSLampWatt.addAccessoryCustomView(newEditText());
-        equipSLampWatt.setTag(28);
+        equipSLampWatt.setTag("equipSLampWatt");
         equipSLampWatt.setVisibility(View.GONE);
 
         // ------------------------------------------------------------------------------ ViceLamp
         equipVLampWatt = mGroupListView.createItemView("功率（W）");
-        equipVLampWatt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        equipVLampWatt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipVLampWatt.addAccessoryCustomView(newEditText());
-        equipVLampWatt.setTag(29);
+        equipVLampWatt.setTag("equipVLampWatt");
         equipVLampWatt.setVisibility(View.GONE);
 
         // ------------------------------------------------------------------------------ Lamp
         equipLampNO = mGroupListView.createItemView("编码");
         equipLampNO.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipLampNO.addAccessoryCustomView(newEditText());
-        equipLampNO.setTag(30);
+        equipLampNO.setTag("equipLampNO");
         equipLampNO.setVisibility(View.GONE);
 
         equipLampType = mGroupListView.createItemView("类型");
         equipLampType.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipLampType.setDetailText("--请选择--");
-        equipLampType.setTag(31);
+        equipLampType.setTag("equipLampType");
         equipLampType.setVisibility(View.GONE);
 
         equipLampLens = mGroupListView.createItemView("透镜形状");
         equipLampLens.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         equipLampLens.setDetailText("--请选择--");
-        equipLampLens.setTag(32);
+        equipLampLens.setTag("equipLampLens");
         equipLampLens.setVisibility(View.GONE);
 
         equipLampInputVolt = mGroupListView.createItemView("输入电压（V）");
         equipLampInputVolt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipLampInputVolt.addAccessoryCustomView(newEditText());
-        equipLampInputVolt.setTag(33);
+        equipLampInputVolt.setTag("equipLampInputVolt");
         equipLampInputVolt.setVisibility(View.GONE);
 
         equipLampWatt = mGroupListView.createItemView("功率（W）");
         equipLampWatt.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         equipLampWatt.addAccessoryCustomView(newEditText());
-        equipLampWatt.setTag(34);
+        equipLampWatt.setTag("equipLampWatt");
         equipLampWatt.setVisibility(View.GONE);
 
         equipLampTelemetryFlag = mGroupListView.createItemView("遥测遥控接口");
         equipLampTelemetryFlag.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_SWITCH);
-        equipLampTelemetryFlag.addAccessoryCustomView(newEditText());
-        equipLampTelemetryFlag.setTag(35);
+        equipLampTelemetryFlag.setTag("equipLampTelemetryFlag");
         equipLampTelemetryFlag.setVisibility(View.GONE);
+        equipLampTelemetryFlag.getSwitch().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    equipInfo.put("lLamp_TelemetryFlag", 1);
+                    equipLampTelemetry.setVisibility(View.VISIBLE);
+                }else{
+                    equipInfo.put("lLamp_TelemetryFlag", 0);
+                    equipLampTelemetry.setVisibility(View.GONE);
+                }
+            }
+        });
 
         equipLampTelemetry = mGroupListView.createItemView("遥测接口类型");
-        equipLampTelemetry.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
-        equipLampTelemetry.addAccessoryCustomView(newEditText());
-        equipLampTelemetry.setTag(36);
+        equipLampTelemetry.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        equipLampTelemetry.setDetailText("--请选择--");
+        equipLampTelemetry.setTag("equipLampTelemetry");
         equipLampTelemetry.setVisibility(View.GONE);
 
 
@@ -492,25 +505,25 @@ public class EquipAddFragment extends QMUIFragment {
                 .addItemView(equipMBrand, null)
                 .addItemView(equipArrivalDate, null)
                 //ais
-                .addItemView(equipAisMMSIX, null)
+                .addItemView(equipAisMMSIX, mOnClickListenerGroup)
                 //radar
-                .addItemView(equipRadarNO, null)
-                .addItemView(equipRadarBand, null)
+                .addItemView(equipRadarNO, mOnClickListenerGroup)
+                .addItemView(equipRadarBand, mOnClickListenerGroup)
                 //Telemetry
                 .addItemView(equipTelemetryNO, null)
                 .addItemView(equipTelemetrySIM, null)
-                .addItemView(equipTelemetryMode, null)
+                .addItemView(equipTelemetryMode, mOnClickListenerGroup)
                 .addItemView(equipTelemetryVolt, null)
                 .addItemView(equipTelemetryWatt, null)
                 //Battery
                 .addItemView(equipBatteryNO, null)
-                .addItemView(equipBatteryType, null)
+                .addItemView(equipBatteryType, mOnClickListenerGroup)
                 .addItemView(equipBatteryVolt, null)
                 .addItemView(equipBatteryWatt, null)
                 .addItemView(equipBatteryConnect, null)
                 //SolarEnergy
                 .addItemView(equipSolarNO, null)
-                .addItemView(equipSolarType, null)
+                .addItemView(equipSolarType, mOnClickListenerGroup)
                 .addItemView(equipSolarVolt, null)
                 .addItemView(equipSolarWatt, null)
                 .addItemView(equipSolarConnect, null)
@@ -520,19 +533,22 @@ public class EquipAddFragment extends QMUIFragment {
                 .addItemView(equipVLampWatt, null)
                 //Lamp
                 .addItemView(equipLampNO, null)
-                .addItemView(equipLampType, null)
-                .addItemView(equipLampLens, null)
+                .addItemView(equipLampType, mOnClickListenerGroup)
+                .addItemView(equipLampLens, mOnClickListenerGroup)
                 .addItemView(equipLampInputVolt, null)
                 .addItemView(equipLampWatt, null)
                 .addItemView(equipLampTelemetryFlag, null)
-                .addItemView(equipLampTelemetry, null)
+                .addItemView(equipLampTelemetry, mOnClickListenerGroup)
 
                 .addTo(mGroupListView);
 
     }
 
     private EditText newEditText(){
+//        View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_list_item_edit, null);
+//        EditText editText = view.findViewById(R.id.item_edit_text);
         EditText editText = new EditText(getContext());
+        editText.setId(R.id.item_edit_text);
         editText.setLayoutParams(new ViewGroup.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT));
         editText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 260));
         editText.setBackgroundDrawable(null);
@@ -654,7 +670,7 @@ public class EquipAddFragment extends QMUIFragment {
                                         equipLampInputVolt.setVisibility(View.GONE);
                                         equipLampWatt.setVisibility(View.GONE);
                                         equipLampTelemetryFlag.setVisibility(View.GONE);
-                                        equipLampTelemetry.setVisibility(View.GONE);
+                                        //equipLampTelemetry.setVisibility(View.GONE);
 
                                         //显示
                                         switch (type.getsDict_NO()){
@@ -708,7 +724,7 @@ public class EquipAddFragment extends QMUIFragment {
                                                 equipLampInputVolt.setVisibility(View.VISIBLE);
                                                 equipLampWatt.setVisibility(View.VISIBLE);
                                                 equipLampTelemetryFlag.setVisibility(View.VISIBLE);
-                                                equipLampTelemetry.setVisibility(View.VISIBLE);
+                                                //equipLampTelemetry.setVisibility(View.VISIBLE);
                                                 break;
                                         }
                                     }
@@ -824,7 +840,7 @@ public class EquipAddFragment extends QMUIFragment {
                         selectorDialog.init(getActivity(), selector);
                         selectorDialog.show();
                         break;
-                    case "equipManufacturer":
+                    case "equipManufacturer": //厂家
                         String[] mNames = new String[equipManufacturerData.size()];
                         for (int i = 0; i < equipManufacturerData.size(); i++) {
                             mNames[i] = equipManufacturerData.get(i).getsDict_Name();
@@ -836,6 +852,159 @@ public class EquipAddFragment extends QMUIFragment {
                                     public void onClick(DialogInterface dialog, int which) {
                                         viewList.getDetailTextView().setText(mNames[which]);
                                         equip.setsEquip_Manufacturer(equipManufacturerData.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipAisMMSIX": //mmsix
+                        String[] amNames = new String[equipAisMMSIXOptions.size()];
+                        for (int i = 0; i < equipAisMMSIXOptions.size(); i++) {
+                            amNames[i] = equipAisMMSIXOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(amNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(amNames[which]);
+                                        equipInfo.put("sAis_MMSIX", equipAisMMSIXOptions.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipRadarNO": //Radar NO
+                        String[] rnNames = new String[equipRadarNOOptions.size()];
+                        for (int i = 0; i < equipRadarNOOptions.size(); i++) {
+                            rnNames[i] = equipRadarNOOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(rnNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(rnNames[which]);
+                                        equipInfo.put("sRadar_NO", equipRadarNOOptions.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipRadarBand":
+                        String[] rbNames = new String[equipRadarBandOptions.size()];
+                        for (int i = 0; i < equipRadarBandOptions.size(); i++) {
+                            rbNames[i] = equipRadarBandOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(rbNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(rbNames[which]);
+                                        equipInfo.put("sRadar_Band", equipRadarBandOptions.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipTelemetryMode":
+                        String[] tmNames = new String[equipTelemetryModeOptions.size()];
+                        for (int i = 0; i < equipTelemetryModeOptions.size(); i++) {
+                            tmNames[i] = equipTelemetryModeOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(tmNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(tmNames[which]);
+                                        equipInfo.put("sTelemetry_Mode", equipTelemetryModeOptions.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipBatteryType":
+                        String[] btNames = new String[equipBatteryTypeOptions.size()];
+                        for (int i = 0; i < equipBatteryTypeOptions.size(); i++) {
+                            btNames[i] = equipBatteryTypeOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(btNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(btNames[which]);
+                                        equipInfo.put("sBattery_Type", equipBatteryTypeOptions.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipSolarType":
+                        String[] stNames = new String[equipSolarTypeOptions.size()];
+                        for (int i = 0; i < equipSolarTypeOptions.size(); i++) {
+                            stNames[i] = equipSolarTypeOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(stNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(stNames[which]);
+                                        equipInfo.put("sSolar_Type", equipSolarTypeOptions.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipLampType":
+                        String[] ltNames = new String[equipLampTypeOptions.size()];
+                        for (int i = 0; i < equipLampTypeOptions.size(); i++) {
+                            ltNames[i] = equipLampTypeOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(ltNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(ltNames[which]);
+                                        equipInfo.put("sLamp_Type", equipLampTypeOptions.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipLampLens":
+                        String[] llNames = new String[equipLampLensOptions.size()];
+                        for (int i = 0; i < equipLampLensOptions.size(); i++) {
+                            llNames[i] = equipLampLensOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(llNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(llNames[which]);
+                                        equipInfo.put("sLamp_Lens", equipLampLensOptions.get(which).getsDict_NO());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "equipLampTelemetry":
+                        String[] ltlNames = new String[equipLampTelemetryOptions.size()];
+                        for (int i = 0; i < equipLampTelemetryOptions.size(); i++) {
+                            ltlNames[i] = equipLampTelemetryOptions.get(i).getsDict_Name();
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(ltlNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(ltlNames[which]);
+                                        equipInfo.put("sLamp_Telemetry", equipLampTelemetryOptions.get(which).getsDict_NO());
                                         dialog.dismiss();
                                     }
                                 })
@@ -914,6 +1083,55 @@ public class EquipAddFragment extends QMUIFragment {
             @Override
             public void run() {
                 Map<String, Object> params = JSONObject.parseObject(JSONObject.toJSONString(equip), new TypeReference<Map<String, Object>>(){});
+                params.putAll(equipInfo);
+                //base
+                EditText sEquip_MModel = equipMMode.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sEquip_MModel", sEquip_MModel.getText());
+                EditText sEquip_MBrand = equipMBrand.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sEquip_MBrand", sEquip_MBrand.getText());
+                //Ais
+                //Radar
+                //Telemetry
+                EditText sTelemetry_NO = equipTelemetryNO.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sTelemetry_NO", sTelemetry_NO.getText());
+                EditText sTelemetry_SIM = equipTelemetrySIM.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sTelemetry_SIM", sTelemetry_SIM.getText());
+                EditText lTelemetry_Volt = equipTelemetryVolt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lTelemetry_Volt", lTelemetry_Volt.getText());
+                EditText lTelemetry_Watt = equipTelemetryWatt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lTelemetry_Watt", lTelemetry_Watt.getText());
+                //Battery
+                EditText sBattery_NO = equipBatteryNO.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sBattery_NO", sBattery_NO.getText());
+                EditText lBattery_Volt = equipBatteryVolt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lBattery_Volt", lBattery_Volt.getText());
+                EditText lBattery_Watt = equipBatteryWatt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lBattery_Watt", lBattery_Watt.getText());
+                EditText sBattery_Connect = equipBatteryConnect.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sBattery_Connect", sBattery_Connect.getText());
+                //SolarEnergy
+                EditText sSolar_NO = equipSolarNO.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sSolar_NO", sSolar_NO.getText());
+                EditText lSolar_Volt = equipSolarVolt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lSolar_Volt", lSolar_Volt.getText());
+                EditText lSolar_Watt = equipSolarWatt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lSolar_Watt", lSolar_Watt.getText());
+                EditText sSolar_Connect = equipSolarConnect.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sSolar_Connect", sSolar_Connect.getText());
+                //SpareLamp
+                EditText lSLamp_Watt = equipSLampWatt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lSLamp_Watt", lSLamp_Watt.getText());
+                //ViceLamp
+                EditText lVLamp_Watt = equipVLampWatt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lVLamp_Watt", lVLamp_Watt.getText());
+                //Lamp
+                EditText sLamp_NO = equipLampNO.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("sLamp_NO", sLamp_NO.getText());
+                EditText lLamp_InputVolt = equipLampInputVolt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lLamp_InputVolt", lLamp_InputVolt.getText());
+                EditText lLamp_Watt = equipLampWatt.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                params.put("lLamp_Watt", lLamp_Watt.getText());
+
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipAddUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_Add);
                 message.obj = res;

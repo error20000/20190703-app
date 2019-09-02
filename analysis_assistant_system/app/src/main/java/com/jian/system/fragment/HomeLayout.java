@@ -33,6 +33,7 @@ import com.jian.system.fragment.components.AidListFragment;
 import com.jian.system.fragment.components.EquipListFragment;
 import com.jian.system.fragment.components.MapFragment;
 import com.jian.system.fragment.components.MsgDetailFragment;
+import com.jian.system.fragment.components.NfcFragment;
 import com.jian.system.model.HomeRvItem;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
@@ -114,7 +115,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
         data.add(new HomeRvItem(AidListFragment.class, "航标列表", R.drawable.ic_home_aid));
         data.add(new HomeRvItem(EquipListFragment.class, "器材管理", R.drawable.ic_home_equip));
         data.add(new HomeRvItem(EquipListFragment.class, "器材扫码", R.mipmap.icon_tabbar_component));
-        data.add(new HomeRvItem(EquipListFragment.class, "器材NFC", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(NfcFragment.class, "器材NFC", R.drawable.ic_nfc_foreground));
         data.add(new HomeRvItem(MapFragment.class, "电子地图", R.drawable.ic_map_foreground));
         data.add(new HomeRvItem(EquipListFragment.class, "消息中心", R.mipmap.icon_tabbar_component));
 
@@ -124,8 +125,17 @@ public class HomeLayout extends QMUIWindowInsetLayout{
             public void onItemClick(View itemView, int pos) {
                 HomeRvItem item = mItemAdapter.getItem(pos);
                 try {
-                    QMUIFragment fragment = item.getFragment().newInstance();
-                    startFragment(fragment);
+                    if("NfcFragment".equals(item.getFragment().getSimpleName())){
+                        QMUIFragment fragment = item.getFragment().newInstance();
+                        //startFragment(fragment);
+                        manager.beginTransaction()
+                                .add(R.id.main, fragment, "NfcFragment")
+                                .commit();
+                    }else{
+                        QMUIFragment fragment = item.getFragment().newInstance();
+                        startFragment(fragment);
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

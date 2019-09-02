@@ -87,6 +87,7 @@ public class EquipDetailFragment extends QMUIFragment {
     private final int MsgType_Dump = 108;
 
 
+    private String from;
     private String remarks = "";
     private Equip equip;
     private String sAid_ID = "";
@@ -115,6 +116,9 @@ public class EquipDetailFragment extends QMUIFragment {
         View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_equip_detail, null);
         ButterKnife.bind(this, rootView);
 
+        Bundle bundle = this.getArguments();
+        from =  bundle.getString("from");
+
         initTopBar();
         initData();
 
@@ -125,7 +129,11 @@ public class EquipDetailFragment extends QMUIFragment {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popBackStack();
+                if("nfc".equals(from)){
+                    getFragmentManager().popBackStack();
+                }else{
+                    popBackStack();
+                }
             }
         });
 

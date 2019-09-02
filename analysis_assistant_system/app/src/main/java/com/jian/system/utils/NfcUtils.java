@@ -145,6 +145,9 @@ public class NfcUtils {
      */
     public static String readNFCId(Intent intent) {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        if(tag == null){
+            return "";
+        }
         String id = ByteArrayToHexString(tag.getId());
         return id;
     }
