@@ -26,7 +26,7 @@ public class LauncherActivity extends Activity {
             String nfcId = NfcUtils.readNFCId(getIntent());
             if(!Utils.isNullOrEmpty(nfcId)){
                 Log.e("ffffffffffff", "dddddddddddd");
-                Toast.makeText(this, "ddddddddddddd", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "ddddddddddddd", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, NfcActivity.class);
                 intent.putExtra(NfcActivity.NFC_TYPE, NfcActivity.NFC_TYPE_SCAN);
                 intent.putExtra(NfcActivity.NFC_ID, nfcId);
@@ -36,7 +36,7 @@ public class LauncherActivity extends Activity {
             }
         }
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

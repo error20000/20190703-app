@@ -59,7 +59,7 @@ public class NfcActivity extends BaseNfcActivity {
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        showToast("onNewIntent");
+        //showToast("onNewIntent");
         //查询nfcId
         String id = NfcUtils.readNFCId(intent);
         intent.putExtra(NFC_RESULT, id);
