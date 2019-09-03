@@ -1,5 +1,6 @@
 package com.jian.system.nfc;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -50,7 +51,8 @@ public class NfcActivity extends BaseNfcActivity {
 
         Bundle bundle = getIntent().getExtras();
         nfcType = bundle.getString(NFC_TYPE);
-        nfcId = bundle.getString(NFC_ID);
+
+        nfcId = NfcUtils.readNFCId(getIntent());
         if(!Utils.isNullOrEmpty(nfcId)){
             nfcFind(nfcId);
         }
@@ -59,12 +61,15 @@ public class NfcActivity extends BaseNfcActivity {
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        //showToast("onNewIntent");
+
         //查询nfcId
         String id = NfcUtils.readNFCId(intent);
         intent.putExtra(NFC_RESULT, id);
         setResult(RESULT_OK, intent);
 
+        if(Utils.isNullOrEmpty(nfcType)){
+            nfcType = NFC_TYPE_SCAN;
+        }
         switch (nfcType){
             case NFC_TYPE_SEARCH:
             case NFC_TYPE_ADD:
