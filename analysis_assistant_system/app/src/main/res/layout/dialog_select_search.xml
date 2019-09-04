@@ -37,7 +37,8 @@
             android:gravity="center"
             android:background="#ffffff"
             android:layout_height="50dp"
-            android:id="@+id/search_view">
+            android:id="@+id/search_view"
+            android:visibility="gone">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
@@ -62,7 +63,8 @@
                     android:id="@+id/search_edit_text"
                     android:layout_weight="1"
                     android:lines="1"
-                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:textSize="15sp"
                     android:background="@null"
                     android:hint="请输入搜索内容"/>
 
@@ -85,6 +87,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:divider="@null"
             android:orientation="vertical" />
     </LinearLayout>
 

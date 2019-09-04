@@ -621,7 +621,6 @@ public class EquipAddFragment extends QMUIFragment {
             @Override
             public void onClick(View view) {
                 QMUICommonListItemView viewList = (QMUICommonListItemView) view;
-                Log.d(TAG, "选项：" + viewList.getText().toString() + " 点击了");
                 switch ((String) viewList.getTag()) {
                     case "equipType": //type
                         String[] typeNames = new String[equipTypeData.size()];
@@ -734,27 +733,21 @@ public class EquipAddFragment extends QMUIFragment {
                                 .create(mCurrentDialogStyle).show();
                         break;
                     case "equipNfc": //nfc标签
-                        String[] nfcNames = new String[20];
-                        for (int i = 0; i < 20; i++) { //nfcUnusedData.size()
-                            nfcNames[i] = "item_"+i;//nfcUnusedData.get(i).getsNfc_Name();
+                        String[] nfcNames = new String[nfcUnusedData.size()];
+                        for (int i = 0; i < nfcUnusedData.size(); i++) {
+                            nfcNames[i] = nfcUnusedData.get(i).getsNfc_Name();
                         }
-                        /*new QMUIDialog.CheckableDialogBuilder(getActivity())
-                                .setTitle("请选择")
-                                .addItems(nfcNames, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        viewList.getDetailTextView().setText(nfcNames[which]);
-                                        equip.setsEquip_NfcID(nfcUnusedData.get(which).getsNfc_ID());
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .create(mCurrentDialogStyle).show();*/
                         new SearchDialogBuilder(getActivity())
                                 .setTitle("请选择")
-                                .addItems(nfcNames, new AdapterView.OnItemClickListener() {
+                                .setHint("请输入标签名称")
+                                .addItems(nfcNames, new SearchDialogBuilder.OnSelectedListiner() {
                                     @Override
-                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                        Log.e("ddddddddddddd", i+"");
+                                    public void onSelected(DialogInterface dialog, SearchDialogBuilder.ItemEntity item) {
+                                        String name = item.getName();
+                                        int index = item.getIndex();
+                                        viewList.getDetailTextView().setText(name);
+                                        equip.setsEquip_NfcID(nfcUnusedData.get(index).getsNfc_ID());
+                                        dialog.dismiss();
                                     }
                                 })
                                 .create(mCurrentDialogStyle).show();

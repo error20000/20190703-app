@@ -76,6 +76,7 @@ public class EquipListFragment extends QMUIFragment {
     private final int MsgType_REFRESH = 2;
     private final int MsgType_SEARCH = 3;
     private final int MsgType_NFC = 4;
+    private final int MsgType_SCAN = 5;
 
     //search
     List<Equip> sdata = new ArrayList<>();
@@ -259,9 +260,9 @@ public class EquipListFragment extends QMUIFragment {
 
     }
 
-    private void intoDetail(String sEquip_ID){
+    private void intoDetail(String sEquip_NO){
         Bundle bundle = new Bundle();
-        bundle.putString("id", sEquip_ID);
+        bundle.putString("id", sEquip_NO);
         EquipDetailFragment fragment = new EquipDetailFragment();
         fragment.setArguments(bundle);
         startFragment(fragment);
@@ -294,16 +295,16 @@ public class EquipListFragment extends QMUIFragment {
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case Application.Scan_Search_Request_Code:
-                    String str = QrCodeUtils.getScanResult(data);
-                    Log.d("onActivityResult", str);
-                    //进入详情
-                    intoDetail(str);
+                    String equipNO = QrCodeUtils.getScanResult(data);
+                    Log.d("onActivityResult", equipNO);
+                    //查询数据
+                    scanData(equipNO);
                     break;
                 case Application.Nfc_Search_Request_Code:
-                    String result = data.getStringExtra(NfcActivity.NFC_RESULT);
-                    Log.d("onActivityResult", result);
+                    String nfcNO = data.getStringExtra(NfcActivity.NFC_RESULT);
+                    Log.d("onActivityResult", nfcNO);
                     //查询数据
-                    nfcData(result);
+                    nfcData(nfcNO);
                     break;
             }
         }
@@ -383,6 +384,9 @@ public class EquipListFragment extends QMUIFragment {
                 case MsgType_NFC:
                     handleNFC(resObj);
                     break;
+                case MsgType_SCAN:
+                    handleScan(resObj);
+                    break;
             }
         }
     };
@@ -456,6 +460,37 @@ public class EquipListFragment extends QMUIFragment {
     }
 
     private void handleNFC(JSONObject resObj){
+        JSONObject resData = resObj.getJSONObject("data");
+        if(resData == null){
+            Toast.makeText(getActivity(), "未查询到器材信息", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Log.d(TAG, resObj.getString("data"));
+        //跳转详情
+        intoDetail(resData.getString("sEquip_ID"));
+    }
+
+    private void scanData(String sEquip_NO){
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<>();
+                params.put("sEquip_NO", sEquip_NO);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryScanUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, UrlConfig.equipQueryScanUrl + " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+                Message msg = mHandler.obtainMessage();
+                msg.what = MsgType_SCAN;
+                msg.obj = resObj;
+                mSearchHandler.sendMessage(msg);
+            }
+        });
+    }
+
+    private void handleScan(JSONObject resObj){
         JSONObject resData = resObj.getJSONObject("data");
         if(resData == null){
             Toast.makeText(getActivity(), "未查询到器材信息", Toast.LENGTH_SHORT).show();

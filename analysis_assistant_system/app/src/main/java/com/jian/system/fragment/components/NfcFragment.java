@@ -53,7 +53,7 @@ public class NfcFragment extends QMUIFragment {
     @Override
     protected View onCreateView() {
 
-        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_nfc_read, null);
+        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_empty, null);
         rootView.setVisibility(View.GONE);
 
         Intent intent = new Intent(getActivity(), NfcActivity.class);

@@ -2,7 +2,7 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.106.67:8065";
+    public static String baseUrl = "http://192.168.1.33:8065";
 //    public static String baseUrl = "http://gztest.yunh.xyz:8085";
 
     //系统
@@ -22,6 +22,7 @@ public class UrlConfig {
     public static String equipQueryPageUrl = baseUrl + "/api/equip/app/findPage";
     public static String equipQueryDetailUrl = baseUrl + "/api/equip/app/findOne";
     public static String equipQueryNfcUrl = baseUrl + "/api/equip/app/nfc";
+    public static String equipQueryScanUrl = baseUrl + "/api/equip/app/findOne";
     public static String equipQueryHistoryUrl = baseUrl + "/api/equip/app/history"; //历史
     public static String equipSearchUrl = baseUrl + "/api/equip/app/search"; //搜索
     public static String equipAddUrl = baseUrl + "/api/equip/app/add"; //新增

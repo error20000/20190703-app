@@ -36,6 +36,7 @@ import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
+import com.jian.system.view.SearchDialogBuilder;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUIEmptyView;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
@@ -129,7 +130,7 @@ public class EquipDetailFragment extends QMUIFragment {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if("nfc".equals(from)){
+                if("nfc".equals(from) || "scan".equals(from)){
                     getFragmentManager().popBackStack();
                 }else{
                     popBackStack();
@@ -616,12 +617,13 @@ public class EquipDetailFragment extends QMUIFragment {
         for (int i = 0; i < userAidData.size(); i++) {
             items[i] = userAidData.get(i).getString("sAid_Name");
         }
-        new QMUIDialog.CheckableDialogBuilder(getActivity())
+        new SearchDialogBuilder(getActivity())
                 .setTitle("请选择")
-                .addItems(items, new DialogInterface.OnClickListener() {
+                .setHint("请输入航标名称")
+                .addItems(items, new SearchDialogBuilder.OnSelectedListiner() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        sAid_ID = userAidData.get(which).getString("sAid_ID");
+                    public void onSelected(DialogInterface dialog, SearchDialogBuilder.ItemEntity item) {
+                        sAid_ID = userAidData.get(item.getIndex()).getString("sAid_ID");
                         dialog.dismiss();
                         //显示保存
                         showEditTextDialog(tag);
