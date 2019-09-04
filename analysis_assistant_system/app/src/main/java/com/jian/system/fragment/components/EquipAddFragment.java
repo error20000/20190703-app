@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -42,6 +43,7 @@ import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
+import com.jian.system.view.SearchDialogBuilder;
 import com.jzxiang.pickerview.TimePickerDialog;
 import com.jzxiang.pickerview.data.Type;
 import com.jzxiang.pickerview.listener.OnDateSetListener;
@@ -732,11 +734,11 @@ public class EquipAddFragment extends QMUIFragment {
                                 .create(mCurrentDialogStyle).show();
                         break;
                     case "equipNfc": //nfc标签
-                        String[] nfcNames = new String[equipManufacturerData.size()];
-                        for (int i = 0; i < equipManufacturerData.size(); i++) {
-                            nfcNames[i] = equipManufacturerData.get(i).getsDict_Name();
+                        String[] nfcNames = new String[20];
+                        for (int i = 0; i < 20; i++) { //nfcUnusedData.size()
+                            nfcNames[i] = "item_"+i;//nfcUnusedData.get(i).getsNfc_Name();
                         }
-                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                        /*new QMUIDialog.CheckableDialogBuilder(getActivity())
                                 .setTitle("请选择")
                                 .addItems(nfcNames, new DialogInterface.OnClickListener() {
                                     @Override
@@ -744,6 +746,15 @@ public class EquipAddFragment extends QMUIFragment {
                                         viewList.getDetailTextView().setText(nfcNames[which]);
                                         equip.setsEquip_NfcID(nfcUnusedData.get(which).getsNfc_ID());
                                         dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();*/
+                        new SearchDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(nfcNames, new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                        Log.e("ddddddddddddd", i+"");
                                     }
                                 })
                                 .create(mCurrentDialogStyle).show();

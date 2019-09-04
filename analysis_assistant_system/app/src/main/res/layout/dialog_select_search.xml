@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_centerVertical="true"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:id="@+id/dialog_title"/>
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:layout_marginRight="10dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:scaleType="centerInside"
+                android:background="@color/transparent"
+                android:src="@mipmap/im_search_back"
+                android:id="@+id/dialog_title_search"/>
+        </RelativeLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:background="#ffffff"
+            android:layout_height="50dp"
+            android:id="@+id/search_view">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/dialog_search_bg">
+                <ImageButton
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/imb_search_search"
+                    android:layout_marginLeft="15dp"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/im_search_gray"
+                    android:background="#F0F0F0" />
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="15dp"
+                    android:id="@+id/search_edit_text"
+                    android:layout_weight="1"
+                    android:lines="1"
+                    android:textSize="14sp"
+                    android:background="@null"
+                    android:hint="请输入搜索内容"/>
+
+                <ImageButton
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:padding="12.5dp"
+                    android:id="@+id/search_clear"
+                    android:layout_marginRight="20dp"
+                    android:src="@mipmap/im_x"
+                    android:visibility="gone"
+                    android:scaleType="centerInside"
+                    android:background="#F0F0F0" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical" />
+    </LinearLayout>
+
+</LinearLayout>
