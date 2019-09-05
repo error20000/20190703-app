@@ -145,15 +145,6 @@ public class EquipAddFragment extends QMUIFragment {
     private QMUICommonListItemView equipLampTelemetryFlag;
     private QMUICommonListItemView equipLampTelemetry;
 
-    public static final String EquipType_AIS = "EquipAIS"; //AIS
-    public static final String EquipType_Radar = "EquipRadar"; //雷达应答器
-    public static final String EquipType_Telemetry = "EquipTelemetry"; //遥测遥控
-    public static final String EquipType_Battery = "EquipBattery"; //蓄电池
-    public static final String EquipType_SolarEnergy = "EquipSolarEnergy"; //太阳能板
-    public static final String EquipType_SpareLamp = "EquipSpareLamp"; //备灯器
-    public static final String EquipType_ViceLamp = "EquipViceLamp"; //副灯器
-    public static final String EquipType_Lamp= "EquipLamp"; //灯器
-
     private final int MsgType_Add = 0;
     private final int MsgType_Nfc_Add = 1;
 
@@ -675,17 +666,17 @@ public class EquipAddFragment extends QMUIFragment {
 
                                         //显示
                                         switch (type.getsDict_NO()){
-                                            case EquipType_AIS:
+                                            case Constant.EquipType_AIS:
                                                 DataUtils.getDictData(Constant.equipAisMMSIXDict, equipAisMMSIXOptions);
                                                 equipAisMMSIX.setVisibility(View.VISIBLE);
                                                 break;
-                                            case EquipType_Radar:
+                                            case Constant.EquipType_Radar:
                                                 DataUtils.getDictData(Constant.equipRadarNODict, equipRadarNOOptions);
                                                 DataUtils.getDictData(Constant.equipRadarBandDict, equipRadarBandOptions);
                                                 equipRadarNO.setVisibility(View.VISIBLE);
                                                 equipRadarBand.setVisibility(View.VISIBLE);
                                                 break;
-                                            case EquipType_Telemetry:
+                                            case Constant.EquipType_Telemetry:
                                                 DataUtils.getDictData(Constant.equipTelemetryModeDict, equipTelemetryModeOptions);
                                                 equipTelemetryNO.setVisibility(View.VISIBLE);
                                                 equipTelemetrySIM.setVisibility(View.VISIBLE);
@@ -693,7 +684,7 @@ public class EquipAddFragment extends QMUIFragment {
                                                 equipTelemetryVolt.setVisibility(View.VISIBLE);
                                                 equipTelemetryWatt.setVisibility(View.VISIBLE);
                                                 break;
-                                            case EquipType_Battery:
+                                            case Constant.EquipType_Battery:
                                                 DataUtils.getDictData(Constant.equipBatteryTypeDict, equipBatteryTypeOptions);
                                                 equipBatteryNO.setVisibility(View.VISIBLE);
                                                 equipBatteryType.setVisibility(View.VISIBLE);
@@ -701,7 +692,7 @@ public class EquipAddFragment extends QMUIFragment {
                                                 equipBatteryWatt.setVisibility(View.VISIBLE);
                                                 equipBatteryConnect.setVisibility(View.VISIBLE);
                                                 break;
-                                            case EquipType_SolarEnergy:
+                                            case Constant.EquipType_SolarEnergy:
                                                 DataUtils.getDictData(Constant.equipSolarTypeDict, equipSolarTypeOptions);
                                                 equipSolarNO.setVisibility(View.VISIBLE);
                                                 equipSolarType.setVisibility(View.VISIBLE);
@@ -709,13 +700,13 @@ public class EquipAddFragment extends QMUIFragment {
                                                 equipSolarWatt.setVisibility(View.VISIBLE);
                                                 equipSolarConnect.setVisibility(View.VISIBLE);
                                                 break;
-                                            case EquipType_SpareLamp:
+                                            case Constant.EquipType_SpareLamp:
                                                 equipSLampWatt.setVisibility(View.VISIBLE);
                                                 break;
-                                            case EquipType_ViceLamp:
+                                            case Constant.EquipType_ViceLamp:
                                                 equipVLampWatt.setVisibility(View.VISIBLE);
                                                 break;
-                                            case EquipType_Lamp:
+                                            case Constant.EquipType_Lamp:
                                                 DataUtils.getDictData(Constant.equipLampTypeDict, equipLampTypeOptions);
                                                 DataUtils.getDictData(Constant.equipLampLensDict, equipLampLensOptions);
                                                 DataUtils.getDictData(Constant.equipLampTelemetryDict, equipLampTelemetryOptions);

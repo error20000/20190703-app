@@ -180,14 +180,6 @@ public class DataUtils {
         if(nfcUnusedData == null){
             throw new RuntimeException("Nfc is list can not be null!");
         }
-        String ckey = "cache_nfc_unused_data";
-        //缓存获取数据
-        List<Nfc> cacheData = DataCacheUtils.getList(ckey, Nfc.class);
-        if(cacheData != null){
-            Log.d(TAG, " NfcUnused 从缓存获取数据。");
-            nfcUnusedData.addAll(cacheData);
-            return;
-        }
         //获取数据
         ThreadUtils.execute(new Runnable() {
             @Override
@@ -204,7 +196,6 @@ public class DataUtils {
                     for (int i = 0; i < data.size(); i++) {
                         nfcUnusedData.add(data.getObject(i, Nfc.class));
                     }
-                    DataCacheUtils.set(ckey, nfcUnusedData);
                 }
             }
         });

@@ -106,6 +106,8 @@ public class EquipListFragment extends QMUIFragment {
         return rootView;
     }
 
+
+
     private void initTopBar() {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,7 +154,7 @@ public class EquipListFragment extends QMUIFragment {
                 mSearchView.clearSearchFocus();
                 //进入详情页面
                 int index = searchSuggestion.describeContents();
-                intoDetail(sdata.get(index).getsEquip_ID());
+                intoDetail(sdata.get(index).getsEquip_ID(), sdata.get(index).getsEquip_Type());
             }
 
             @Override
@@ -231,7 +233,7 @@ public class EquipListFragment extends QMUIFragment {
             public void onItemClick(View itemView, int pos) {
                 Log.d(TAG, "onItemClick: " + data.get(pos).getsEquip_ID());
                 //进入详情页面
-                intoDetail(data.get(pos).getsEquip_ID());
+                intoDetail(data.get(pos).getsEquip_ID(), data.get(pos).getsEquip_Type());
             }
         });
         mRecyclerView.setAdapter(mItemAdapter);
@@ -260,9 +262,10 @@ public class EquipListFragment extends QMUIFragment {
 
     }
 
-    private void intoDetail(String sEquip_NO){
+    private void intoDetail(String sEquip_NO, String sEquip_Type){
         Bundle bundle = new Bundle();
         bundle.putString("id", sEquip_NO);
+        bundle.putString("type", sEquip_Type);
         EquipDetailFragment fragment = new EquipDetailFragment();
         fragment.setArguments(bundle);
         startFragment(fragment);
@@ -467,7 +470,7 @@ public class EquipListFragment extends QMUIFragment {
         }
         Log.d(TAG, resObj.getString("data"));
         //跳转详情
-        intoDetail(resData.getString("sEquip_ID"));
+        intoDetail(resData.getString("sEquip_ID"), resData.getString("sEquip_Type"));
     }
 
     private void scanData(String sEquip_NO){
@@ -498,7 +501,7 @@ public class EquipListFragment extends QMUIFragment {
         }
         Log.d(TAG, resObj.getString("data"));
         //跳转详情
-        intoDetail(resData.getString("sEquip_ID"));
+        intoDetail(resData.getString("sEquip_ID"), resData.getString("sEquip_Type"));
     }
 
     private void searchData(String keywords){

@@ -97,9 +97,10 @@ public class ScanFragment extends QMUIFragment {
         });
     }
 
-    private void intoDetail(String sEquip_ID){
+    private void intoDetail(String sEquip_ID, String sEquip_Type){
         Bundle bundle = new Bundle();
         bundle.putString("id", sEquip_ID);
+        bundle.putString("type", sEquip_Type);
         bundle.putString("from", "scan");
         EquipDetailFragment fragment = new EquipDetailFragment();
         fragment.setArguments(bundle);
@@ -121,11 +122,11 @@ public class ScanFragment extends QMUIFragment {
             }
             JSONObject resData = JSONObject.parseObject(str);
             //处理数据
-            handleNFC(resData);
+            handleScan(resData);
         }
     };
 
-    private void handleNFC(JSONObject resObj){
+    private void handleScan(JSONObject resObj){
         JSONObject resData = resObj.getJSONObject("data");
 
         if(resData == null){
@@ -133,7 +134,7 @@ public class ScanFragment extends QMUIFragment {
             return;
         }
         //进入详情
-        intoDetail(resData.getString("sEquip_ID"));
+        intoDetail(resData.getString("sEquip_ID"), resData.getString("sEquip_Type"));
     }
 
     private void showToast(String msg){

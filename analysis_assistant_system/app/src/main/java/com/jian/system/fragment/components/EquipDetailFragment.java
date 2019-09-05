@@ -11,6 +11,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -91,15 +92,37 @@ public class EquipDetailFragment extends QMUIFragment {
     private String from;
     private String remarks = "";
     private Equip equip;
+    private JSONObject detail;
     private String sAid_ID = "";
+    private String sEquip_ID = "";
+    private String sEquip_Type = "";
     private List<Dict> equipTypeData = new ArrayList<>();
     private List<Dict> equipStatusData = new ArrayList<>();
+    private List<Dict> equipManufacturerData = new ArrayList<>();
     private List<StoreType> storeTypeData = new ArrayList<>();
     private List<Store> storeData = new ArrayList<>();
     private List<Nfc> nfcData = new ArrayList<>();
     private List<EquipLog> historyData = new ArrayList<>();
     private List<JSONObject> aidAllData = new ArrayList<>();
     private List<JSONObject> userAidData = new ArrayList<>();
+
+    //Ais
+    private List<Dict> equipAisMMSIXOptions = new ArrayList<>();
+    //Radar
+    private List<Dict> equipRadarNOOptions = new ArrayList<>();
+    private List<Dict> equipRadarBandOptions = new ArrayList<>();
+    //Telemetry
+    private List<Dict> equipTelemetryModeOptions = new ArrayList<>();
+    //Battery
+    private List<Dict> equipBatteryTypeOptions = new ArrayList<>();
+    //SolarEnergy
+    private List<Dict> equipSolarTypeOptions = new ArrayList<>();
+    //SpareLamp
+    //ViceLamp
+    //Lamp
+    private List<Dict> equipLampTypeOptions = new ArrayList<>();
+    private List<Dict> equipLampLensOptions = new ArrayList<>();
+    private List<Dict> equipLampTelemetryOptions = new ArrayList<>();
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -119,6 +142,8 @@ public class EquipDetailFragment extends QMUIFragment {
 
         Bundle bundle = this.getArguments();
         from =  bundle.getString("from");
+        sEquip_ID = bundle.getString("id");
+        sEquip_Type = bundle.getString("type");
 
         initTopBar();
         initData();
@@ -271,7 +296,7 @@ public class EquipDetailFragment extends QMUIFragment {
         String date = FormatUtils.formatDate("yyyy-MM-dd", equip.getdEquip_CreateDate());
         equipDate.setDetailText(date);
 
-        QMUICommonListItemView equipNfc = mGroupListView.createItemView("所属NFC标签");
+        QMUICommonListItemView equipNfc = mGroupListView.createItemView("NFC标签");
         String nfcName = FormatUtils.formatNFC(equip.getsEquip_NfcID(), nfcData);
         equipNfc.setDetailText(nfcName);
 
@@ -310,17 +335,278 @@ public class EquipDetailFragment extends QMUIFragment {
         storeName += Utils.isNullOrEmpty(storeName4) ? "": "/"+storeName4;
         equipStore.setDetailText(storeName);
 
+        QMUICommonListItemView equipManufacturer = mGroupListView.createItemView("生产厂家");
+        String equipManufacturerName = FormatUtils.formatDict(equip.getsEquip_Manufacturer(), equipManufacturerData);
+        equipManufacturer.setDetailText(equipManufacturerName);
+
+        QMUICommonListItemView equipMMode = mGroupListView.createItemView("厂方型号");
+        equipMMode.setDetailText(equip.getsEquip_MModel());
+
+        QMUICommonListItemView equipMBrand = mGroupListView.createItemView("品牌");
+        equipMBrand.setDetailText(equip.getsEquip_MBrand());
+
+        QMUICommonListItemView equipArrivalDate = mGroupListView.createItemView("到货日期");
+        String arrivalDate = FormatUtils.formatDate("yyyy-MM-dd", equip.getdEquip_ArrivalDate());
+        equipArrivalDate.setDetailText(arrivalDate);
+
+
+        // ------------------------------------------------------------------------------ Ais
+        QMUICommonListItemView equipAisMMSIX = mGroupListView.createItemView("MMSIX号");
+        equipAisMMSIX.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_AIS)){
+            String equipAisMMSIXName = FormatUtils.formatDict(detail.getString("sAis_MMSIX"), equipAisMMSIXOptions);
+            equipAisMMSIX.setDetailText(equipAisMMSIXName);
+            equipAisMMSIX.setVisibility(View.VISIBLE);
+        }
+
+        // ------------------------------------------------------------------------------ Radar
+        QMUICommonListItemView equipRadarNO = mGroupListView.createItemView("雷达应答器编码");
+        equipRadarNO.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Radar)){
+            String equipRadarNOName = FormatUtils.formatDict(detail.getString("sRadar_NO"), equipRadarNOOptions);
+            equipRadarNO.setDetailText(equipRadarNOName);
+            equipRadarNO.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipRadarBand = mGroupListView.createItemView("雷达应答器波段");
+        equipRadarBand.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Radar)){
+            String equipRadarBandName = FormatUtils.formatDict(detail.getString("sRadar_Band"), equipRadarBandOptions);
+            equipRadarBand.setDetailText(equipRadarBandName);
+            equipRadarBand.setVisibility(View.VISIBLE);
+        }
+
+        // ------------------------------------------------------------------------------ Telemetry
+        QMUICommonListItemView equipTelemetryNO = mGroupListView.createItemView("遥控遥测编码");
+        equipTelemetryNO.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Telemetry)){
+            equipTelemetryNO.setDetailText(detail.getString("sTelemetry_NO"));
+            equipTelemetryNO.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipTelemetrySIM = mGroupListView.createItemView("SIM(MMIS)卡号");
+        equipTelemetrySIM.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Telemetry)){
+            equipTelemetrySIM.setDetailText(detail.getString("sTelemetry_SIM"));
+            equipTelemetrySIM.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipTelemetryMode = mGroupListView.createItemView("遥控遥测方式");
+        equipTelemetryMode.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Telemetry)){
+            String equipTelemetryModeName = FormatUtils.formatDict(detail.getString("sTelemetry_Mode"), equipTelemetryModeOptions);
+            equipTelemetryMode.setDetailText(equipTelemetryModeName);
+            equipTelemetryMode.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipTelemetryVolt = mGroupListView.createItemView("电压（V）");
+        equipTelemetryVolt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Telemetry)){
+            equipTelemetryVolt.setDetailText(detail.getString("lTelemetry_Volt"));
+            equipTelemetryVolt.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipTelemetryWatt = mGroupListView.createItemView("功率（W）");
+        equipTelemetryWatt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Telemetry)){
+            equipTelemetryWatt.setDetailText(detail.getString("lTelemetry_Watt"));
+            equipTelemetryWatt.setVisibility(View.VISIBLE);
+        }
+
+        // ------------------------------------------------------------------------------ Battery
+        QMUICommonListItemView equipBatteryNO = mGroupListView.createItemView("编码");
+        equipBatteryNO.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Battery)){
+            equipBatteryNO.setDetailText(detail.getString("sBattery_NO"));
+            equipBatteryNO.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipBatteryType = mGroupListView.createItemView("种类");
+        equipBatteryType.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Battery)){
+            String equipBatteryTypeName = FormatUtils.formatDict(detail.getString("sBattery_Type"), equipBatteryTypeOptions);
+            equipBatteryType.setDetailText(equipBatteryTypeName);
+            equipBatteryType.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipBatteryVolt = mGroupListView.createItemView("工作电压（V）");
+        equipBatteryVolt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Battery)){
+            equipBatteryVolt.setDetailText(detail.getString("lBattery_Volt"));
+            equipBatteryVolt.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipBatteryWatt = mGroupListView.createItemView("容量（W）");
+        equipBatteryWatt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Battery)){
+            equipBatteryWatt.setDetailText(detail.getString("lBattery_Watt"));
+            equipBatteryWatt.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipBatteryConnect = mGroupListView.createItemView("连接方式");
+        equipBatteryConnect.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Battery)){
+            equipBatteryConnect.setDetailText(detail.getString("sBattery_Connect"));
+            equipBatteryConnect.setVisibility(View.VISIBLE);
+        }
+
+        // ------------------------------------------------------------------------------ Solar
+        QMUICommonListItemView equipSolarNO = mGroupListView.createItemView("编码");
+        equipSolarNO.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_SolarEnergy)){
+            equipSolarNO.setDetailText(detail.getString("sSolar_NO"));
+            equipSolarNO.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipSolarType = mGroupListView.createItemView("种类");
+        equipSolarType.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Battery)){
+            String equipSolarTypeName = FormatUtils.formatDict(detail.getString("sSolar_Type"), equipSolarTypeOptions);
+            equipSolarType.setDetailText(equipSolarTypeName);
+            equipSolarType.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipSolarVolt = mGroupListView.createItemView("额定电压（V）");
+        equipSolarVolt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_SolarEnergy)){
+            equipSolarVolt.setDetailText(detail.getString("lSolar_Volt"));
+            equipSolarVolt.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipSolarWatt = mGroupListView.createItemView("功率（W）");
+        equipSolarWatt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_SolarEnergy)){
+            equipSolarWatt.setDetailText(detail.getString("lSolar_Watt"));
+            equipSolarWatt.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipSolarConnect = mGroupListView.createItemView("连接方式");
+        equipSolarConnect.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_SolarEnergy)){
+            equipSolarConnect.setDetailText(detail.getString("sSolar_Connect"));
+            equipSolarConnect.setVisibility(View.VISIBLE);
+        }
+
+        // ------------------------------------------------------------------------------ SpareLamp
+        QMUICommonListItemView equipSLampWatt = mGroupListView.createItemView("功率（W）");
+        equipSLampWatt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_SpareLamp)){
+            equipSLampWatt.setDetailText(detail.getString("lSLamp_Watt"));
+            equipSLampWatt.setVisibility(View.VISIBLE);
+        }
+
+        // ------------------------------------------------------------------------------ ViceLamp
+        QMUICommonListItemView equipVLampWatt = mGroupListView.createItemView("功率（W）");
+        equipVLampWatt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_ViceLamp)){
+            equipVLampWatt.setDetailText(detail.getString("lVLamp_Watt"));
+            equipVLampWatt.setVisibility(View.VISIBLE);
+        }
+
+        // ------------------------------------------------------------------------------ Lamp
+        QMUICommonListItemView equipLampNO = mGroupListView.createItemView("编码");
+        equipLampNO.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Lamp)){
+            equipLampNO.setDetailText(detail.getString("sLamp_NO"));
+            equipLampNO.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipLampType = mGroupListView.createItemView("类型");
+        equipLampType.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Lamp)){
+            String equipLampTypeName = FormatUtils.formatDict(detail.getString("sLamp_Type"), equipLampTypeOptions);
+            equipLampType.setDetailText(equipLampTypeName);
+            equipLampType.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipLampLens = mGroupListView.createItemView("透镜形状");
+        equipLampLens.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Lamp)){
+            String equipLampLensName = FormatUtils.formatDict(detail.getString("sLamp_Lens"), equipLampLensOptions);
+            equipLampLens.setDetailText(equipLampLensName);
+            equipLampLens.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipLampInputVolt = mGroupListView.createItemView("输入电压（V）");
+        equipLampInputVolt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Lamp)){
+            equipLampInputVolt.setDetailText(detail.getString("lLamp_InputVolt"));
+            equipLampInputVolt.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipLampWatt = mGroupListView.createItemView("功率（W）");
+        equipLampWatt.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Lamp)){
+            equipLampWatt.setDetailText(detail.getString("lLamp_Watt"));
+            equipLampWatt.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipLampTelemetryFlag = mGroupListView.createItemView("遥测遥控接口");
+        equipLampTelemetryFlag.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Lamp)){
+            equipLampTelemetryFlag.setDetailText("1".equals(detail.getString("lLamp_TelemetryFlag")) ? "是" : "否");
+            equipLampTelemetryFlag.setVisibility(View.VISIBLE);
+        }
+
+        QMUICommonListItemView equipLampTelemetry = mGroupListView.createItemView("遥测接口类型");
+        equipLampTelemetry.setVisibility(View.GONE);
+        if(sEquip_Type.equals(Constant.EquipType_Lamp) && "1".equals(detail.getString("lLamp_TelemetryFlag"))){
+            String equipLampTelemetryName = FormatUtils.formatDict(detail.getString("sLamp_Telemetry"), equipLampTelemetryOptions);
+            equipLampTelemetry.setDetailText(equipLampTelemetryName);
+            equipLampTelemetry.setVisibility(View.VISIBLE);
+        }
+
         QMUIGroupListView.newSection(getContext())
                 .setTitle("基础信息")
                 .addItemView(equipId, null)
                 .addItemView(equipNo, null)
-                .addItemView(equipName, null)
+                //.addItemView(equipName, null)
                 .addItemView(equipType, null)
                 .addItemView(equipStatus, null)
                 .addItemView(equipDate, null)
                 .addItemView(equipNfc, null)
                 .addItemView(equipAid, null)
                 .addItemView(equipStore, null)
+                .addItemView(equipManufacturer, null)
+                .addItemView(equipMMode, null)
+                .addItemView(equipMBrand, null)
+                .addItemView(equipArrivalDate, null)
+                //ais
+                .addItemView(equipAisMMSIX, null)
+                //radar
+                .addItemView(equipRadarNO, null)
+                .addItemView(equipRadarBand, null)
+                //Telemetry
+                .addItemView(equipTelemetryNO, null)
+                .addItemView(equipTelemetrySIM, null)
+                .addItemView(equipTelemetryMode, null)
+                .addItemView(equipTelemetryVolt, null)
+                .addItemView(equipTelemetryWatt, null)
+                //Battery
+                .addItemView(equipBatteryNO, null)
+                .addItemView(equipBatteryType, null)
+                .addItemView(equipBatteryVolt, null)
+                .addItemView(equipBatteryWatt, null)
+                .addItemView(equipBatteryConnect, null)
+                //SolarEnergy
+                .addItemView(equipSolarNO, null)
+                .addItemView(equipSolarType, null)
+                .addItemView(equipSolarVolt, null)
+                .addItemView(equipSolarWatt, null)
+                .addItemView(equipSolarConnect, null)
+                //SpareLamp
+                .addItemView(equipSLampWatt, null)
+                //SolarEnergy
+                .addItemView(equipVLampWatt, null)
+                //Lamp
+                .addItemView(equipLampNO, null)
+                .addItemView(equipLampType, null)
+                .addItemView(equipLampLens, null)
+                .addItemView(equipLampInputVolt, null)
+                .addItemView(equipLampWatt, null)
+                .addItemView(equipLampTelemetryFlag, null)
+                .addItemView(equipLampTelemetry, null)
+
                 .addTo(mGroupListView);
 
         //设置历史信息
@@ -373,33 +659,29 @@ public class EquipDetailFragment extends QMUIFragment {
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
-            JSONObject resObj = (JSONObject) msg.obj;
-            if(resObj.getInteger("code") < 0){
-                QMUITipDialog tipDialog2 = new QMUITipDialog.Builder(getContext())
-                        .setIconType(QMUITipDialog.Builder.ICON_TYPE_FAIL)
-                        .setTipWord(resObj.getString("msg"))
-                        .create();
-                tipDialog2.show();
-                mGroupListView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        tipDialog2.dismiss();
-                    }
-                }, 1500);
+            hideTips();
+            String str =  (String) msg.obj;
+            //异常处理
+            if(Utils.isNullOrEmpty(str)){
+                showToast("网络异常，请检查网络。");
                 return;
             }
-
+            JSONObject resData = JSONObject.parseObject(str);
+            if (handleErrorCode(resData)) {
+                Log.d(TAG, resData.toJSONString());
+                return;
+            }
             //处理数据
             switch (msg.what){
                 case MsgType_Detail:
-                    equip = resObj.getObject("data", Equip.class);
+                    equip = resData.getObject("data", Equip.class);
+                    detail = resData.getJSONObject("data");
                     initEquipInfo();
-                    tipDialog.dismiss();
                     break;
                 case MsgType_History:
-                    JSONArray resData = resObj.getJSONArray("data");
-                    for (int i = 0; i < resData.size(); i++) {
-                        historyData.add(resData.getObject(i, EquipLog.class));
+                    JSONArray resArray = resData.getJSONArray("data");
+                    for (int i = 0; i < resArray.size(); i++) {
+                        historyData.add(resArray.getObject(i, EquipLog.class));
                     }
                     initEquipHistoryInfo();
                     break;
@@ -413,7 +695,17 @@ public class EquipDetailFragment extends QMUIFragment {
         @Override
         public void handleMessage(@NonNull Message msg) {
             hideTips();
-            JSONObject resData = (JSONObject) msg.obj;
+            String str =  (String) msg.obj;
+            //异常处理
+            if(Utils.isNullOrEmpty(str)){
+                showToast("网络异常，请检查网络。");
+                return;
+            }
+            JSONObject resData = JSONObject.parseObject(str);
+            if (handleErrorCode(resData)) {
+                Log.d(TAG, resData.toJSONString());
+                return;
+            }
             //处理数据
             switch (msg.what) {
                 case MsgType_InStore: //入库
@@ -451,7 +743,6 @@ public class EquipDetailFragment extends QMUIFragment {
 
     private void initData(){
         //查询数据 -- 判断网络
-
         tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("正在加载")
@@ -461,6 +752,8 @@ public class EquipDetailFragment extends QMUIFragment {
         DataUtils.getDictData(Constant.equipTypeDict, equipTypeData);
         //查询器材状态
         DataUtils.getDictData(Constant.equipStatusDict, equipStatusData);
+        //查询器材厂家
+        DataUtils.getDictData(Constant.equipManufacturerDict, equipManufacturerData);
         //查询仓库
         DataUtils.getStoreTypeData(storeTypeData);
         DataUtils.getStoreData(storeData);
@@ -468,11 +761,38 @@ public class EquipDetailFragment extends QMUIFragment {
         DataUtils.getNfcAllData(nfcData);
         //查询所有航标
         DataUtils.getAidAllData(aidAllData);
+        //查询种类属性
+        sEquip_Type = sEquip_Type == null ? "" : sEquip_Type;
+        switch (sEquip_Type) {
+            case Constant.EquipType_AIS:
+                DataUtils.getDictData(Constant.equipAisMMSIXDict, equipAisMMSIXOptions);
+                break;
+            case Constant.EquipType_Radar:
+                DataUtils.getDictData(Constant.equipRadarNODict, equipRadarNOOptions);
+                DataUtils.getDictData(Constant.equipRadarBandDict, equipRadarBandOptions);
+                break;
+            case Constant.EquipType_Telemetry:
+                DataUtils.getDictData(Constant.equipTelemetryModeDict, equipTelemetryModeOptions);
+                break;
+            case Constant.EquipType_Battery:
+                DataUtils.getDictData(Constant.equipBatteryTypeDict, equipBatteryTypeOptions);
+                break;
+            case Constant.EquipType_SolarEnergy:
+                DataUtils.getDictData(Constant.equipSolarTypeDict, equipSolarTypeOptions);
+                break;
+            case Constant.EquipType_SpareLamp:
+                break;
+            case Constant.EquipType_ViceLamp:
+                break;
+            case Constant.EquipType_Lamp:
+                DataUtils.getDictData(Constant.equipLampTypeDict, equipLampTypeOptions);
+                DataUtils.getDictData(Constant.equipLampLensDict, equipLampLensOptions);
+                DataUtils.getDictData(Constant.equipLampTelemetryDict, equipLampTelemetryOptions);
+                break;
+        }
         //查询器材详情
-        Bundle bundle = this.getArguments();
-        String id = bundle.getString("id");
         Map<String, Object> params = new HashMap<>();
-        params.put("sEquip_ID", id);
+        params.put("sEquip_ID", sEquip_ID);
         queryDetail(params);
         queryHistory(params);
         //查询用户航标
@@ -484,14 +804,9 @@ public class EquipDetailFragment extends QMUIFragment {
             @Override
             public void run() {
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryDetailUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.equipQueryDetailUrl + " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
                 Message msg = mHandler.obtainMessage();
                 msg.what = MsgType_Detail;
-                msg.obj = resObj;
+                msg.obj = res;
                 mHandler.sendMessage(msg);
             }
         });
@@ -502,14 +817,9 @@ public class EquipDetailFragment extends QMUIFragment {
             @Override
             public void run() {
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryHistoryUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, UrlConfig.equipQueryHistoryUrl + " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
                 Message msg = mHandler.obtainMessage();
                 msg.what = MsgType_History;
-                msg.obj = resObj;
+                msg.obj = res;
                 mHandler.sendMessage(msg);
             }
         });
@@ -663,14 +973,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 Map<String, Object> params = JSONObject.parseObject(JSONObject.toJSONString(equip), new TypeReference<Map<String, Object>>(){});
                 params.put("remarks", remarks);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipInStoreUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_InStore);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
@@ -694,14 +998,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipOutStoreUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_OutStore);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
@@ -726,14 +1024,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("remarks", remarks);
                 params.put("sAid_ID", sAid_ID);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipUseToAidUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_UseToAid);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
@@ -757,14 +1049,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipRemoveUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_Remove);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
@@ -788,14 +1074,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipTransportUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_Transport);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
@@ -819,14 +1099,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipToBeTestUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_ToBeTest);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
@@ -850,14 +1124,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipCheckUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_Check);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
@@ -881,14 +1149,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipRepairUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_Repair);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
@@ -912,14 +1174,8 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipDumpUrl, params);
-                if(res == null || "".equals(res)){
-                    Log.d(TAG, " return  is null ");
-                    return;
-                }
-                JSONObject resObj = JSONObject.parseObject(res);
-
                 Message message = mHandler.obtainMessage(MsgType_Dump);
-                message.obj = resObj;
+                message.obj = res;
                 mItemHandler.sendMessage(message);
             }
         });
