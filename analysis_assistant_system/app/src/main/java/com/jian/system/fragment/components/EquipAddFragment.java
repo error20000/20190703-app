@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.jian.system.Application;
+import com.jian.system.LoginActivity;
 import com.jian.system.MainActivity;
 import com.jian.system.R;
 import com.jian.system.config.Constant;
@@ -52,6 +53,7 @@ import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
@@ -174,14 +176,31 @@ public class EquipAddFragment extends QMUIFragment {
         mTopBar.addRightTextButton("保存", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText editTextNo = equipNo.getAccessoryContainerView().findViewById(R.id.item_edit_text);
-                equip.setsEquip_NO(editTextNo.getText().toString());
-                //EditText editTextName = (EditText)equipName.getAccessoryContainerView().getChildAt(0);
-                //equip.setsEquip_Name(editTextName.getText().toString());
-                equip.setsEquip_Name(equip.getsEquip_NO());
-                Log.d(TAG, JSONObject.toJSONString(equip));
-                //保存数据
-                sendAdd();
+                new QMUIDialog.MessageDialogBuilder(getActivity())
+                        .setTitle("")
+                        .setMessage("确定要保存吗？")
+                        .addAction(0,"取消", QMUIDialogAction.ACTION_PROP_NEGATIVE, new QMUIDialogAction.ActionListener() {
+                            @Override
+                            public void onClick(QMUIDialog dialog, int index) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .addAction("确定", new QMUIDialogAction.ActionListener() {
+                            @Override
+                            public void onClick(QMUIDialog dialog, int index) {
+                                dialog.dismiss();
+
+                                EditText editTextNo = equipNo.getAccessoryContainerView().findViewById(R.id.item_edit_text);
+                                equip.setsEquip_NO(editTextNo.getText().toString());
+                                //EditText editTextName = (EditText)equipName.getAccessoryContainerView().getChildAt(0);
+                                //equip.setsEquip_Name(editTextName.getText().toString());
+                                equip.setsEquip_Name(equip.getsEquip_NO());
+                                Log.d(TAG, JSONObject.toJSONString(equip));
+                                //保存数据
+                                sendAdd();
+                            }
+                        })
+                        .create(mCurrentDialogStyle).show();
             }
         });
         mTopBar.setTitle(title);

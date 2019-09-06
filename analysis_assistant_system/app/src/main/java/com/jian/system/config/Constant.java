@@ -36,5 +36,7 @@ public class Constant {
     public static String msgTypeDict = "MsgType";
     public static String msgStatusDict = "MsgStatus";
     public static String msgLabelDict = "MsgLabel";
+    public static String msgReasonDict = "MsgReason";
+
 
 }

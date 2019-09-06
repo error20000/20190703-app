@@ -13,13 +13,19 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.MainActivity;
 import com.jian.system.R;
+import com.jian.system.adapter.DialogSearchItemAdapter;
+import com.jian.system.adapter.StopwatchItemAdapter;
+import com.jian.system.model.StopwatchItem;
 import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,8 +54,11 @@ public class StopwatchFragment extends QMUIFragment {
     boolean canClear = false;
     Date startDate = null;
     long time = 0;
+    long lastTime = 0;
+    int index = 0;
     Thread mThread;
-
+    List<StopwatchItem> mData = new ArrayList<>();
+    StopwatchItemAdapter adapter;
 
     @Override
     protected View onCreateView() {
@@ -73,7 +82,7 @@ public class StopwatchFragment extends QMUIFragment {
     }
 
     private void init(){
-
+        //计时器线程
         mThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -94,7 +103,7 @@ public class StopwatchFragment extends QMUIFragment {
 
             }
         });
-
+        //按钮事件
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,6 +127,9 @@ public class StopwatchFragment extends QMUIFragment {
                 }
             }
         });
+        //绑定list
+        adapter = new StopwatchItemAdapter(getContext(), mData, R.layout.fragment_stopwatch_list_item);
+        mListView.setAdapter(adapter);
     }
 
     private void start(){
@@ -127,8 +139,13 @@ public class StopwatchFragment extends QMUIFragment {
         startDate = new Date();
         mThread.start();
         isStart = true;
+        canClear = true;
         mButtonClear.setText("计次");
-        Log.e("ddddddddd", FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss.S", startDate));
+        index = 0;
+        //list
+        String dateStr = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss.S", startDate);
+        mData.add(0, new StopwatchItem("开始时间", dateStr, ""));
+        updateList();
     }
 
     private void stop(){
@@ -138,22 +155,41 @@ public class StopwatchFragment extends QMUIFragment {
         mThread.interrupt();
         isStart = false;
         mButtonClear.setText("重置");
+        //list
+        long add = time - lastTime;
+        startDate = new Date(startDate.getTime() + add);
+        String dateStr = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss.S", startDate);
+        mData.add(0, new StopwatchItem("结束时间", dateStr, "+" + format(add)));
+        lastTime = time;
+        updateList();
     }
 
     private void clear(){
+        if(!canClear){
+            return;
+        }
         time = 0;
+        lastTime = 0;
+        index = 0;
         startDate = null;
         updateTime();
+        //list
+        mData.clear();
+        updateList();
     }
 
     private void count(){
-
-        Log.e("ddddddddd", FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss.S", new Date(startDate.getTime() + time)));
-        Log.e("ddddddddd", time + "");
+        index++;
+        //list
+        long add = time - lastTime;
+        startDate = new Date(startDate.getTime() + add);
+        String dateStr = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss.S", startDate);
+        mData.add(0, new StopwatchItem("计次"+index, dateStr, "+" + format(add)));
+        lastTime = time;
+        updateList();
     }
 
     private void updateTime(){
-
         int hour=(int) (time / (3600 * 1000)) % 60;
         int minute = (int) (time / (60 * 1000)) % 60;
         int second = (int) (time / 1000) % 1000;
@@ -174,7 +210,29 @@ public class StopwatchFragment extends QMUIFragment {
     }
 
     private void updateList(){
+        adapter.notifyDataSetChanged();
+    }
 
+    private String format(long time){
+        int hour=(int) (time / (3600 * 1000)) % 60;
+        int minute = (int) (time / (60 * 1000)) % 60;
+        int second = (int) (time / 1000) % 1000;
+        int msecond = (int) (time % 1000) / 100;
+        String str = "";
+        if (hour < 10)
+            str += "0" + hour+":";
+        else
+            str += "" + hour+":";
+        if (minute < 10)
+            str += "0" + minute+":";
+        else
+            str += "" + minute+":";
+        if (second < 10)
+            str += "0" + second;
+        else
+            str += "" + second;
+        str += "." + msecond;
+        return str;
     }
 
     Handler mHandler = new Handler(){

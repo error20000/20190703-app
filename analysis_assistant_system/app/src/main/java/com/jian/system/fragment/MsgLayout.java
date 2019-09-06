@@ -49,6 +49,7 @@ import com.jian.system.entity.Dict;
 import com.jian.system.entity.Messages;
 import com.jian.system.fragment.components.AidDetailFragment;
 import com.jian.system.fragment.components.AidListFragment;
+import com.jian.system.fragment.components.MsgAddFragment;
 import com.jian.system.fragment.components.MsgDetailFragment;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.FormatUtils;
@@ -147,7 +148,14 @@ public class MsgLayout extends QMUIWindowInsetLayout {
 
     private void initTopBar() {
 
-        mTopBar.addRightImageButton(R.drawable.ic_filter, R.id.topbar_right_change_button).setOnClickListener(new View.OnClickListener() {
+        mTopBar.addRightImageButton(R.drawable.ic_xinzeng, R.id.topbar_right_change_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MsgAddFragment fragment = new MsgAddFragment();
+                startFragment(fragment);
+            }
+        });
+        mTopBar.addRightImageButton(R.drawable.ic_filter2, R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 showPopupList(view);

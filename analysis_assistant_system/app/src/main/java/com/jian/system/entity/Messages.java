@@ -7,6 +7,7 @@ public class Messages {
 
 	private String sMsg_ID;
 	private String sMsg_Type;
+	private String sMsg_TypeName;
 	private Date dMsg_CreateDate;
 	private String sMsg_ToUserID;
 	private String sMsg_ToUserName;
@@ -23,10 +24,22 @@ public class Messages {
 	private String sMsg_FromUserID;
 	private String sMsg_FromUserName;
 	private String sMsg_Label;
+	private String sMsg_LabelName;
 	private int lMsg_Level = Integer.MAX_VALUE;
 	private String sMsg_Status;
+	private String sMsg_StatusName;
 	private String sMsg_Title;
-	
+	private String sMsg_StoreLv1;
+	private String sMsg_StoreLv1Name;
+	private String sMsg_StoreLv2;
+	private String sMsg_StoreLv2Name;
+	private String sMsg_StoreLv3;
+	private String sMsg_StoreLv3Name;
+	private String sMsg_StoreLv4;
+	private String sMsg_StoreLv4Name;
+	private int dMsg_StoreNum;
+	private String sMsg_Reason;
+	private String sMsg_ReasonName;
 	
 
 	public String getsMsg_ID() {
@@ -164,5 +177,117 @@ public class Messages {
 
 	public void setsMsg_FromUserName(String sMsg_FromUserName) {
 		this.sMsg_FromUserName = sMsg_FromUserName;
+	}
+
+	public String getsMsg_TypeName() {
+		return sMsg_TypeName;
+	}
+
+	public void setsMsg_TypeName(String sMsg_TypeName) {
+		this.sMsg_TypeName = sMsg_TypeName;
+	}
+
+	public String getsMsg_LabelName() {
+		return sMsg_LabelName;
+	}
+
+	public void setsMsg_LabelName(String sMsg_LabelName) {
+		this.sMsg_LabelName = sMsg_LabelName;
+	}
+
+	public String getsMsg_StatusName() {
+		return sMsg_StatusName;
+	}
+
+	public void setsMsg_StatusName(String sMsg_StatusName) {
+		this.sMsg_StatusName = sMsg_StatusName;
+	}
+
+	public String getsMsg_StoreLv1() {
+		return sMsg_StoreLv1;
+	}
+
+	public void setsMsg_StoreLv1(String sMsg_StoreLv1) {
+		this.sMsg_StoreLv1 = sMsg_StoreLv1;
+	}
+
+	public String getsMsg_StoreLv1Name() {
+		return sMsg_StoreLv1Name;
+	}
+
+	public void setsMsg_StoreLv1Name(String sMsg_StoreLv1Name) {
+		this.sMsg_StoreLv1Name = sMsg_StoreLv1Name;
+	}
+
+	public String getsMsg_StoreLv2() {
+		return sMsg_StoreLv2;
+	}
+
+	public void setsMsg_StoreLv2(String sMsg_StoreLv2) {
+		this.sMsg_StoreLv2 = sMsg_StoreLv2;
+	}
+
+	public String getsMsg_StoreLv2Name() {
+		return sMsg_StoreLv2Name;
+	}
+
+	public void setsMsg_StoreLv2Name(String sMsg_StoreLv2Name) {
+		this.sMsg_StoreLv2Name = sMsg_StoreLv2Name;
+	}
+
+	public String getsMsg_StoreLv3() {
+		return sMsg_StoreLv3;
+	}
+
+	public void setsMsg_StoreLv3(String sMsg_StoreLv3) {
+		this.sMsg_StoreLv3 = sMsg_StoreLv3;
+	}
+
+	public String getsMsg_StoreLv3Name() {
+		return sMsg_StoreLv3Name;
+	}
+
+	public void setsMsg_StoreLv3Name(String sMsg_StoreLv3Name) {
+		this.sMsg_StoreLv3Name = sMsg_StoreLv3Name;
+	}
+
+	public String getsMsg_StoreLv4() {
+		return sMsg_StoreLv4;
+	}
+
+	public void setsMsg_StoreLv4(String sMsg_StoreLv4) {
+		this.sMsg_StoreLv4 = sMsg_StoreLv4;
+	}
+
+	public String getsMsg_StoreLv4Name() {
+		return sMsg_StoreLv4Name;
+	}
+
+	public void setsMsg_StoreLv4Name(String sMsg_StoreLv4Name) {
+		this.sMsg_StoreLv4Name = sMsg_StoreLv4Name;
+	}
+
+	public int getdMsg_StoreNum() {
+		return dMsg_StoreNum;
+	}
+
+	public void setdMsg_StoreNum(int dMsg_StoreNum) {
+		this.dMsg_StoreNum = dMsg_StoreNum;
+	}
+
+	public String getsMsg_Reason() {
+		return sMsg_Reason;
+	}
+
+	public void setsMsg_Reason(String sMsg_Reason) {
+		this.sMsg_Reason = sMsg_Reason;
+	}
+
+	public String getsMsg_ReasonName() {
+		return sMsg_ReasonName;
+	}
+
+	public void setsMsg_ReasonName(String sMsg_ReasonName) {
+		this.sMsg_ReasonName = sMsg_ReasonName;
 	}
 }
