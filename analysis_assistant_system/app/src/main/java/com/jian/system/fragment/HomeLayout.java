@@ -35,6 +35,7 @@ import com.jian.system.fragment.components.MapFragment;
 import com.jian.system.fragment.components.MsgDetailFragment;
 import com.jian.system.fragment.components.NfcFragment;
 import com.jian.system.fragment.components.ScanFragment;
+import com.jian.system.fragment.components.StopwatchFragment;
 import com.jian.system.model.HomeRvItem;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
@@ -118,7 +119,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
         data.add(new HomeRvItem(ScanFragment.class, "器材扫码", R.drawable.ic_scan_foreground));
         data.add(new HomeRvItem(NfcFragment.class, "器材NFC", R.drawable.ic_nfc_foreground));
         data.add(new HomeRvItem(MapFragment.class, "电子地图", R.drawable.ic_map_foreground));
-        data.add(new HomeRvItem(EquipListFragment.class, "消息中心", R.mipmap.icon_tabbar_component));
+        data.add(new HomeRvItem(StopwatchFragment.class, "秒表", R.drawable.ic_miaobiao));
 
         mItemAdapter = new HomeRvItemAdapter(context, data);
         mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
