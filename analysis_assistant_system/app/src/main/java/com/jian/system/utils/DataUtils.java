@@ -30,7 +30,7 @@ public class DataUtils {
         }
         //缓存获取数据
         List<Dict> cacheData = DataCacheUtils.getList(sDict_DictTypeNO, Dict.class);
-        if(cacheData != null){
+        if(cacheData != null && cacheData.size() > 0){
             Log.d(TAG, sDict_DictTypeNO + " Dict 从缓存获取数据。");
             resData.addAll(cacheData);
             return;
