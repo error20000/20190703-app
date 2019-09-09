@@ -45,9 +45,9 @@ public class MessagesAdapter extends BaseRecyclerAdapter<Messages> {
         String typeName = FormatUtils.formatDict(item.getsMsg_Type(), msgTypeData);
         holder.getTextView(R.id.item_type).setText(typeName);
 
-        String statusName = FormatUtils.formatDict(item.getsMsg_Label(), msgStatusData);
+        String statusName = FormatUtils.formatDict(item.getsMsg_Status(), msgStatusData);
         holder.getTextView(R.id.item_status).setText(statusName);
-        String color = FormatUtils.formatDictCustom(item.getsMsg_Label(), msgStatusData, "Color");
+        String color = FormatUtils.formatDictCustom(item.getsMsg_Status(), msgStatusData, "Color");
         color = Utils.isNullOrEmpty(color) ? "#3B7FD4" : color;
         holder.getTextView(R.id.item_status).setBackgroundColor(Color.parseColor(color));
 

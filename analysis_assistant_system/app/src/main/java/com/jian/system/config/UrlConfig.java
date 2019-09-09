@@ -2,7 +2,7 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.1.45:8065";
+    public static String baseUrl = "http://192.168.106.67:8065";
 //    public static String baseUrl = "http://gztest.yunh.xyz:8085";
 
     //系统
@@ -40,6 +40,7 @@ public class UrlConfig {
     public static String storeTypeQueryUrl = baseUrl + "/api/store/app/findType";
     public static String storeQueryUrl = baseUrl + "/api/store/app/findList";
     public static String storeQueryMapUrl = baseUrl + "/api/store/app/map";
+    public static String storeQueryEquipUrl = baseUrl + "/api/store/app/equip";
 
     //NFC
     public static String nfcQueryUrl = baseUrl + "/api/nfc/app/findAll";

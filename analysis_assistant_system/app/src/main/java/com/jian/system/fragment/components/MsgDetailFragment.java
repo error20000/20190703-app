@@ -202,6 +202,7 @@ public class MsgDetailFragment extends QMUIFragment {
 
         QMUICommonListItemView msgLevel = mGroupListView.createItemView("消息级别");
         msgLevel.setDetailText(msg.getlMsg_Level() == Integer.MAX_VALUE ? "默认" : msg.getlMsg_Level()+"");
+        msgLevel.setVisibility(View.GONE);
 
         QMUICommonListItemView msgStatus = mGroupListView.createItemView("消息状态");
         String statusName = FormatUtils.formatDict(msg.getsMsg_Status(), msgStatusData);
@@ -210,14 +211,32 @@ public class MsgDetailFragment extends QMUIFragment {
         QMUICommonListItemView msgLabel = mGroupListView.createItemView("自定义标签");
         String labelName = FormatUtils.formatDict(msg.getsMsg_Label(), msgLabelData);
         msgLabel.setDetailText(labelName);
+        msgLabel.setVisibility(View.GONE);
 
         QMUICommonListItemView msgAid = mGroupListView.createItemView("航标");
         String aidName = Utils.isNullOrEmpty(msg.getsMsg_AidName()) ? msg.getsMsg_AidID() : msg.getsMsg_AidName();
         msgAid.setDetailText(aidName);
+        if(Utils.isNullOrEmpty(aidName)){
+            msgAid.setVisibility(View.GONE);
+        }
+
+        QMUICommonListItemView msgStore = mGroupListView.createItemView("仓库");
+        String storeName = "";
+        storeName += Utils.isNullOrEmpty(msg.getsMsg_StoreLv1Name()) ? "": msg.getsMsg_StoreLv1Name();
+        storeName += Utils.isNullOrEmpty(msg.getsMsg_StoreLv2Name()) ? "": "/"+msg.getsMsg_StoreLv2Name();
+        storeName += Utils.isNullOrEmpty(msg.getsMsg_StoreLv3Name()) ? "": "/"+msg.getsMsg_StoreLv3Name();
+        storeName += Utils.isNullOrEmpty(msg.getsMsg_StoreLv4Name()) ? "": "/"+msg.getsMsg_StoreLv4Name();
+        msgStore.setDetailText(storeName);
+        if(Utils.isNullOrEmpty(storeName)){
+            msgStore.setVisibility(View.GONE);
+        }
 
         QMUICommonListItemView msgEquip = mGroupListView.createItemView("器材");
         String equipName = Utils.isNullOrEmpty(msg.getsMsg_EquipName()) ? msg.getsMsg_EquipID() : msg.getsMsg_EquipName();
         msgEquip.setDetailText(equipName);
+        if(Utils.isNullOrEmpty(equipName)){
+            msgEquip.setVisibility(View.GONE);
+        }
 
         QMUICommonListItemView msgToUser = mGroupListView.createItemView("消息接收人员");
         msgToUser.setDetailText(msg.getsMsg_ToUserName());
@@ -263,7 +282,6 @@ public class MsgDetailFragment extends QMUIFragment {
 
     private void initData(){
         //查询数据 -- 判断网络
-
         tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
                 .setTipWord("正在加载")
@@ -368,10 +386,12 @@ public class MsgDetailFragment extends QMUIFragment {
         msg = resObj.getObject("data", Messages.class);
         //展示数据
         initInfo();
+        //已读标记
         if("1".equals(msg.getsMsg_Status())){
             Map<String, Object> params = new HashMap<>();
             params.put("sMsg_ID", msg.getsMsg_ID());
             readMsg(params);
+            msg.setsMsg_Status("1");
         }
     }
 
