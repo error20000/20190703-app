@@ -5,6 +5,7 @@ import android.database.Cursor;
 
 import com.jian.system.db.BaseHelper;
 import com.jian.system.entity.Store;
+import com.jian.system.entity.Sync;
 import com.jian.system.entity.System;
 
 import java.util.ArrayList;
@@ -41,18 +42,29 @@ public class SyncMapper {
         return list;
     }
 
+    public Sync selectOne(String sSync_TableName){
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(" select * from ");
+        buffer.append(tableName);
+        buffer.append(" where sSync_TableName = ? ");
+
+        Cursor cursor = baseHelper.getReadableDatabase()
+                .rawQuery(buffer.toString(), new String[]{sSync_TableName});
+
+        Sync obj = new Sync();
+        obj.cursorToBean(cursor);
+
+        cursor.close();
+        return obj;
+    }
+
     public static String createTable(){
         StringBuffer buffer = new StringBuffer();
         buffer.append("CREATE TABLE ").append(tableName);
         buffer.append(" ( ");
-        buffer.append(" 	 sSys_ID NVARCHAR(32) NOT NULL, ");
-        buffer.append("      sSys_MapService NVARCHAR(255),");
-        buffer.append("      lSys_MapLat NUMBER,");
-        buffer.append("      lSys_MapLng NUMBER,");
-        buffer.append("      lSys_MapLevel NUMBER,");
-        buffer.append("      lSys_MapIconWidth NUMBER,");
-        buffer.append("      lSys_MapIconHeight NUMBER,");
-        buffer.append("  PRIMARY KEY (sSys_ID)");
+        buffer.append(" 	 sSync_TableName NVARCHAR(32) NOT NULL, ");
+        buffer.append("      dSync_UpdateDate DATE,");
+        buffer.append("  PRIMARY KEY (sSync_TableName)");
         buffer.append(" );");
         return buffer.toString();
     }

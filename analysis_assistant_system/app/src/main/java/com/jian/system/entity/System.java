@@ -1,6 +1,7 @@
 package com.jian.system.entity;
 
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class System {
@@ -69,5 +70,17 @@ public class System {
 		this.lSys_MapIconHeight = cursor.getInt(cursor.getColumnIndex("lSys_MapIconHeight"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sSys_ID", sSys_ID);
+		values.put("sSys_MapService", sSys_MapService);
+		values.put("lSys_MapLng", lSys_MapLng);
+		values.put("lSys_MapLat", lSys_MapLat);
+		values.put("lSys_MapLevel", lSys_MapLevel);
+		values.put("lSys_MapIconWidth", lSys_MapIconWidth);
+		values.put("lSys_MapIconHeight", lSys_MapIconHeight);
+		return values;
 	}
 }

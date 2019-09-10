@@ -65,11 +65,11 @@ public class UrlConfig {
     public static String msgAddUrl = baseUrl + "/api/msg/app/add";
 
     //同步数据
-    public static String dataSystemUrl = baseUrl + "/api/data/app/system";
-    public static String dataDictUrl = baseUrl + "/api/data/app/dict";
-    public static String dataStoreUrl = baseUrl + "/api/data/app/store";
-    public static String dataAidUrl = baseUrl + "/api/data/app/aid";
-    public static String dataNfcUrl = baseUrl + "/api/data/app/nfc";
-    public static String dataEquipUrl = baseUrl + "/api/data/app/equip";
-    public static String dataMsgUrl = baseUrl + "/api/data/app/msg";
+    public static String syncSystemUrl = baseUrl + "/api/sync/app/system";
+    public static String syncDictUrl = baseUrl + "/api/sync/app/dict";
+    public static String syncStoreUrl = baseUrl + "/api/sync/app/store";
+    public static String syncAidUrl = baseUrl + "/api/sync/app/aid";
+    public static String syncNfcUrl = baseUrl + "/api/sync/app/nfc";
+    public static String syncEquipUrl = baseUrl + "/api/sync/app/equip";
+    public static String syncMsgUrl = baseUrl + "/api/sync/app/msg";
 }

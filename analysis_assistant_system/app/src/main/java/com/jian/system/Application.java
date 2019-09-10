@@ -2,6 +2,7 @@
 package com.jian.system;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
@@ -9,6 +10,7 @@ import androidx.multidex.MultiDexApplication;
 import com.jian.system.entity.System;
 import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.utils.NetworkUtils;
+import com.jian.system.utils.SyncUtils;
 import com.qmuiteam.qmui.arch.QMUISwipeBackActivityManager;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -50,6 +52,10 @@ public class Application extends MultiDexApplication {
         //QDUpgradeManager.getInstance(this).check();
 
         hasNetwork = NetworkUtils.isNetworkConnected(this);
+        Log.d("dddddddddddddddddd", hasNetwork+"");
+        if(hasNetwork){
+            SyncUtils.systemData();
+        }
 
         tokenStr = GestureUtils.get(this, GestureUtils.USER_TOEKN);
         tokenStr = tokenStr == null ? "" : tokenStr;
