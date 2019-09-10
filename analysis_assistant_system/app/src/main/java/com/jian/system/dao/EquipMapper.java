@@ -24,7 +24,6 @@ public class EquipMapper {
 
 
     public List<Equip> selectPage(Map<String, Object> condition, int start, int rows){
-
         List<Equip> list = new ArrayList<>();
         List<String> args = new ArrayList<>();
         StringBuffer buffer = new StringBuffer();
@@ -52,7 +51,6 @@ public class EquipMapper {
     }
 
     public long size(Map<String, Object> condition){
-
         List<String> args = new ArrayList<>();
         StringBuffer buffer = new StringBuffer();
         buffer.append("select count (*) from ");
@@ -74,7 +72,6 @@ public class EquipMapper {
     }
 
     public Equip selectOne(Map<String, Object> condition){
-
         List<String> args = new ArrayList<>();
         StringBuffer buffer = new StringBuffer();
         buffer.append("select * from ");
@@ -107,13 +104,32 @@ public class EquipMapper {
         buffer.append(" where 1 = 1");
         if(condition != null){
             for (String key : condition.keySet()) {
-                buffer.append(" and ").append(key).append(" = ?");
+                buffer.append(" and ").append(key).append(" = ? ");
                 args.add(String.valueOf(condition.get(key)));
             }
         }
 
         Cursor cursor = baseHelper.getReadableDatabase()
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
+
+        while (cursor.moveToNext()) {
+            Equip obj = new Equip();
+            obj.cursorToBean(cursor);
+            list.add(obj);
+        }
+        cursor.close();
+        return list;
+    }
+
+    public List<Equip> search(String keywords){
+        List<Equip> list = new ArrayList<>();
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("select * from ");
+        buffer.append(tableName);
+        buffer.append(" where sEquip_NO like '%"+keywords+"%' ");
+
+        Cursor cursor = baseHelper.getReadableDatabase()
+                .rawQuery(buffer.toString(), null);
 
         while (cursor.moveToNext()) {
             Equip obj = new Equip();

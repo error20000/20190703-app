@@ -8,6 +8,7 @@ import androidx.multidex.MultiDexApplication;
 
 import com.jian.system.entity.System;
 import com.jian.system.gesture.util.GestureUtils;
+import com.jian.system.utils.NetworkUtils;
 import com.qmuiteam.qmui.arch.QMUISwipeBackActivityManager;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -15,6 +16,7 @@ public class Application extends MultiDexApplication {
 
     private static Context context;
     private static String tokenStr;
+    public static boolean hasNetwork = true;
 
     public static final int Scan_Search_Request_Code = 100;
     public static final int Scan_Add_Request_Code = 200;
@@ -46,6 +48,8 @@ public class Application extends MultiDexApplication {
         LeakCanary.install(this);
 
         //QDUpgradeManager.getInstance(this).check();
+
+        hasNetwork = NetworkUtils.isNetworkConnected(this);
 
         tokenStr = GestureUtils.get(this, GestureUtils.USER_TOEKN);
         tokenStr = tokenStr == null ? "" : tokenStr;

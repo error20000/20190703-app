@@ -38,5 +38,7 @@ public class Constant {
     public static String msgLabelDict = "MsgLabel";
     public static String msgReasonDict = "MsgReason";
 
+    //系统设置
+    public static String superGroupId = "1";
 
 }

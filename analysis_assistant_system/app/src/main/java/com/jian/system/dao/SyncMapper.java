@@ -4,40 +4,47 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.jian.system.db.BaseHelper;
-import com.jian.system.entity.Dict;
+import com.jian.system.entity.Store;
 import com.jian.system.entity.System;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SystemMapper {
+public class SyncMapper {
 
-    private final static String TAG = SystemMapper.class.getSimpleName();
-    public static String tableName = "tBase_System";
+    private final static String TAG = SyncMapper.class.getSimpleName();
+    public static String tableName = "tBase_Sync";
 
     private BaseHelper baseHelper;
 
-    public SystemMapper(Context context){
+    public SyncMapper(Context context){
         baseHelper = BaseHelper.getInstance(context);
     }
 
 
-    public void delete(){
-
+    public List<Sync> delete(){
+        List<Store> list = new ArrayList<>();
         StringBuffer buffer = new StringBuffer();
         buffer.append("select * from ");
         buffer.append(tableName);
-        buffer.append(" limit 1 ");
+        if(condition != null){
+            for (String key : condition.keySet()) {
+                buffer.append(" and ").append(key).append(" = ?");
+                args.add(String.valueOf(condition.get(key)));
+            }
+        }
 
         Cursor cursor = baseHelper.getReadableDatabase()
-                .rawQuery(buffer.toString(), null);
+                .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
 
-        System obj = new System();
-        obj.cursorToBean(cursor);
-
+        while (cursor.moveToNext()) {
+            Store obj = new Store();
+            obj.cursorToBean(cursor);
+            list.add(obj);
+        }
         cursor.close();
-        return obj;
+        return list;
     }
 
     public static String createTable(){
