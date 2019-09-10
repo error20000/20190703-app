@@ -23,23 +23,17 @@ public class SyncMapper {
     }
 
 
-    public List<Sync> delete(){
-        List<Store> list = new ArrayList<>();
+    public List<Sync> selectAll(){
+        List<Sync> list = new ArrayList<>();
         StringBuffer buffer = new StringBuffer();
         buffer.append("select * from ");
         buffer.append(tableName);
-        if(condition != null){
-            for (String key : condition.keySet()) {
-                buffer.append(" and ").append(key).append(" = ?");
-                args.add(String.valueOf(condition.get(key)));
-            }
-        }
 
         Cursor cursor = baseHelper.getReadableDatabase()
-                .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
+                .rawQuery(buffer.toString(), null);
 
         while (cursor.moveToNext()) {
-            Store obj = new Store();
+            Sync obj = new Sync();
             obj.cursorToBean(cursor);
             list.add(obj);
         }
