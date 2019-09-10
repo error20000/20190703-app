@@ -1,5 +1,7 @@
 package com.jian.system.entity;
 
+import android.database.Cursor;
+
 import java.util.Date;
 
 public class Aid {
@@ -19,6 +21,14 @@ public class Aid {
 	private String sAid_Mark;
 	private String sAid_NfcID;
 	private Date dAid_CreateDate;
+	private String sAid_Status;
+
+	private float lAid_LatDu;
+	private float lAid_LatFen;
+	private float lAid_LatMiao;
+	private float lAid_LngDu;
+	private float lAid_LngFen;
+	private float lAid_LngMiao;
 	
 	
 	public String getsAid_ID() {
@@ -105,5 +115,74 @@ public class Aid {
 	public void setdAid_BuildDate(Date dAid_BuildDate) {
 		this.dAid_BuildDate = dAid_BuildDate;
 	}
-	
+	public String getsAid_Status() {
+		return sAid_Status;
+	}
+	public void setsAid_Status(String sAid_Status) {
+		this.sAid_Status = sAid_Status;
+	}
+	public float getlAid_LatDu() {
+		return lAid_LatDu;
+	}
+	public void setlAid_LatDu(float lAid_LatDu) {
+		this.lAid_LatDu = lAid_LatDu;
+	}
+	public float getlAid_LatFen() {
+		return lAid_LatFen;
+	}
+	public void setlAid_LatFen(float lAid_LatFen) {
+		this.lAid_LatFen = lAid_LatFen;
+	}
+	public float getlAid_LatMiao() {
+		return lAid_LatMiao;
+	}
+	public void setlAid_LatMiao(float lAid_LatMiao) {
+		this.lAid_LatMiao = lAid_LatMiao;
+	}
+	public float getlAid_LngDu() {
+		return lAid_LngDu;
+	}
+	public void setlAid_LngDu(float lAid_LngDu) {
+		this.lAid_LngDu = lAid_LngDu;
+	}
+	public float getlAid_LngFen() {
+		return lAid_LngFen;
+	}
+	public void setlAid_LngFen(float lAid_LngFen) {
+		this.lAid_LngFen = lAid_LngFen;
+	}
+	public float getlAid_LngMiao() {
+		return lAid_LngMiao;
+	}
+	public void setlAid_LngMiao(float lAid_LngMiao) {
+		this.lAid_LngMiao = lAid_LngMiao;
+	}
+
+	public Aid cursorToBean(Cursor cursor){
+		this.sAid_ID = cursor.getString(cursor.getColumnIndex("sAid_ID"));
+		this.sAid_Name = cursor.getString(cursor.getColumnIndex("sAid_Name"));
+		this.sAid_NO = cursor.getString(cursor.getColumnIndex("sAid_NO"));
+		this.lAid_Lat = cursor.getFloat(cursor.getColumnIndex("lAid_Lat"));
+		this.lAid_Lng = cursor.getFloat(cursor.getColumnIndex("lAid_Lng"));
+		this.sAid_Station = cursor.getString(cursor.getColumnIndex("sAid_Station"));
+		this.sAid_Type = cursor.getString(cursor.getColumnIndex("sAid_Type"));
+		this.sAid_Icon = cursor.getString(cursor.getColumnIndex("sAid_Icon"));
+		this.dAid_BuildDate = new Date(cursor.getLong(cursor.getColumnIndex("dAid_BuildDate")));
+		this.dAid_DelDate =  new Date(cursor.getLong(cursor.getColumnIndex("dAid_DelDate")));
+		this.sAid_Lighting = cursor.getString(cursor.getColumnIndex("sAid_Lighting"));
+		this.sAid_Mark = cursor.getString(cursor.getColumnIndex("sAid_Mark"));
+		this.sAid_NfcID = cursor.getString(cursor.getColumnIndex("sAid_NfcID"));
+		this.dAid_CreateDate =  new Date(cursor.getLong(cursor.getColumnIndex("dAid_CreateDate")));
+		this.sAid_Status = cursor.getString(cursor.getColumnIndex("sAid_Status"));
+
+		this.lAid_LatDu = cursor.getFloat(cursor.getColumnIndex("lAid_LatDu"));
+		this.lAid_LatFen = cursor.getFloat(cursor.getColumnIndex("lAid_LatFen"));
+		this.lAid_LatMiao = cursor.getFloat(cursor.getColumnIndex("lAid_LatMiao"));
+		this.lAid_LngDu = cursor.getFloat(cursor.getColumnIndex("lAid_LngDu"));
+		this.lAid_LngFen = cursor.getFloat(cursor.getColumnIndex("lAid_LngFen"));
+		this.lAid_LngMiao = cursor.getFloat(cursor.getColumnIndex("lAid_LngMiao"));
+
+		return this;
+	}
+
 }

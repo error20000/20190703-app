@@ -1,5 +1,7 @@
 package com.jian.system.entity;
 
+import android.database.Cursor;
+
 import java.util.Date;
 
 public class Nfc {
@@ -43,5 +45,14 @@ public class Nfc {
 	public void setdNfc_CreateDate(Date dNfc_CreateDate) {
 		this.dNfc_CreateDate = dNfc_CreateDate;
 	}
-	
+
+
+	public Nfc cursorToBean(Cursor cursor){
+		this.sNfc_ID = cursor.getString(cursor.getColumnIndex("sNfc_ID"));
+		this.sNfc_Name = cursor.getString(cursor.getColumnIndex("sNfc_Name"));
+		this.sNfc_NO = cursor.getString(cursor.getColumnIndex("sNfc_NO"));
+		this.lNfc_StatusFlag = cursor.getInt(cursor.getColumnIndex("lNfc_StatusFlag"));
+		this.dNfc_CreateDate = new Date(cursor.getLong(cursor.getColumnIndex("dNfc_CreateDate")));
+		return this;
+	}
 }

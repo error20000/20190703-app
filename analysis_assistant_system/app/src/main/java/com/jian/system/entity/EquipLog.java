@@ -1,5 +1,7 @@
 package com.jian.system.entity;
 
+import android.database.Cursor;
+
 import java.util.Date;
 
 
@@ -14,6 +16,10 @@ public class EquipLog  {
 	private String sELog_Describe;
 	private String sELog_Remarks;
 	private String sELog_IP;
+	private String sELog_StoreLv1;
+	private String sELog_StoreLv2;
+	private String sELog_StoreLv3;
+	private String sELog_StoreLv4;
 	
 	
 	
@@ -65,5 +71,53 @@ public class EquipLog  {
 	public void setsELog_IP(String sELog_IP) {
 		this.sELog_IP = sELog_IP;
 	}
-	
+
+	public String getsELog_StoreLv1() {
+		return sELog_StoreLv1;
+	}
+
+	public void setsELog_StoreLv1(String sELog_StoreLv1) {
+		this.sELog_StoreLv1 = sELog_StoreLv1;
+	}
+
+	public String getsELog_StoreLv2() {
+		return sELog_StoreLv2;
+	}
+
+	public void setsELog_StoreLv2(String sELog_StoreLv2) {
+		this.sELog_StoreLv2 = sELog_StoreLv2;
+	}
+
+	public String getsELog_StoreLv3() {
+		return sELog_StoreLv3;
+	}
+
+	public void setsELog_StoreLv3(String sELog_StoreLv3) {
+		this.sELog_StoreLv3 = sELog_StoreLv3;
+	}
+
+	public String getsELog_StoreLv4() {
+		return sELog_StoreLv4;
+	}
+
+	public void setsELog_StoreLv4(String sELog_StoreLv4) {
+		this.sELog_StoreLv4 = sELog_StoreLv4;
+	}
+
+	public EquipLog cursorToBean(Cursor cursor){
+		this.sELog_ID = cursor.getString(cursor.getColumnIndex("sELog_ID"));
+		this.sELog_Type = cursor.getString(cursor.getColumnIndex("sELog_Type"));
+		this.dELog_CreateDate = new Date(cursor.getLong(cursor.getColumnIndex("dELog_CreateDate")));
+		this.sELog_UserID = cursor.getString(cursor.getColumnIndex("sELog_UserID"));
+		this.sELog_EquipID = cursor.getString(cursor.getColumnIndex("sELog_EquipID"));
+		this.sELog_Describe = cursor.getString(cursor.getColumnIndex("sELog_Describe"));
+		this.sELog_Remarks = cursor.getString(cursor.getColumnIndex("sELog_Remarks"));
+		this.sELog_IP = cursor.getString(cursor.getColumnIndex("sELog_IP"));
+		this.sELog_StoreLv1 = cursor.getString(cursor.getColumnIndex("sELog_StoreLv1"));
+		this.sELog_StoreLv2 = cursor.getString(cursor.getColumnIndex("sELog_StoreLv2"));
+		this.sELog_StoreLv3 = cursor.getString(cursor.getColumnIndex("sELog_StoreLv3"));
+		this.sELog_StoreLv4 = cursor.getString(cursor.getColumnIndex("sELog_StoreLv4"));
+
+		return this;
+	}
 }

@@ -1,5 +1,11 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.text.TextUtils;
+
+import com.jian.system.utils.Utils;
+
 import java.util.Date;
 
 
@@ -94,5 +100,61 @@ public class User  {
 		this.sUser_UserID = sUser_UserID;
 	}
 	
-	
+
+	public  User cursorToBean(Cursor cursor){
+		this.sUser_ID = cursor.getString(cursor.getColumnIndex("sUser_ID"));
+		this.sUser_UserName = cursor.getString(cursor.getColumnIndex("sUser_UserName"));
+		this.sUser_PassWord = cursor.getString(cursor.getColumnIndex("sUser_PassWord"));
+		this.sUser_Nick = cursor.getString(cursor.getColumnIndex("sUser_Nick"));
+		this.lUser_StatusFlag = cursor.getInt(cursor.getColumnIndex("lUser_StatusFlag"));
+		this.sUser_GroupID = cursor.getString(cursor.getColumnIndex("sUser_GroupID"));
+		this.sUser_QQ = cursor.getString(cursor.getColumnIndex("sUser_QQ"));
+		this.sUser_Email = cursor.getString(cursor.getColumnIndex("sUser_Email"));
+		this.sUser_Phone = cursor.getString(cursor.getColumnIndex("sUser_Phone"));
+		this.sUser_ThirdID = cursor.getString(cursor.getColumnIndex("sUser_ThirdID"));
+		this.dUser_CreateDate = new Date(cursor.getLong(cursor.getColumnIndex("dUser_CreateDate")));
+		this.sUser_UserID = cursor.getString(cursor.getColumnIndex("sUser_UserID"));
+		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		if (!Utils.isNullOrEmpty(sUser_ID)) {
+			values.put("sUser_ID", sUser_ID);
+		}
+		if (!Utils.isNullOrEmpty(sUser_UserName)) {
+			values.put("sUser_UserName", sUser_UserName);
+		}
+		if (!Utils.isNullOrEmpty(sUser_PassWord)) {
+			values.put("sUser_PassWord", sUser_PassWord);
+		}
+		if (!Utils.isNullOrEmpty(sUser_Nick)) {
+			values.put("sUser_Nick", sUser_Nick);
+		}
+		if (!Utils.isNullOrEmpty(lUser_StatusFlag)) {
+			values.put("lUser_StatusFlag", lUser_StatusFlag);
+		}
+		if (!Utils.isNullOrEmpty(sUser_GroupID)) {
+			values.put("sUser_GroupID", sUser_GroupID);
+		}
+		if (!Utils.isNullOrEmpty(sUser_QQ)) {
+			values.put("sUser_QQ", sUser_QQ);
+		}
+		if (!Utils.isNullOrEmpty(sUser_Email)) {
+			values.put("sUser_Email", sUser_Email);
+		}
+		if (!Utils.isNullOrEmpty(sUser_Phone)) {
+			values.put("sUser_Phone", sUser_Phone);
+		}
+		if (!Utils.isNullOrEmpty(sUser_ThirdID)) {
+			values.put("sUser_ThirdID", sUser_ThirdID);
+		}
+		if (!Utils.isNullOrEmpty(dUser_CreateDate)) {
+			values.put("dUser_CreateDate", dUser_CreateDate.getTime());
+		}
+		if (!Utils.isNullOrEmpty(sUser_UserID)) {
+			values.put("sUser_UserID", sUser_UserID);
+		}
+		return values;
+	}
 }

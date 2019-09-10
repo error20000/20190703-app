@@ -1,5 +1,7 @@
 package com.jian.system.entity;
 
+import android.database.Cursor;
+
 import java.util.Date;
 
 public class Equip {
@@ -146,4 +148,31 @@ public class Equip {
 	public void setdEquip_DumpDate(Date dEquip_DumpDate) {
 		this.dEquip_DumpDate = dEquip_DumpDate;
 	}
+
+
+	public Equip cursorToBean(Cursor cursor){
+		this.sEquip_ID = cursor.getString(cursor.getColumnIndex("sEquip_ID"));
+		this.sEquip_NO = cursor.getString(cursor.getColumnIndex("sEquip_NO"));
+		this.sEquip_Name = cursor.getString(cursor.getColumnIndex("sEquip_Name"));
+		this.sEquip_StoreLv1 = cursor.getString(cursor.getColumnIndex("sEquip_StoreLv1"));
+		this.sEquip_StoreLv2 = cursor.getString(cursor.getColumnIndex("sEquip_StoreLv2"));
+		this.sEquip_StoreLv3 = cursor.getString(cursor.getColumnIndex("sEquip_StoreLv3"));
+		this.sEquip_StoreLv4 = cursor.getString(cursor.getColumnIndex("sEquip_StoreLv4"));
+		this.sEquip_Type = cursor.getString(cursor.getColumnIndex("sEquip_Type"));
+		this.sEquip_Status = cursor.getString(cursor.getColumnIndex("sEquip_Status"));
+		this.sEquip_NfcID = cursor.getString(cursor.getColumnIndex("sEquip_NfcID"));
+		this.sEquip_AidID = cursor.getString(cursor.getColumnIndex("sEquip_AidID"));
+		this.dEquip_CreateDate = new Date(cursor.getLong(cursor.getColumnIndex("dEquip_CreateDate")));
+		this.sEquip_Icon = cursor.getString(cursor.getColumnIndex("sEquip_Icon"));
+		this.sEquip_Manufacturer = cursor.getString(cursor.getColumnIndex("sEquip_Manufacturer"));
+		this.sEquip_MModel = cursor.getString(cursor.getColumnIndex("sEquip_MModel"));
+		this.dEquip_ArrivalDate = new Date(cursor.getLong(cursor.getColumnIndex("dEquip_ArrivalDate")));
+		this.dEquip_UseDate = new Date(cursor.getLong(cursor.getColumnIndex("dEquip_UseDate")));
+		this.dEquip_StoreDate = new Date(cursor.getLong(cursor.getColumnIndex("dEquip_StoreDate")));
+		this.sEquip_MBrand = cursor.getString(cursor.getColumnIndex("sEquip_MBrand"));
+		this.dEquip_DumpDate = new Date(cursor.getLong(cursor.getColumnIndex("dEquip_DumpDate")));
+
+		return this;
+	}
+
 }

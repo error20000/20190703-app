@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.zip.GZIPInputStream;
@@ -53,6 +57,9 @@ public class Utils {
 		return String.valueOf(SnowflakeIdWorker.generateId());
 	}
 
+	public static Map<String, Object> objToMap(Object obj){
+		return JSONObject.parseObject(JSONObject.toJSONString(obj), new TypeReference<Map<String, Object>>(){});
+	}
 
 	/**
 	 * MD5，默认字符编码 “utf-8”

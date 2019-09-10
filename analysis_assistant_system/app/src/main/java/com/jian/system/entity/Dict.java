@@ -1,5 +1,7 @@
 package com.jian.system.entity;
 
+import android.database.Cursor;
+
 import java.util.Date;
 
 public class Dict {
@@ -98,5 +100,24 @@ public class Dict {
 	}
 	public void setsDict_Color(String sDict_Color) {
 		this.sDict_Color = sDict_Color;
+	}
+
+
+
+	public Dict cursorToBean(Cursor cursor){
+		this.sDict_ID = cursor.getString(cursor.getColumnIndex("sDict_ID"));
+		this.sDict_NO = cursor.getString(cursor.getColumnIndex("sDict_NO"));
+		this.sDict_Name = cursor.getString(cursor.getColumnIndex("sDict_Name"));
+		this.dDict_CreateDate = new Date(cursor.getLong(cursor.getColumnIndex("dDict_CreateDate")));
+		this.sDict_UserID = cursor.getString(cursor.getColumnIndex("sDict_UserID"));
+		this.sDict_DictTypeNO = cursor.getString(cursor.getColumnIndex("sDict_DictTypeNO"));
+		this.dDict_UpdateDate = new Date(cursor.getLong(cursor.getColumnIndex("dDict_UpdateDate")));
+		this.sDict_UpdateUserID = cursor.getString(cursor.getColumnIndex("sDict_UpdateUserID"));
+		this.lDict_SysFlag = cursor.getInt(cursor.getColumnIndex("lDict_SysFlag"));
+		this.sDict_Describe = cursor.getString(cursor.getColumnIndex("sDict_Describe"));
+		this.sDict_Picture = cursor.getString(cursor.getColumnIndex("sDict_Picture"));
+		this.sDict_Link = cursor.getString(cursor.getColumnIndex("sDict_Link"));
+		this.sDict_Color = cursor.getString(cursor.getColumnIndex("sDict_Color"));
+		return this;
 	}
 }

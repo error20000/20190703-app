@@ -1,5 +1,7 @@
 package com.jian.system.entity;
 
+import android.database.Cursor;
+
 public class Store {
 
 
@@ -9,6 +11,7 @@ public class Store {
 	private String sStore_Level2;
 	private String sStore_Level3;
 	private String sStore_Parent;
+	private int lStore_Limit;
 	
 
 	
@@ -48,5 +51,21 @@ public class Store {
 	public void setsStore_Parent(String sStore_Parent) {
 		this.sStore_Parent = sStore_Parent;
 	}
-	
+	public int getlStore_Limit() {
+		return lStore_Limit;
+	}
+	public void setlStore_Limit(int lStore_Limit) {
+		this.lStore_Limit = lStore_Limit;
+	}
+
+	public Store cursorToBean(Cursor cursor){
+		this.sStore_ID = cursor.getString(cursor.getColumnIndex("sStore_ID"));
+		this.sStore_Name = cursor.getString(cursor.getColumnIndex("sStore_Name"));
+		this.sStore_Level1 = cursor.getString(cursor.getColumnIndex("sStore_Level1"));
+		this.sStore_Level2 = cursor.getString(cursor.getColumnIndex("sStore_Level2"));
+		this.sStore_Level3 = cursor.getString(cursor.getColumnIndex("sStore_Level3"));
+		this.sStore_Parent = cursor.getString(cursor.getColumnIndex("sStore_Parent"));
+		this.lStore_Limit = cursor.getInt(cursor.getColumnIndex("lStore_Limit"));
+		return this;
+	}
 }

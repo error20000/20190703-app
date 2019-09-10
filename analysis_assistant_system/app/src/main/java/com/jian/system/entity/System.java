@@ -1,6 +1,8 @@
 package com.jian.system.entity;
 
 
+import android.database.Cursor;
+
 public class System {
 
 
@@ -57,4 +59,15 @@ public class System {
 	}
 
 
+	public System cursorToBean(Cursor cursor){
+		this.sSys_ID = cursor.getString(cursor.getColumnIndex("sSys_ID"));
+		this.sSys_MapService = cursor.getString(cursor.getColumnIndex("sSys_MapService"));
+		this.lSys_MapLng = cursor.getFloat(cursor.getColumnIndex("lSys_MapLng"));
+		this.lSys_MapLat = cursor.getFloat(cursor.getColumnIndex("lSys_MapLat"));
+		this.lSys_MapLevel = cursor.getInt(cursor.getColumnIndex("lSys_MapLevel"));
+		this.lSys_MapIconWidth = cursor.getInt(cursor.getColumnIndex("lSys_MapIconWidth"));
+		this.lSys_MapIconHeight = cursor.getInt(cursor.getColumnIndex("lSys_MapIconHeight"));
+
+		return this;
+	}
 }

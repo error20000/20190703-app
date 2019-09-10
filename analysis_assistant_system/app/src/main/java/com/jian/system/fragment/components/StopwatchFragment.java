@@ -50,6 +50,7 @@ public class StopwatchFragment extends QMUIFragment {
     ListView mListView;
 
     String title = "秒表";
+    String timeFormatStr = "HH:mm:ss.S";
     boolean isStart = false;
     boolean canClear = false;
     Date startDate = null;
@@ -143,7 +144,7 @@ public class StopwatchFragment extends QMUIFragment {
         mButtonClear.setText("计次");
         index = 0;
         //list
-        String dateStr = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss.S", startDate);
+        String dateStr = FormatUtils.formatDate(timeFormatStr, startDate);
         mData.add(0, new StopwatchItem("开始时间", dateStr, ""));
         updateList();
     }
@@ -158,7 +159,7 @@ public class StopwatchFragment extends QMUIFragment {
         //list
         long add = time - lastTime;
         startDate = new Date(startDate.getTime() + add);
-        String dateStr = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss.S", startDate);
+        String dateStr = FormatUtils.formatDate(timeFormatStr, startDate);
         mData.add(0, new StopwatchItem("结束时间", dateStr, "+" + format(add)));
         lastTime = time;
         updateList();
@@ -190,7 +191,7 @@ public class StopwatchFragment extends QMUIFragment {
     }
 
     private void updateTime(){
-        int hour=(int) (time / (3600 * 1000)) % 60;
+        int hour = (int) (time / (3600 * 1000)) % 60;
         int minute = (int) (time / (60 * 1000)) % 60;
         int second = (int) (time / 1000) % 1000;
         int msecond = (int) (time % 1000) / 100;
@@ -214,7 +215,7 @@ public class StopwatchFragment extends QMUIFragment {
     }
 
     private String format(long time){
-        int hour=(int) (time / (3600 * 1000)) % 60;
+        int hour = (int) (time / (3600 * 1000)) % 60;
         int minute = (int) (time / (60 * 1000)) % 60;
         int second = (int) (time / 1000) % 1000;
         int msecond = (int) (time % 1000) / 100;

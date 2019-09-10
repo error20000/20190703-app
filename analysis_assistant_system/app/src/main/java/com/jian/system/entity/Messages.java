@@ -1,5 +1,7 @@
 package com.jian.system.entity;
 
+import android.database.Cursor;
+
 import java.util.Date;
 
 public class Messages {
@@ -289,5 +291,46 @@ public class Messages {
 
 	public void setsMsg_ReasonName(String sMsg_ReasonName) {
 		this.sMsg_ReasonName = sMsg_ReasonName;
+	}
+
+
+	public Messages cursorToBean(Cursor cursor){
+		this.sMsg_ID = cursor.getString(cursor.getColumnIndex("sMsg_ID"));
+		this.sMsg_Type = cursor.getString(cursor.getColumnIndex("sMsg_Type"));
+		this.sMsg_TypeName = cursor.getString(cursor.getColumnIndex("sMsg_TypeName"));
+		this.dMsg_CreateDate = new Date(cursor.getLong(cursor.getColumnIndex("dMsg_CreateDate")));
+		this.sMsg_ToUserID = cursor.getString(cursor.getColumnIndex("sMsg_ToUserID"));
+		this.sMsg_ToUserName = cursor.getString(cursor.getColumnIndex("sMsg_ToUserName"));
+		this.sMsg_EquipID = cursor.getString(cursor.getColumnIndex("sMsg_EquipID"));
+		this.sMsg_EquipName = cursor.getString(cursor.getColumnIndex("sMsg_EquipName"));
+		this.sMsg_Describe = cursor.getString(cursor.getColumnIndex("sMsg_Describe"));
+		this.sMsg_Remarks =  cursor.getString(cursor.getColumnIndex("sMsg_Remarks"));
+		this.dMsg_UpdateDate = new Date(cursor.getLong(cursor.getColumnIndex("dMsg_UpdateDate")));
+		this.sMsg_UserID = cursor.getString(cursor.getColumnIndex("sMsg_UserID"));
+		this.sMsg_UserName = cursor.getString(cursor.getColumnIndex("sMsg_UserName"));
+		this.sMsg_AidID =  cursor.getString(cursor.getColumnIndex("sMsg_AidID"));
+		this.sMsg_AidName = cursor.getString(cursor.getColumnIndex("sMsg_AidName"));
+		this.sMsg_IP = cursor.getString(cursor.getColumnIndex("sMsg_IP"));
+		this.sMsg_FromUserID = cursor.getString(cursor.getColumnIndex("sMsg_FromUserID"));
+		this.sMsg_FromUserName = cursor.getString(cursor.getColumnIndex("sMsg_FromUserName"));
+		this.sMsg_Label = cursor.getString(cursor.getColumnIndex("sMsg_Label"));
+		this.sMsg_LabelName = cursor.getString(cursor.getColumnIndex("sMsg_LabelName"));
+		this.lMsg_Level = cursor.getInt(cursor.getColumnIndex("lMsg_Level"));
+		this.sMsg_Status = cursor.getString(cursor.getColumnIndex("sMsg_Status"));
+		this.sMsg_StatusName = cursor.getString(cursor.getColumnIndex("sMsg_StatusName"));
+		this.sMsg_Title = cursor.getString(cursor.getColumnIndex("sMsg_Title"));
+		this.sMsg_StoreLv1 = cursor.getString(cursor.getColumnIndex("sMsg_StoreLv1"));
+		this.sMsg_StoreLv1Name = cursor.getString(cursor.getColumnIndex("sMsg_StoreLv1Name"));
+		this.sMsg_StoreLv2 = cursor.getString(cursor.getColumnIndex("sMsg_StoreLv2"));
+		this.sMsg_StoreLv2Name = cursor.getString(cursor.getColumnIndex("sMsg_StoreLv2Name"));
+		this.sMsg_StoreLv3 = cursor.getString(cursor.getColumnIndex("sMsg_StoreLv3"));
+		this.sMsg_StoreLv3Name = cursor.getString(cursor.getColumnIndex("sMsg_StoreLv3Name"));
+		this.sMsg_StoreLv4 = cursor.getString(cursor.getColumnIndex("sMsg_StoreLv4"));
+		this.sMsg_StoreLv4Name = cursor.getString(cursor.getColumnIndex("sMsg_StoreLv4Name"));
+		this.dMsg_StoreNum = cursor.getInt(cursor.getColumnIndex("dMsg_StoreNum"));
+		this.sMsg_Reason = cursor.getString(cursor.getColumnIndex("sMsg_Reason"));
+		this.sMsg_ReasonName = cursor.getString(cursor.getColumnIndex("sMsg_ReasonName"));
+
+		return this;
 	}
 }
