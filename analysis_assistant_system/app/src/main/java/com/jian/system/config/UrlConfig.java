@@ -66,10 +66,25 @@ public class UrlConfig {
 
     //同步数据
     public static String syncSystemUrl = baseUrl + "/api/sync/app/system";
+    public static String syncUserUrl = baseUrl + "/api/sync/app/user";
+    public static String syncUserAidUrl = baseUrl + "/api/sync/app/userAid";
     public static String syncDictUrl = baseUrl + "/api/sync/app/dict";
     public static String syncStoreUrl = baseUrl + "/api/sync/app/store";
-    public static String syncAidUrl = baseUrl + "/api/sync/app/aid";
+    public static String syncStoreTypeUrl = baseUrl + "/api/sync/app/storeType";
     public static String syncNfcUrl = baseUrl + "/api/sync/app/nfc";
+    public static String syncAidUrl = baseUrl + "/api/sync/app/aid";
+    public static String syncAidEquipUrl = baseUrl + "/api/sync/app/aidEquip";
+    public static String syncAidMapIconUrl = baseUrl + "/api/sync/app/aidMapIcon";
+    public static String syncAidTypeMapIconUrl = baseUrl + "/api/sync/app/aidTypeMapIcon";
     public static String syncEquipUrl = baseUrl + "/api/sync/app/equip";
+    public static String syncEquipLogUrl = baseUrl + "/api/sync/app/equipLog";
+    public static String syncEquipAisUrl = baseUrl + "/api/sync/app/equipAis";
+    public static String syncEquipBatteryUrl = baseUrl + "/api/sync/app/equipBattery";
+    public static String syncEquipLampUrl = baseUrl + "/api/sync/app/equipLamp";
+    public static String syncEquipRadarUrl = baseUrl + "/api/sync/app/equipRadar";
+    public static String syncEquipSolarEnergyUrl = baseUrl + "/api/sync/app/equipSolarEnergy";
+    public static String syncEquipSpareLampUrl = baseUrl + "/api/sync/app/equipSpareLamp";
+    public static String syncEquipTelemetryUrl = baseUrl + "/api/sync/app/equipTelemetry";
+    public static String syncEquipViceLampUrl = baseUrl + "/api/sync/app/equipViceLamp";
     public static String syncMsgUrl = baseUrl + "/api/sync/app/msg";
 }

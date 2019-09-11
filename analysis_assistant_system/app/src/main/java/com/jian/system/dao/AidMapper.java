@@ -170,8 +170,8 @@ public class AidMapper {
         buffer.append(" a.*, ");
         buffer.append(" d.sDict_Picture sAid_StatusIcon, e.sDict_Picture sAid_TypeIcon,  ");
         buffer.append(" f.sDict_Name sAid_StationName,  ");
-        buffer.append(" g.sDict_Picture sAid_IconUrl ");
-        buffer.append(" h.sDict_Name sAid_TypeName,  ");
+        buffer.append(" g.sDict_Picture sAid_IconUrl, ");
+        buffer.append(" h.sDict_Name sAid_TypeName  ");
         buffer.append(" from ").append(tableName).append(" a ");
         buffer.append(" left join tBase_AidMapIcon b on a.sAid_ID = b.sAidIcon_AidID and a.sAid_Status = b.sAidIcon_Status ");
         buffer.append(" left join tBase_AidTypeMapIcon c on a.sAid_Type = c.sAidTypeIcon_Type and a.sAid_Status = c.sAidTypeIcon_Status ");

@@ -253,6 +253,8 @@ public class SyncUtils {
         });
     }
 
+    //TODO ------------------------------------------------------------------------------------- equip
+
     public static void equipData(){
         //获取数据
         ThreadUtils.executes(new Runnable() {
@@ -301,7 +303,7 @@ public class SyncUtils {
                 Log.d(TAG, "Sync：" + JSONObject.toJSONString(sync));
                 //查询数据
                 Map<String, Object> params = new HashMap<>();
-                params.put("syncDate", syncDate);
+                params.put("syncDate", syncDate == null ? "" : syncDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.syncEquipLogUrl, params);
                 if(Utils.isNullOrEmpty(res)){
                     Log.d(TAG, "获取数据失败：res为空");
@@ -322,6 +324,13 @@ public class SyncUtils {
                 //新增
                 service.insert(onlineData);
                 Log.d(TAG, "EquipLog 数据同步成功。");
+                //记录
+                if(sync == null){
+                    sync = new Sync();
+                }
+                sync.setsSync_TableName("tBase_EquipLog");
+                sync.setdSync_UpdateDate(new Date());
+                syncService.insert(sync);
             }
         });
     }
@@ -582,6 +591,8 @@ public class SyncUtils {
         });
     }
 
+    //TODO -------------------------------------------------------------------------------------store
+
     public static void storeTypeData(){
         //获取数据
         ThreadUtils.executes(new Runnable() {
@@ -646,6 +657,8 @@ public class SyncUtils {
         });
     }
 
+    //TODO -------------------------------------------------------------------------------------nfc
+
     public static void nfcData(){
         //获取数据
         ThreadUtils.executes(new Runnable() {
@@ -677,6 +690,8 @@ public class SyncUtils {
             }
         });
     }
+
+    //TODO -------------------------------------------------------------------------------------aid
 
     public static void aidData(){
         //获取数据
@@ -806,5 +821,6 @@ public class SyncUtils {
         });
     }
 
+    //TODO ------------------------------------------------------------------------------------- Msg
 
 }
