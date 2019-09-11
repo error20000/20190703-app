@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.util.Date;
@@ -119,5 +120,22 @@ public class EquipLog  {
 		this.sELog_StoreLv4 = cursor.getString(cursor.getColumnIndex("sELog_StoreLv4"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sELog_ID", sELog_ID);
+		values.put("sELog_Type", sELog_Type);
+		values.put("dELog_CreateDate", dELog_CreateDate.getTime());
+		values.put("sELog_UserID", sELog_UserID);
+		values.put("sELog_EquipID", sELog_EquipID);
+		values.put("sELog_Describe", sELog_Describe);
+		values.put("sELog_Remarks", sELog_Remarks);
+		values.put("sELog_IP", sELog_IP);
+		values.put("sELog_StoreLv1", sELog_StoreLv1);
+		values.put("sELog_StoreLv2", sELog_StoreLv2);
+		values.put("sELog_StoreLv3", sELog_StoreLv3);
+		values.put("sELog_StoreLv4", sELog_StoreLv4);
+		return values;
 	}
 }

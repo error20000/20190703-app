@@ -2,6 +2,7 @@ package com.jian.system.dao;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
 import com.jian.system.entity.User;
@@ -19,6 +20,10 @@ public class UserMapper {
 
     public UserMapper(Context context){
         baseHelper = BaseHelper.getInstance(context);
+    }
+
+    public BaseHelper getBaseHelper(){
+        return baseHelper;
     }
 
     public void insert(User user){
@@ -51,6 +56,30 @@ public class UserMapper {
         return list;
     }
 
+    //TODO --------------------------------------------------------------------------------同步数据
+    public void deleteAll(){
+        baseHelper.getReadableDatabase()
+                .delete(tableName, null, null);
+    }
+
+    public void insert(List<User> data){
+        SQLiteDatabase db = baseHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (User node: data) {
+                db.insert(tableName, null, node.beanToValues());
+            }
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+
+        }finally {
+            db.endTransaction(); // 处理完成
+            db.close();
+        }
+        baseHelper.close();
+    }
+
+    //TODO --------------------------------------------------------------------------------------创建表
     public static String createTable(){
         StringBuffer buffer = new StringBuffer();
         buffer.append("CREATE TABLE ").append(tableName);

@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class EquipLamp {
@@ -84,5 +85,19 @@ public class EquipLamp {
 		this.sLamp_Telemetry = cursor.getString(cursor.getColumnIndex("sLamp_Telemetry"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("sLamp_NO", sLamp_NO);
+		values.put("sLamp_Brand", sLamp_Brand);
+		values.put("sLamp_Type", sLamp_Type);
+		values.put("lLamp_InputVolt", lLamp_InputVolt);
+		values.put("lLamp_Watt", lLamp_Watt);
+		values.put("sLamp_Lens", sLamp_Lens);
+		values.put("lLamp_TelemetryFlag", lLamp_TelemetryFlag);
+		values.put("sLamp_Telemetry", sLamp_Telemetry);
+		return values;
 	}
 }

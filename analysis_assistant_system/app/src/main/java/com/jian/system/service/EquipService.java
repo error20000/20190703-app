@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.jian.system.config.Constant;
 import com.jian.system.dao.EquipMapper;
+import com.jian.system.dao.SystemMapper;
 import com.jian.system.dao.UserMapper;
 import com.jian.system.entity.Equip;
 import com.jian.system.entity.EquipLog;
@@ -134,5 +135,17 @@ public class EquipService {
             }
         }
         return logs;
+    }
+
+    public EquipMapper getMapper(){
+        return baseMapper;
+    }
+
+    public void deleteAll(){
+        baseMapper.deleteAll();
+    }
+
+    public void insert(List<Equip> data){
+        baseMapper.insert(data);
     }
 }

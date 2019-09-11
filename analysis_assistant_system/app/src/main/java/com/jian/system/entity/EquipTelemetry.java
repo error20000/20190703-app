@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class EquipTelemetry {
@@ -60,5 +61,16 @@ public class EquipTelemetry {
 		this.sTelemetry_SIM = cursor.getString(cursor.getColumnIndex("sTelemetry_SIM"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("sTelemetry_Mode", sTelemetry_Mode);
+		values.put("lTelemetry_Watt", lTelemetry_Watt);
+		values.put("sTelemetry_NO", sTelemetry_NO);
+		values.put("lTelemetry_Volt", lTelemetry_Volt);
+		values.put("sTelemetry_SIM", sTelemetry_SIM);
+		return values;
 	}
 }

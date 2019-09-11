@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class Store {
@@ -67,5 +68,17 @@ public class Store {
 		this.sStore_Parent = cursor.getString(cursor.getColumnIndex("sStore_Parent"));
 		this.lStore_Limit = cursor.getInt(cursor.getColumnIndex("lStore_Limit"));
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sStore_ID", sStore_ID);
+		values.put("sStore_Name", sStore_Name);
+		values.put("sStore_Level1", sStore_Level1);
+		values.put("sStore_Level2", sStore_Level2);
+		values.put("sStore_Level3", sStore_Level3);
+		values.put("sStore_Parent", sStore_Parent);
+		values.put("lStore_Limit", lStore_Limit);
+		return values;
 	}
 }

@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class StoreType {
@@ -143,5 +144,24 @@ public class StoreType {
 		this.lStoreType_LngMiao = cursor.getFloat(cursor.getColumnIndex("lStoreType_LngMiao"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sStoreType_ID", sStoreType_ID);
+		values.put("sStoreType_Name", sStoreType_Name);
+		values.put("sStoreType_Address", sStoreType_Address);
+		values.put("lStoreType_Lat", lStoreType_Lat);
+		values.put("lStoreType_Lng", lStoreType_Lng);
+		values.put("sStoreType_Station", sStoreType_Station);
+		values.put("lStoreType_Limit", lStoreType_Limit);
+		values.put("sStoreType_MapIcon", sStoreType_MapIcon);
+		values.put("lStoreType_LatDu", lStoreType_LatDu);
+		values.put("lStoreType_LatFen", lStoreType_LatFen);
+		values.put("lStoreType_LatMiao", lStoreType_LatMiao);
+		values.put("lStoreType_LngDu", lStoreType_LngDu);
+		values.put("lStoreType_LngFen", lStoreType_LngFen);
+		values.put("lStoreType_LngMiao", lStoreType_LngMiao);
+		return values;
 	}
 }

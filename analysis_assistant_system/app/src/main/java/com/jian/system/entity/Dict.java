@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.util.Date;
@@ -119,5 +120,23 @@ public class Dict {
 		this.sDict_Link = cursor.getString(cursor.getColumnIndex("sDict_Link"));
 		this.sDict_Color = cursor.getString(cursor.getColumnIndex("sDict_Color"));
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sDict_ID", sDict_ID);
+		values.put("sDict_NO", sDict_NO);
+		values.put("sDict_Name", sDict_Name);
+		values.put("dDict_CreateDate", dDict_CreateDate.getTime());
+		values.put("sDict_UserID", sDict_UserID);
+		values.put("sDict_DictTypeNO", sDict_DictTypeNO);
+		values.put("dDict_UpdateDate", dDict_UpdateDate.getTime());
+		values.put("sDict_UpdateUserID", sDict_UpdateUserID);
+		values.put("lDict_SysFlag", lDict_SysFlag);
+		values.put("sDict_Describe", sDict_Describe);
+		values.put("sDict_Picture", sDict_Picture);
+		values.put("sDict_Link", sDict_Link);
+		values.put("sDict_Color", sDict_Color);
+		return values;
 	}
 }

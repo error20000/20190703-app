@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.util.Date;
@@ -175,4 +176,28 @@ public class Equip {
 		return this;
 	}
 
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("sEquip_NO", sEquip_NO);
+		values.put("sEquip_Name", sEquip_Name);
+		values.put("sEquip_StoreLv1", sEquip_StoreLv1);
+		values.put("sEquip_StoreLv2", sEquip_StoreLv2);
+		values.put("sEquip_StoreLv3", sEquip_StoreLv3);
+		values.put("sEquip_StoreLv4", sEquip_StoreLv4);
+		values.put("sEquip_Type", sEquip_Type);
+		values.put("sEquip_Status", sEquip_Status);
+		values.put("sEquip_NfcID", sEquip_NfcID);
+		values.put("sEquip_AidID", sEquip_AidID);
+		values.put("dEquip_CreateDate", dEquip_CreateDate.getTime());
+		values.put("sEquip_Icon", sEquip_Icon);
+		values.put("sEquip_Manufacturer", sEquip_Manufacturer);
+		values.put("sEquip_MModel", sEquip_MModel);
+		values.put("dEquip_ArrivalDate", dEquip_ArrivalDate.getTime());
+		values.put("dEquip_UseDate", dEquip_UseDate.getTime());
+		values.put("dEquip_StoreDate", dEquip_StoreDate.getTime());
+		values.put("sEquip_MBrand", sEquip_MBrand);
+		values.put("dEquip_DumpDate", dEquip_DumpDate.getTime());
+		return values;
+	}
 }

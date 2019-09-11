@@ -4,8 +4,10 @@ import android.content.Context;
 
 import com.jian.system.config.Constant;
 import com.jian.system.dao.AidMapper;
+import com.jian.system.dao.DictMapper;
 import com.jian.system.dao.EquipAisMapper;
 import com.jian.system.entity.Aid;
+import com.jian.system.entity.Dict;
 import com.jian.system.entity.EquipAis;
 import com.jian.system.entity.User;
 import com.jian.system.utils.LoginUtils;
@@ -63,4 +65,16 @@ public class AidService {
         return baseMapper.aidMap();
     }
 
+
+    public AidMapper getMapper(){
+        return baseMapper;
+    }
+
+    public void deleteAll(){
+        baseMapper.deleteAll();
+    }
+
+    public void insert(List<Aid> data){
+        baseMapper.insert(data);
+    }
 }

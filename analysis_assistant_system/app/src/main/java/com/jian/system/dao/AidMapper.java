@@ -2,6 +2,7 @@ package com.jian.system.dao;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
 import com.jian.system.entity.Aid;
@@ -25,6 +26,9 @@ public class AidMapper {
         baseHelper = BaseHelper.getInstance(context);
     }
 
+    public BaseHelper getBaseHelper(){
+        return baseHelper;
+    }
 
     public List<Aid> selectPageByUser(Map<String, Object> condition, String sUser_ID,  int start, int rows){
         List<Aid> list = new ArrayList<>();
@@ -139,7 +143,7 @@ public class AidMapper {
         buffer.append(" b.sEquip_NO sAidEquip_EquipNO,  ");
         buffer.append(" b.sEquip_Type sAidEquip_EquipType,  ");
         buffer.append(" d.sDict_Name sAidEquip_EquipTypeName  ");
-        buffer.append(" from ").append(tableName).append(" a ");
+        buffer.append(" from tBase_AidEquip a ");
         buffer.append(" left join tBase_Equip b on a.sAidEquip_EquipID = b.sEquip_ID ");
         buffer.append(" left join tBase_Dict d on b.sEquip_Type = d.sDict_NO  and d.sDict_DictTypeNO = 'EquipType' ");
         buffer.append(" left join tBase_Dict e on b.sEquip_Icon = e.sDict_NO and e.sDict_DictTypeNO = 'EquipIcon' ");
@@ -167,6 +171,7 @@ public class AidMapper {
         buffer.append(" d.sDict_Picture sAid_StatusIcon, e.sDict_Picture sAid_TypeIcon,  ");
         buffer.append(" f.sDict_Name sAid_StationName,  ");
         buffer.append(" g.sDict_Picture sAid_IconUrl ");
+        buffer.append(" h.sDict_Name sAid_TypeName,  ");
         buffer.append(" from ").append(tableName).append(" a ");
         buffer.append(" left join tBase_AidMapIcon b on a.sAid_ID = b.sAidIcon_AidID and a.sAid_Status = b.sAidIcon_Status ");
         buffer.append(" left join tBase_AidTypeMapIcon c on a.sAid_Type = c.sAidTypeIcon_Type and a.sAid_Status = c.sAidTypeIcon_Status ");
@@ -174,6 +179,7 @@ public class AidMapper {
         buffer.append(" left join tBase_Dict e on c.sAidTypeIcon_StatusIcon = e.sDict_NO and e.sDict_DictTypeNO = 'MapIcon' ");
         buffer.append(" left join tBase_Dict f on a.sAid_Station = f.sDict_NO and f.sDict_DictTypeNO = 'AidStation' ");
         buffer.append(" left join tBase_Dict g on a.sAid_Icon = g.sDict_NO and g.sDict_DictTypeNO = 'AidIcon' ");
+        buffer.append(" left join tBase_Dict h on a.sAid_Type = h.sDict_NO and h.sDict_DictTypeNO = 'AidType' ");
         
         Cursor cursor = baseHelper.getReadableDatabase()
                 .rawQuery(buffer.toString(), null);
@@ -189,6 +195,31 @@ public class AidMapper {
         return list;
     }
 
+
+    //TODO --------------------------------------------------------------------------------同步数据
+    public void deleteAll(){
+        baseHelper.getReadableDatabase()
+                .delete(tableName, null, null);
+    }
+
+    public void insert(List<Aid> data){
+        SQLiteDatabase db = baseHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (Aid node: data) {
+                db.insert(tableName, null, node.beanToValues());
+            }
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+
+        }finally {
+            db.endTransaction(); // 处理完成
+            db.close();
+        }
+        baseHelper.close();
+    }
+
+    //TODO --------------------------------------------------------------------------------------创建表
     public static String createTable(){
         StringBuffer buffer = new StringBuffer();
         buffer.append("CREATE TABLE ").append(tableName);

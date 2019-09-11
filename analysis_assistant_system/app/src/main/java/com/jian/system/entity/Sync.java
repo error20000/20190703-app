@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.util.Date;
@@ -27,5 +28,12 @@ public class Sync {
 		this.sSync_TableName = cursor.getString(cursor.getColumnIndex("sSync_TableName"));
 		this.dSync_UpdateDate = new Date(cursor.getLong(cursor.getColumnIndex("dSync_UpdateDate")));
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sSync_TableName", sSync_TableName);
+		values.put("dSync_UpdateDate", dSync_UpdateDate.getTime());
+		return values;
 	}
 }

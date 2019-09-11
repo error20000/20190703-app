@@ -3,6 +3,7 @@ package com.jian.system.service;
 import android.content.Context;
 
 import com.jian.system.dao.StoreMapper;
+import com.jian.system.dao.StoreTypeMapper;
 import com.jian.system.entity.Equip;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
@@ -54,5 +55,16 @@ public class StoreService {
         condition.put("sEquip_StoreLv3", sEquip_StoreLv3);
         condition.put("sEquip_StoreLv4", sEquip_StoreLv4);
         return equipService.selectList(condition);
+    }
+    public StoreMapper getMapper(){
+        return baseMapper;
+    }
+
+    public void deleteAll(){
+        baseMapper.deleteAll();
+    }
+
+    public void insert(List<Store> data){
+        baseMapper.insert(data);
     }
 }

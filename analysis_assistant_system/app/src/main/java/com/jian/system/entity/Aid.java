@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.util.Date;
@@ -183,6 +184,32 @@ public class Aid {
 		this.lAid_LngMiao = cursor.getFloat(cursor.getColumnIndex("lAid_LngMiao"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sAid_ID", sAid_ID);
+		values.put("sAid_Name", sAid_Name);
+		values.put("sAid_NO", sAid_NO);
+		values.put("lAid_Lat", lAid_Lat);
+		values.put("lAid_Lng", lAid_Lng);
+		values.put("sAid_Station", sAid_Station);
+		values.put("sAid_Type", sAid_Type);
+		values.put("sAid_Icon", sAid_Icon);
+		values.put("dAid_BuildDate", dAid_BuildDate.getTime());
+		values.put("dAid_DelDate", dAid_DelDate.getTime());
+		values.put("sAid_Lighting", sAid_Lighting);
+		values.put("sAid_Mark", sAid_Mark);
+		values.put("sAid_NfcID", sAid_NfcID);
+		values.put("dAid_CreateDate", dAid_CreateDate.getTime());
+		values.put("sAid_Status", sAid_Status);
+		values.put("lAid_LatDu", lAid_LatDu);
+		values.put("lAid_LatFen", lAid_LatFen);
+		values.put("lAid_LatMiao", lAid_LatMiao);
+		values.put("lAid_LngDu", lAid_LngDu);
+		values.put("lAid_LngFen", lAid_LngFen);
+		values.put("lAid_LngMiao", lAid_LngMiao);
+		return values;
 	}
 
 }

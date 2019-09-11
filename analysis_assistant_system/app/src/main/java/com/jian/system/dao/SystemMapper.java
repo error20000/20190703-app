@@ -3,6 +3,7 @@ package com.jian.system.dao;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.jian.system.db.BaseHelper;
 import com.jian.system.entity.Dict;
@@ -24,6 +25,9 @@ public class SystemMapper {
         baseHelper = BaseHelper.getInstance(context);
     }
 
+    public BaseHelper getBaseHelper(){
+        return baseHelper;
+    }
 
     public System selectOne(){
         StringBuffer buffer = new StringBuffer();
@@ -72,6 +76,7 @@ public class SystemMapper {
             for (System system: data) {
                 db.insert(tableName, null, system.beanToValues());
             }
+            db.setTransactionSuccessful();
         }catch (Exception e){
 
         }finally {
@@ -81,6 +86,7 @@ public class SystemMapper {
         baseHelper.close();
     }
 
+    //TODO --------------------------------------------------------------------------------------创建表
     public static String createTable(){
         StringBuffer buffer = new StringBuffer();
         buffer.append("CREATE TABLE ").append(tableName);

@@ -1,6 +1,7 @@
 package com.jian.system.entity;
 
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class EquipBattery  {
@@ -60,7 +61,17 @@ public class EquipBattery  {
 		this.lBattery_Volt = cursor.getFloat(cursor.getColumnIndex("lBattery_Volt"));
 		this.lBattery_Watt = cursor.getFloat(cursor.getColumnIndex("lBattery_Watt"));
 		this.sBattery_Connect = cursor.getString(cursor.getColumnIndex("sBattery_Connect"));
-
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("sBattery_NO", sBattery_NO);
+		values.put("sBattery_Type", sBattery_Type);
+		values.put("lBattery_Volt", lBattery_Volt);
+		values.put("lBattery_Watt", lBattery_Watt);
+		values.put("sBattery_Connect", sBattery_Connect);
+		return values;
 	}
 }

@@ -1,5 +1,8 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import java.util.Date;
 
 public class AidEquip {
@@ -63,5 +66,22 @@ public class AidEquip {
 	}
 	public void setsAidEquip_EquipTypeName(String sAidEquip_EquipTypeName) {
 		this.sAidEquip_EquipTypeName = sAidEquip_EquipTypeName;
+	}
+
+	public AidEquip cursorToBean(Cursor cursor){
+		this.sAidEquip_ID = cursor.getString(cursor.getColumnIndex("sAidEquip_ID"));
+		this.sAidEquip_AidID = cursor.getString(cursor.getColumnIndex("sAidEquip_AidID"));
+		this.sAidEquip_EquipID = cursor.getString(cursor.getColumnIndex("sAidEquip_EquipID"));
+		this.dAidEquip_CreateDate = new Date(cursor.getLong(cursor.getColumnIndex("dAidEquip_CreateDate")));
+		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sAidEquip_ID", sAidEquip_ID);
+		values.put("sAidEquip_AidID", sAidEquip_AidID);
+		values.put("sAidEquip_EquipID", sAidEquip_EquipID);
+		values.put("dAidEquip_CreateDate", dAidEquip_CreateDate.getTime());
+		return values;
 	}
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.jian.system.dao.EquipAisMapper;
 import com.jian.system.dao.EquipLogMapper;
+import com.jian.system.dao.SystemMapper;
 import com.jian.system.entity.EquipAis;
 import com.jian.system.entity.EquipLog;
 
@@ -18,8 +19,15 @@ public class EquipLogService {
         baseMapper = new EquipLogMapper(context);
     }
 
+    public EquipLogMapper getMapper(){
+        return baseMapper;
+    }
 
     public List<EquipLog> selectList(Map<String, Object> condition){
         return baseMapper.selectList(condition);
+    }
+
+    public void insert(List<EquipLog> data){
+        baseMapper.insert(data);
     }
 }

@@ -2,9 +2,12 @@ package com.jian.system.dao;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
 import com.jian.system.entity.Equip;
+import com.jian.system.entity.EquipViceLamp;
+import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
 
 import java.util.ArrayList;
@@ -24,6 +27,9 @@ public class StoreTypeMapper {
         baseHelper = BaseHelper.getInstance(context);
     }
 
+    public BaseHelper getBaseHelper(){
+        return baseHelper;
+    }
 
     public List<StoreType> selectAll(){
 
@@ -67,6 +73,30 @@ public class StoreTypeMapper {
     }
 
 
+    //TODO --------------------------------------------------------------------------------同步数据
+    public void deleteAll(){
+        baseHelper.getReadableDatabase()
+                .delete(tableName, null, null);
+    }
+
+    public void insert(List<StoreType> data){
+        SQLiteDatabase db = baseHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (StoreType node: data) {
+                db.insert(tableName, null, node.beanToValues());
+            }
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+
+        }finally {
+            db.endTransaction(); // 处理完成
+            db.close();
+        }
+        baseHelper.close();
+    }
+
+    //TODO --------------------------------------------------------------------------------------创建表
     public static String createTable(){
         StringBuffer buffer = new StringBuffer();
         buffer.append("CREATE TABLE ").append(tableName);

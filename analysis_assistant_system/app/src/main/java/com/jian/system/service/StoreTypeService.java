@@ -2,9 +2,11 @@ package com.jian.system.service;
 
 import android.content.Context;
 
+import com.jian.system.dao.EquipViceLampMapper;
 import com.jian.system.dao.StoreMapper;
 import com.jian.system.dao.StoreTypeMapper;
 import com.jian.system.entity.Equip;
+import com.jian.system.entity.EquipViceLamp;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
 
@@ -29,4 +31,16 @@ public class StoreTypeService {
         return baseMapper.storeMap();
     }
 
+
+    public StoreTypeMapper getMapper(){
+        return baseMapper;
+    }
+
+    public void deleteAll(){
+        baseMapper.deleteAll();
+    }
+
+    public void insert(List<StoreType> data){
+        baseMapper.insert(data);
+    }
 }

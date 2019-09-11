@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class EquipViceLamp {
@@ -28,6 +29,13 @@ public class EquipViceLamp {
 		this.lVLamp_Watt = cursor.getFloat(cursor.getColumnIndex("lVLamp_Watt"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("lVLamp_Watt", lVLamp_Watt);
+		return values;
 	}
 	
 }

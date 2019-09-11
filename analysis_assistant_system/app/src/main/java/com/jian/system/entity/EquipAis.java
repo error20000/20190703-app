@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.util.Date;
@@ -31,5 +32,12 @@ public class EquipAis {
 		this.sEquip_ID = cursor.getString(cursor.getColumnIndex("sEquip_ID"));
 		this.sAis_MMSIX = cursor.getString(cursor.getColumnIndex("sAis_MMSIX"));
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("sAis_MMSIX", sAis_MMSIX);
+		return values;
 	}
 }

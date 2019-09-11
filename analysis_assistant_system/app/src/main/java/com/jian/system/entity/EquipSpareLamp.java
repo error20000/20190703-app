@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class EquipSpareLamp {
@@ -28,5 +29,12 @@ public class EquipSpareLamp {
 		this.lSLamp_Watt = cursor.getFloat(cursor.getColumnIndex("lSLamp_Watt"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("lSLamp_Watt", lSLamp_Watt);
+		return values;
 	}
 }

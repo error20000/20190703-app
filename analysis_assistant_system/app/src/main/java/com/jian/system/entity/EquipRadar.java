@@ -1,6 +1,7 @@
 package com.jian.system.entity;
 
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class EquipRadar {
@@ -37,5 +38,13 @@ public class EquipRadar {
 		this.sRadar_Band = cursor.getString(cursor.getColumnIndex("sRadar_Band"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("sRadar_NO", sRadar_NO);
+		values.put("sRadar_Band", sRadar_Band);
+		return values;
 	}
 }

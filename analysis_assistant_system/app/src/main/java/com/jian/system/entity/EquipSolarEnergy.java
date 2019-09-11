@@ -1,5 +1,6 @@
 package com.jian.system.entity;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 public class EquipSolarEnergy {
@@ -60,5 +61,16 @@ public class EquipSolarEnergy {
 		this.sSolar_Connect = cursor.getString(cursor.getColumnIndex("sSolar_Connect"));
 
 		return this;
+	}
+
+	public ContentValues beanToValues(){
+		ContentValues values = new ContentValues();
+		values.put("sEquip_ID", sEquip_ID);
+		values.put("sSolar_NO", sSolar_NO);
+		values.put("sSolar_Type", sSolar_Type);
+		values.put("lSolar_Volt", lSolar_Volt);
+		values.put("lSolar_Watt", lSolar_Watt);
+		values.put("sSolar_Connect", sSolar_Connect);
+		return values;
 	}
 }

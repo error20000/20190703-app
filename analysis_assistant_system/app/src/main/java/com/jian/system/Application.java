@@ -7,10 +7,13 @@ import android.util.Log;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jian.system.entity.System;
+import com.jian.system.entity.User;
 import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.utils.NetworkUtils;
 import com.jian.system.utils.SyncUtils;
+import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUISwipeBackActivityManager;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -54,7 +57,12 @@ public class Application extends MultiDexApplication {
         hasNetwork = NetworkUtils.isNetworkConnected(this);
         Log.d("dddddddddddddddddd", hasNetwork+"");
         if(hasNetwork){
-            SyncUtils.systemData();
+            SyncUtils.baseData();
+            String userInfo = GestureUtils.get(context, GestureUtils.USER_INFO);
+            if(!Utils.isNullOrEmpty(userInfo)){
+                User user = JSONObject.parseObject(userInfo, User.class);
+                SyncUtils.loginData(user.getsUser_ID());
+            }
         }
 
         tokenStr = GestureUtils.get(this, GestureUtils.USER_TOEKN);

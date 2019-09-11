@@ -5,7 +5,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.jian.system.dao.AidEquipMapper;
+import com.jian.system.dao.AidMapIconMapper;
 import com.jian.system.dao.AidMapper;
+import com.jian.system.dao.AidTypeMapIconMapper;
 import com.jian.system.dao.DictMapper;
 import com.jian.system.dao.EquipAisMapper;
 import com.jian.system.dao.EquipBatteryMapper;
@@ -22,6 +25,7 @@ import com.jian.system.dao.NfcMapper;
 import com.jian.system.dao.StoreMapper;
 import com.jian.system.dao.StoreTypeMapper;
 import com.jian.system.dao.SystemMapper;
+import com.jian.system.dao.UserAidMapper;
 import com.jian.system.dao.UserMapper;
 
 import java.util.HashMap;
@@ -59,7 +63,9 @@ public class BaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(UserMapper.createTable());
+        sqLiteDatabase.execSQL(UserAidMapper.createTable());
         sqLiteDatabase.execSQL(SystemMapper.createTable());
+
         sqLiteDatabase.execSQL(DictMapper.createTable());
 
         sqLiteDatabase.execSQL(EquipMapper.createTable());
@@ -77,7 +83,12 @@ public class BaseHelper extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL(StoreTypeMapper.createTable());
 
         sqLiteDatabase.execSQL(NfcMapper.createTable());
+
         sqLiteDatabase.execSQL(AidMapper.createTable());
+        sqLiteDatabase.execSQL(AidEquipMapper.createTable());
+        sqLiteDatabase.execSQL(AidMapIconMapper.createTable());
+        sqLiteDatabase.execSQL(AidTypeMapIconMapper.createTable());
+
         sqLiteDatabase.execSQL(MessagesMapper.createTable());
         Log.d(TAG, "onCreate");
     }
@@ -87,7 +98,9 @@ public class BaseHelper extends SQLiteOpenHelper{
 
         try {
             sqLiteDatabase.execSQL(UserMapper.dropTable());
+            sqLiteDatabase.execSQL(UserAidMapper.dropTable());
             sqLiteDatabase.execSQL(SystemMapper.dropTable());
+
             sqLiteDatabase.execSQL(DictMapper.dropTable());
 
             sqLiteDatabase.execSQL(EquipMapper.dropTable());
@@ -105,7 +118,12 @@ public class BaseHelper extends SQLiteOpenHelper{
             sqLiteDatabase.execSQL(StoreTypeMapper.dropTable());
 
             sqLiteDatabase.execSQL(NfcMapper.dropTable());
+
             sqLiteDatabase.execSQL(AidMapper.dropTable());
+            sqLiteDatabase.execSQL(AidEquipMapper.dropTable());
+            sqLiteDatabase.execSQL(AidMapIconMapper.dropTable());
+            sqLiteDatabase.execSQL(AidTypeMapIconMapper.dropTable());
+
             sqLiteDatabase.execSQL(MessagesMapper.dropTable());
         } catch (Exception e){
 

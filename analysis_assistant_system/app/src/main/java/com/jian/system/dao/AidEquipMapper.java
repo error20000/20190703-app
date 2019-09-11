@@ -5,22 +5,22 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
-import com.jian.system.entity.EquipSolarEnergy;
-import com.jian.system.entity.EquipSpareLamp;
+import com.jian.system.entity.AidEquip;
+import com.jian.system.entity.EquipViceLamp;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 
-public class EquipSpareLampMapper {
+public class AidEquipMapper {
 
-    private final static String TAG = EquipSpareLampMapper.class.getSimpleName();
-    public static String tableName = "tEquip_SpareLamp";
+    private final static String TAG = AidEquipMapper.class.getSimpleName();
+    public static String tableName = "tBase_AidEquip";
 
     private BaseHelper baseHelper;
 
-    public EquipSpareLampMapper(Context context){
+    public AidEquipMapper(Context context){
         baseHelper = BaseHelper.getInstance(context);
     }
 
@@ -28,30 +28,6 @@ public class EquipSpareLampMapper {
         return baseHelper;
     }
 
-    public EquipSpareLamp selectOne(Map<String, Object> condition){
-
-        List<String> args = new ArrayList<>();
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("select * from ");
-        buffer.append(tableName);
-        buffer.append(" where 1 = 1");
-        if(condition != null){
-            for (String key : condition.keySet()) {
-                buffer.append(" and ").append(key).append(" = ?");
-                args.add(String.valueOf(condition.get(key)));
-            }
-        }
-        buffer.append(" limit 1 ");
-
-        Cursor cursor = baseHelper.getReadableDatabase()
-                .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
-
-        EquipSpareLamp obj = new EquipSpareLamp();
-        obj.cursorToBean(cursor);
-
-        cursor.close();
-        return obj;
-    }
 
     //TODO --------------------------------------------------------------------------------同步数据
     public void deleteAll(){
@@ -59,11 +35,11 @@ public class EquipSpareLampMapper {
                 .delete(tableName, null, null);
     }
 
-    public void insert(List<EquipSpareLamp> data){
+    public void insert(List<AidEquip> data){
         SQLiteDatabase db = baseHelper.getWritableDatabase();
         db.beginTransaction();
         try {
-            for (EquipSpareLamp node: data) {
+            for (AidEquip node: data) {
                 db.insert(tableName, null, node.beanToValues());
             }
             db.setTransactionSuccessful();
@@ -77,13 +53,16 @@ public class EquipSpareLampMapper {
     }
 
     //TODO --------------------------------------------------------------------------------------创建表
+
     public static String createTable(){
         StringBuffer buffer = new StringBuffer();
         buffer.append("CREATE TABLE ").append(tableName);
         buffer.append(" ( ");
-        buffer.append(" 	 sEquip_ID NVARCHAR(32) NOT NULL, ");
-        buffer.append("      lSLamp_Watt NUMBER, ");
-        buffer.append("  PRIMARY KEY (sEquip_ID)");
+        buffer.append(" 	 sAidEquip_ID NVARCHAR(32) NOT NULL, ");
+        buffer.append("      sAidEquip_AidID NVARCHAR(32), ");
+        buffer.append("      sAidEquip_EquipID NVARCHAR(32), ");
+        buffer.append("      dAidEquip_CreateDate DATE, ");
+        buffer.append("  PRIMARY KEY (sAidEquip_ID)");
         buffer.append(" );");
         return buffer.toString();
     }

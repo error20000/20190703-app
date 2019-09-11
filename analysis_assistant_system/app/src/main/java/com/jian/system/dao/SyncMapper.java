@@ -2,8 +2,10 @@ package com.jian.system.dao;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.entity.Dict;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.Sync;
 import com.jian.system.entity.System;
@@ -23,6 +25,9 @@ public class SyncMapper {
         baseHelper = BaseHelper.getInstance(context);
     }
 
+    public BaseHelper getBaseHelper(){
+        return baseHelper;
+    }
 
     public List<Sync> selectAll(){
         List<Sync> list = new ArrayList<>();
@@ -58,6 +63,27 @@ public class SyncMapper {
         return obj;
     }
 
+    //TODO --------------------------------------------------------------------------------同步数据
+    public void deleteAll(){
+        baseHelper.getReadableDatabase()
+                .delete(tableName, null, null);
+    }
+
+    public void insert(Sync data){
+        SQLiteDatabase db = baseHelper.getWritableDatabase();
+        db.insert(tableName, null, data.beanToValues());
+        db.close();
+        baseHelper.close();
+    }
+
+    public void update(Sync data){
+        SQLiteDatabase db = baseHelper.getWritableDatabase();
+        db.update(tableName, data.beanToValues(), "sSync_TableName = ?", new String[]{data.getsSync_TableName()});
+        db.close();
+        baseHelper.close();
+    }
+
+    //TODO --------------------------------------------------------------------------------------创建表
     public static String createTable(){
         StringBuffer buffer = new StringBuffer();
         buffer.append("CREATE TABLE ").append(tableName);
