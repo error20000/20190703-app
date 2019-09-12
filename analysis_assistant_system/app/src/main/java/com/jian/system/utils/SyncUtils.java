@@ -321,6 +321,7 @@ public class SyncUtils {
                     onlineData.add(data.getObject(i, EquipLog.class));
                 }
                 EquipLogService service = new EquipLogService(Application.getContext());
+                service.deleteAll();
                 //新增
                 service.insert(onlineData);
                 Log.d(TAG, "EquipLog 数据同步成功。");

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Nfc;
 import com.jian.system.entity.Store;
@@ -19,13 +20,13 @@ public class NfcMapper {
     private final static String TAG = NfcMapper.class.getSimpleName();
     public static String tableName = "tBase_Nfc";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public NfcMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -109,6 +110,6 @@ public class NfcMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

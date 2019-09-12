@@ -58,11 +58,11 @@ public class Application extends MultiDexApplication {
         Log.d("dddddddddddddddddd", hasNetwork+"");
         if(hasNetwork){
             SyncUtils.baseData();
-            String userInfo = GestureUtils.get(context, GestureUtils.USER_INFO);
+            /*String userInfo = GestureUtils.get(context, GestureUtils.USER_INFO);
             if(!Utils.isNullOrEmpty(userInfo)){
                 User user = JSONObject.parseObject(userInfo, User.class);
                 SyncUtils.loginData(user.getsUser_ID());
-            }
+            }*/
         }
 
         tokenStr = GestureUtils.get(this, GestureUtils.USER_TOEKN);

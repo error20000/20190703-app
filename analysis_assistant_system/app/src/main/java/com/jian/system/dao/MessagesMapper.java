@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.Aid;
 import com.jian.system.entity.EquipAis;
 import com.jian.system.entity.Messages;
@@ -21,10 +22,14 @@ public class MessagesMapper {
     private final static String TAG = MessagesMapper.class.getSimpleName();
     public static String tableName = "tBase_Message";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public MessagesMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
+    }
+
+    public BaseHelperManager getBaseHelper(){
+        return baseHelper;
     }
 
     public List<Messages> selectPageByUser(Map<String, Object> condition,
@@ -97,7 +102,10 @@ public class MessagesMapper {
         Cursor cursor = baseHelper.getReadableDatabase()
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]) );
 
-        long count = cursor.getLong(0);
+        long count = 0;
+        if(cursor.moveToNext()) {
+            count = cursor.getLong(0);
+        }
         cursor.close();
         return count;
     }
@@ -172,9 +180,12 @@ public class MessagesMapper {
         Cursor cursor = baseHelper.getReadableDatabase()
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]) );
 
-        Map<String, Object> obj = new HashMap<>();;
-        for (int i = 0; i < cursor.getColumnCount(); i++) {
-            obj.put(cursor.getColumnName(i), cursor.getString(i));
+        Map<String, Object> obj = new HashMap<>();
+
+        if(cursor.moveToNext()) {
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                obj.put(cursor.getColumnName(i), cursor.getString(i));
+            }
         }
 
         cursor.close();
@@ -214,6 +225,6 @@ public class MessagesMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Sync;
 import com.jian.system.entity.System;
@@ -19,13 +20,13 @@ public class SystemMapper {
     private final static String TAG = SystemMapper.class.getSimpleName();
     public static String tableName = "tBase_System";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public SystemMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -39,7 +40,9 @@ public class SystemMapper {
                 .rawQuery(buffer.toString(), null);
 
         System obj = new System();
-        obj.cursorToBean(cursor);
+        if(cursor.moveToNext()) {
+            obj.cursorToBean(cursor);
+        }
 
         cursor.close();
         return obj;
@@ -104,6 +107,6 @@ public class SystemMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

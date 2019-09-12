@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.User;
 
 import java.util.ArrayList;
@@ -16,13 +17,13 @@ public class UserMapper {
     private final static String TAG = UserMapper.class.getSimpleName();
     public static String tableName = "tBase_User";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public UserMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -102,6 +103,6 @@ public class UserMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

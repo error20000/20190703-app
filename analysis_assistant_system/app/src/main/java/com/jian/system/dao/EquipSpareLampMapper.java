@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.EquipSolarEnergy;
 import com.jian.system.entity.EquipSpareLamp;
 
@@ -18,13 +19,13 @@ public class EquipSpareLampMapper {
     private final static String TAG = EquipSpareLampMapper.class.getSimpleName();
     public static String tableName = "tEquip_SpareLamp";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public EquipSpareLampMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -89,6 +90,6 @@ public class EquipSpareLampMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

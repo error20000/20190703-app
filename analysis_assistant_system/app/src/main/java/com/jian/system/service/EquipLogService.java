@@ -27,6 +27,10 @@ public class EquipLogService {
         return baseMapper.selectList(condition);
     }
 
+    public void deleteAll(){
+        baseMapper.deleteAll();
+    }
+
     public void insert(List<EquipLog> data){
         baseMapper.insert(data);
     }

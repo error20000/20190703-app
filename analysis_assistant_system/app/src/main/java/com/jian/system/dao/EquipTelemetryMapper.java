@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.EquipSpareLamp;
 import com.jian.system.entity.EquipTelemetry;
 import com.jian.system.entity.EquipViceLamp;
@@ -19,13 +20,13 @@ public class EquipTelemetryMapper {
     private final static String TAG = EquipTelemetryMapper.class.getSimpleName();
     public static String tableName = "tEquip_Telemetry";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public EquipTelemetryMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -96,6 +97,6 @@ public class EquipTelemetryMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

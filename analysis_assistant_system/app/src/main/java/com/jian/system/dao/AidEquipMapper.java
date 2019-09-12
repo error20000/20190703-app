@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.AidEquip;
 import com.jian.system.entity.EquipViceLamp;
 
@@ -18,13 +19,13 @@ public class AidEquipMapper {
     private final static String TAG = AidEquipMapper.class.getSimpleName();
     public static String tableName = "tBase_AidEquip";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public AidEquipMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -68,6 +69,6 @@ public class AidEquipMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

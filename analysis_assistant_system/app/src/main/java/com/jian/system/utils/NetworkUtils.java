@@ -73,7 +73,7 @@ public class NetworkUtils {
         return -1;
     }
 
-    @SuppressLint("NewApi")
+    /*@SuppressLint("NewApi")
     public static void isConnected(Context context){
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         cm.requestNetwork(new NetworkRequest.Builder().build(), new ConnectivityManager.NetworkCallback() {
@@ -88,5 +88,5 @@ public class NetworkUtils {
                 //网络可用的情况下的方法
             }
         });
-    }
+    }*/
 }

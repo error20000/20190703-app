@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.Sync;
@@ -19,13 +20,13 @@ public class SyncMapper {
     private final static String TAG = SyncMapper.class.getSimpleName();
     public static String tableName = "tBase_Sync";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public SyncMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -57,7 +58,9 @@ public class SyncMapper {
                 .rawQuery(buffer.toString(), new String[]{sSync_TableName});
 
         Sync obj = new Sync();
-        obj.cursorToBean(cursor);
+        if(cursor.moveToNext()) {
+            obj.cursorToBean(cursor);
+        }
 
         cursor.close();
         return obj;
@@ -96,6 +99,6 @@ public class SyncMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

@@ -24,6 +24,7 @@ import com.jian.system.dao.MessagesMapper;
 import com.jian.system.dao.NfcMapper;
 import com.jian.system.dao.StoreMapper;
 import com.jian.system.dao.StoreTypeMapper;
+import com.jian.system.dao.SyncMapper;
 import com.jian.system.dao.SystemMapper;
 import com.jian.system.dao.UserAidMapper;
 import com.jian.system.dao.UserMapper;
@@ -36,7 +37,8 @@ public class BaseHelper extends SQLiteOpenHelper{
     private static final String TAG = BaseHelper.class.getSimpleName();
     private static Map<String, BaseHelper> dbMaps = new HashMap<String, BaseHelper>();
     private static String dbName = "aasystem.db";
-    private static int dbVersion = 2;
+    private static int dbVersion = 6;
+    private SQLiteOpenHelper helper;
 
     private BaseHelper(Context context, String dbName, int dbVersion) {
         super(context, dbName, null, dbVersion);
@@ -65,6 +67,7 @@ public class BaseHelper extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL(UserMapper.createTable());
         sqLiteDatabase.execSQL(UserAidMapper.createTable());
         sqLiteDatabase.execSQL(SystemMapper.createTable());
+        sqLiteDatabase.execSQL(SyncMapper.createTable());
 
         sqLiteDatabase.execSQL(DictMapper.createTable());
 
@@ -90,7 +93,7 @@ public class BaseHelper extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL(AidTypeMapIconMapper.createTable());
 
         sqLiteDatabase.execSQL(MessagesMapper.createTable());
-        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate："+sqLiteDatabase.getPath()+" "+sqLiteDatabase.getVersion());
     }
 
     @Override
@@ -100,6 +103,7 @@ public class BaseHelper extends SQLiteOpenHelper{
             sqLiteDatabase.execSQL(UserMapper.dropTable());
             sqLiteDatabase.execSQL(UserAidMapper.dropTable());
             sqLiteDatabase.execSQL(SystemMapper.dropTable());
+            sqLiteDatabase.execSQL(SyncMapper.dropTable());
 
             sqLiteDatabase.execSQL(DictMapper.dropTable());
 
@@ -126,10 +130,12 @@ public class BaseHelper extends SQLiteOpenHelper{
 
             sqLiteDatabase.execSQL(MessagesMapper.dropTable());
         } catch (Exception e){
-
+            e.printStackTrace();
         }
-        Log.d(TAG, "onUpgrade");
+
+        Log.d(TAG, "onUpgrade："+sqLiteDatabase.getPath()+" "+sqLiteDatabase.getVersion());
 
         onCreate(sqLiteDatabase);
     }
+
 }

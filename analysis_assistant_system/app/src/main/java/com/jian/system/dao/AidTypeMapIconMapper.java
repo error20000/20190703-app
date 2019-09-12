@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.AidMapIcon;
 import com.jian.system.entity.AidTypeMapIcon;
 
@@ -15,13 +16,13 @@ public class AidTypeMapIconMapper {
     private final static String TAG = AidTypeMapIconMapper.class.getSimpleName();
     public static String tableName = "tBase_AidTypeMapIcon";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public AidTypeMapIconMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -65,6 +66,6 @@ public class AidTypeMapIconMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }

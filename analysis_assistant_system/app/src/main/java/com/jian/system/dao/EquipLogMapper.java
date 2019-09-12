@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jian.system.db.BaseHelper;
+import com.jian.system.db.BaseHelperManager;
 import com.jian.system.entity.Equip;
 import com.jian.system.entity.EquipAis;
 import com.jian.system.entity.EquipLog;
@@ -19,13 +20,13 @@ public class EquipLogMapper {
     private final static String TAG = EquipLogMapper.class.getSimpleName();
     public static String tableName = "tBase_EquipLog";
 
-    private BaseHelper baseHelper;
+    private BaseHelperManager baseHelper;
 
     public EquipLogMapper(Context context){
-        baseHelper = BaseHelper.getInstance(context);
+        baseHelper = BaseHelperManager.getInstance(context);
     }
 
-    public BaseHelper getBaseHelper(){
+    public BaseHelperManager getBaseHelper(){
         return baseHelper;
     }
 
@@ -56,6 +57,10 @@ public class EquipLogMapper {
     }
 
     //TODO --------------------------------------------------------------------------------同步数据
+    public void deleteAll(){
+        baseHelper.getReadableDatabase()
+                .delete(tableName, null, null);
+    }
 
     public void insert(List<EquipLog> data){
         SQLiteDatabase db = baseHelper.getWritableDatabase();
@@ -97,6 +102,6 @@ public class EquipLogMapper {
     }
 
     public static String dropTable(){
-        return "drop table " +  tableName;
+        return "drop table if exists " +  tableName;
     }
 }
