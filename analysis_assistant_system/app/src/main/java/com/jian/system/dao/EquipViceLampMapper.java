@@ -49,7 +49,9 @@ public class EquipViceLampMapper {
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
 
         EquipViceLamp obj = new EquipViceLamp();
-        obj.cursorToBean(cursor);
+        if (cursor.moveToNext()) {
+            obj.cursorToBean(cursor);
+        }
 
         cursor.close();
         return obj;
@@ -75,7 +77,6 @@ public class EquipViceLampMapper {
 
         }finally {
             db.endTransaction(); // 处理完成
-            db.close();
         }
         baseHelper.close();
     }

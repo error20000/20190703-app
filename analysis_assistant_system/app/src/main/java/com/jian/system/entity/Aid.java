@@ -24,11 +24,11 @@ public class Aid {
 	private Date dAid_CreateDate;
 	private String sAid_Status;
 
-	private float lAid_LatDu;
-	private float lAid_LatFen;
+	private int lAid_LatDu;
+	private int lAid_LatFen;
 	private float lAid_LatMiao;
-	private float lAid_LngDu;
-	private float lAid_LngFen;
+	private int lAid_LngDu;
+	private int lAid_LngFen;
 	private float lAid_LngMiao;
 	
 	
@@ -122,16 +122,16 @@ public class Aid {
 	public void setsAid_Status(String sAid_Status) {
 		this.sAid_Status = sAid_Status;
 	}
-	public float getlAid_LatDu() {
+	public int getlAid_LatDu() {
 		return lAid_LatDu;
 	}
-	public void setlAid_LatDu(float lAid_LatDu) {
+	public void setlAid_LatDu(int lAid_LatDu) {
 		this.lAid_LatDu = lAid_LatDu;
 	}
-	public float getlAid_LatFen() {
+	public int getlAid_LatFen() {
 		return lAid_LatFen;
 	}
-	public void setlAid_LatFen(float lAid_LatFen) {
+	public void setlAid_LatFen(int lAid_LatFen) {
 		this.lAid_LatFen = lAid_LatFen;
 	}
 	public float getlAid_LatMiao() {
@@ -140,16 +140,16 @@ public class Aid {
 	public void setlAid_LatMiao(float lAid_LatMiao) {
 		this.lAid_LatMiao = lAid_LatMiao;
 	}
-	public float getlAid_LngDu() {
+	public int getlAid_LngDu() {
 		return lAid_LngDu;
 	}
-	public void setlAid_LngDu(float lAid_LngDu) {
+	public void setlAid_LngDu(int lAid_LngDu) {
 		this.lAid_LngDu = lAid_LngDu;
 	}
-	public float getlAid_LngFen() {
+	public int getlAid_LngFen() {
 		return lAid_LngFen;
 	}
-	public void setlAid_LngFen(float lAid_LngFen) {
+	public void setlAid_LngFen(int lAid_LngFen) {
 		this.lAid_LngFen = lAid_LngFen;
 	}
 	public float getlAid_LngMiao() {
@@ -176,11 +176,11 @@ public class Aid {
 		this.dAid_CreateDate =  new Date(cursor.getLong(cursor.getColumnIndex("dAid_CreateDate")));
 		this.sAid_Status = cursor.getString(cursor.getColumnIndex("sAid_Status"));
 
-		this.lAid_LatDu = cursor.getFloat(cursor.getColumnIndex("lAid_LatDu"));
-		this.lAid_LatFen = cursor.getFloat(cursor.getColumnIndex("lAid_LatFen"));
+		this.lAid_LatDu = cursor.getInt(cursor.getColumnIndex("lAid_LatDu"));
+		this.lAid_LatFen = cursor.getInt(cursor.getColumnIndex("lAid_LatFen"));
 		this.lAid_LatMiao = cursor.getFloat(cursor.getColumnIndex("lAid_LatMiao"));
-		this.lAid_LngDu = cursor.getFloat(cursor.getColumnIndex("lAid_LngDu"));
-		this.lAid_LngFen = cursor.getFloat(cursor.getColumnIndex("lAid_LngFen"));
+		this.lAid_LngDu = cursor.getInt(cursor.getColumnIndex("lAid_LngDu"));
+		this.lAid_LngFen = cursor.getInt(cursor.getColumnIndex("lAid_LngFen"));
 		this.lAid_LngMiao = cursor.getFloat(cursor.getColumnIndex("lAid_LngMiao"));
 
 		return this;

@@ -212,6 +212,7 @@ public class EquipAddFragment extends QMUIFragment {
         equipNo.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         View equipNoLayout = LayoutInflater.from(getContext()).inflate(R.layout.fragment_list_item_edit, null);
         EditText equipNoEditText = equipNoLayout.findViewById(R.id.item_edit_text);
+        equipNoEditText.setBackgroundDrawable(null);
         equipNoEditText.setSingleLine();
         equipNoEditText.setHint("--请输入编码--");
         ImageView equipNoImage = equipNoLayout.findViewById(R.id.item_image_button);
@@ -232,7 +233,7 @@ public class EquipAddFragment extends QMUIFragment {
         equipName.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         EditText equipNameEditText = new EditText(getContext());
         equipNameEditText.setLayoutParams(new ViewGroup.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        equipNameEditText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 260));
+        equipNameEditText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 240));
         equipNameEditText.setBackgroundDrawable(null);
         equipNameEditText.setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_gray_5));
         equipNameEditText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ));
@@ -562,7 +563,7 @@ public class EquipAddFragment extends QMUIFragment {
         EditText editText = new EditText(getContext());
         editText.setId(R.id.item_edit_text);
         editText.setLayoutParams(new ViewGroup.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        editText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 260));
+        editText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 240));
         editText.setBackgroundDrawable(null);
         editText.setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_gray_5));
         editText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ));

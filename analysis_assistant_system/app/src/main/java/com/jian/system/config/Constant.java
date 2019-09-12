@@ -4,6 +4,7 @@ public class Constant {
 
     //航标数据字典
     public static String aidTypeDict = "AidType";
+    public static String aidStatusDict = "AidStatus";
     public static String aidStationDict = "AidStation";
     public static String aidLightingDict = "AidLighting";
     public static String aidMarkDict = "AidMark";

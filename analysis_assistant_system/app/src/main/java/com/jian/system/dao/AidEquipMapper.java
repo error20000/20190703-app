@@ -48,7 +48,6 @@ public class AidEquipMapper {
 
         }finally {
             db.endTransaction(); // 处理完成
-            db.close();
         }
         baseHelper.close();
     }

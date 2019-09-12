@@ -75,7 +75,6 @@ public class UserMapper {
 
         }finally {
             db.endTransaction(); // 处理完成
-            db.close();
         }
         baseHelper.close();
     }

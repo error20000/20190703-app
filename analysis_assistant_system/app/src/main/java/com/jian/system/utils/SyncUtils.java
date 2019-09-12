@@ -328,10 +328,14 @@ public class SyncUtils {
                 //记录
                 if(sync == null){
                     sync = new Sync();
+                    sync.setsSync_TableName("tBase_EquipLog");
+                    sync.setdSync_UpdateDate(new Date());
+                    syncService.insert(sync);
+                }else{
+                    sync.setsSync_TableName("tBase_EquipLog");
+                    sync.setdSync_UpdateDate(new Date());
+                    syncService.update(sync);
                 }
-                sync.setsSync_TableName("tBase_EquipLog");
-                sync.setdSync_UpdateDate(new Date());
-                syncService.insert(sync);
             }
         });
     }

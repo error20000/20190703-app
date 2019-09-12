@@ -48,7 +48,9 @@ public class EquipSolarEnergyMapper {
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
 
         EquipSolarEnergy obj = new EquipSolarEnergy();
-        obj.cursorToBean(cursor);
+        if (cursor.moveToNext()) {
+            obj.cursorToBean(cursor);
+        }
 
         cursor.close();
         return obj;
@@ -72,7 +74,6 @@ public class EquipSolarEnergyMapper {
 
         }finally {
             db.endTransaction(); // 处理完成
-            db.close();
         }
         baseHelper.close();
     }

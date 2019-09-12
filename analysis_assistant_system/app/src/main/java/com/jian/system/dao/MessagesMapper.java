@@ -181,7 +181,6 @@ public class MessagesMapper {
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]) );
 
         Map<String, Object> obj = new HashMap<>();
-
         if(cursor.moveToNext()) {
             for (int i = 0; i < cursor.getColumnCount(); i++) {
                 obj.put(cursor.getColumnName(i), cursor.getString(i));

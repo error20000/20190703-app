@@ -71,7 +71,10 @@ public class EquipMapper {
         Cursor cursor = baseHelper.getReadableDatabase()
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
 
-        long count = cursor.getLong(0);
+        long count = 0;
+        if (cursor.moveToNext()) {
+            count = cursor.getLong(0);
+        }
         cursor.close();
         return count;
     }
@@ -94,7 +97,9 @@ public class EquipMapper {
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
 
         Equip obj = new Equip();
-        obj.cursorToBean(cursor);
+        if (cursor.moveToNext()) {
+            obj.cursorToBean(cursor);
+        }
 
         cursor.close();
         return obj;
@@ -163,7 +168,6 @@ public class EquipMapper {
 
         }finally {
             db.endTransaction(); // 处理完成
-            db.close();
         }
         baseHelper.close();
     }

@@ -57,8 +57,9 @@ public class SyncMapper {
         Cursor cursor = baseHelper.getReadableDatabase()
                 .rawQuery(buffer.toString(), new String[]{sSync_TableName});
 
-        Sync obj = new Sync();
+        Sync obj = null;
         if(cursor.moveToNext()) {
+            obj = new Sync();
             obj.cursorToBean(cursor);
         }
 
@@ -73,17 +74,13 @@ public class SyncMapper {
     }
 
     public void insert(Sync data){
-        SQLiteDatabase db = baseHelper.getWritableDatabase();
-        db.insert(tableName, null, data.beanToValues());
-        db.close();
-        baseHelper.close();
+        baseHelper.getWritableDatabase()
+                .insert(tableName, null, data.beanToValues());
     }
 
     public void update(Sync data){
-        SQLiteDatabase db = baseHelper.getWritableDatabase();
-        db.update(tableName, data.beanToValues(), "sSync_TableName = ?", new String[]{data.getsSync_TableName()});
-        db.close();
-        baseHelper.close();
+        baseHelper.getWritableDatabase()
+                .update(tableName, data.beanToValues(), "sSync_TableName = ?", new String[]{data.getsSync_TableName()});
     }
 
     //TODO --------------------------------------------------------------------------------------创建表

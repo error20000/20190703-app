@@ -49,7 +49,9 @@ public class EquipTelemetryMapper {
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
 
         EquipTelemetry obj = new EquipTelemetry();
-        obj.cursorToBean(cursor);
+        if (cursor.moveToNext()) {
+            obj.cursorToBean(cursor);
+        }
 
         cursor.close();
         return obj;
@@ -74,7 +76,6 @@ public class EquipTelemetryMapper {
 
         }finally {
             db.endTransaction(); // 处理完成
-            db.close();
         }
         baseHelper.close();
     }

@@ -48,7 +48,9 @@ public class EquipRadarMapper {
                 .rawQuery(buffer.toString(), args.toArray(new String[args.size()]));
 
         EquipRadar obj = new EquipRadar();
-        obj.cursorToBean(cursor);
+        if (cursor.moveToNext()) {
+            obj.cursorToBean(cursor);
+        }
 
         cursor.close();
         return obj;
@@ -72,7 +74,6 @@ public class EquipRadarMapper {
 
         }finally {
             db.endTransaction(); // 处理完成
-            db.close();
         }
         baseHelper.close();
     }

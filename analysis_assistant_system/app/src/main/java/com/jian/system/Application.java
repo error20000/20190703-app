@@ -57,7 +57,7 @@ public class Application extends MultiDexApplication {
         hasNetwork = NetworkUtils.isNetworkConnected(this);
         Log.d("dddddddddddddddddd", hasNetwork+"");
         if(hasNetwork){
-            SyncUtils.baseData();
+            //SyncUtils.baseData();
             /*String userInfo = GestureUtils.get(context, GestureUtils.USER_INFO);
             if(!Utils.isNullOrEmpty(userInfo)){
                 User user = JSONObject.parseObject(userInfo, User.class);
