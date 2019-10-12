@@ -2,6 +2,7 @@
 package com.jian.system.fragment.components;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,11 +12,20 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSONArray;
@@ -32,13 +42,20 @@ import com.jian.system.entity.EquipLog;
 import com.jian.system.entity.Nfc;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
+import com.jian.system.fragment.MsgLayout;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
 import com.jian.system.view.SearchDialogBuilder;
+import com.jzxiang.pickerview.TimePickerDialog;
+import com.jzxiang.pickerview.data.Type;
+import com.jzxiang.pickerview.listener.OnDateSetListener;
 import com.qmuiteam.qmui.arch.QMUIFragment;
+import com.qmuiteam.qmui.util.QMUIDisplayHelper;
+import com.qmuiteam.qmui.util.QMUIResHelper;
+import com.qmuiteam.qmui.util.QMUIViewHelper;
 import com.qmuiteam.qmui.widget.QMUIEmptyView;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUIBottomSheet;
@@ -54,6 +71,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +105,7 @@ public class EquipDetailFragment extends QMUIFragment {
     private final int MsgType_Check = 106;
     private final int MsgType_Repair = 107;
     private final int MsgType_Dump = 108;
+    private final int MsgType_Unusual = 109;
 
 
     private String from;
@@ -105,6 +124,7 @@ public class EquipDetailFragment extends QMUIFragment {
     private List<EquipLog> historyData = new ArrayList<>();
     private List<JSONObject> aidAllData = new ArrayList<>();
     private List<JSONObject> userAidData = new ArrayList<>();
+    private Date timeFilterStartDate;
 
     //Ais
     private List<Dict> equipAisMMSIXOptions = new ArrayList<>();
@@ -183,28 +203,61 @@ public class EquipDetailFragment extends QMUIFragment {
                 .addItem("检测", "check")
                 .addItem("维修", "repair")
                 .addItem("报废", "dump")
+                .addItem("异常", "unusual")
                 .setOnSheetItemClickListener(new QMUIBottomSheet.BottomListSheetBuilder.OnSheetItemClickListener() {
                     @Override
                     public void onClick(QMUIBottomSheet dialog, View itemView, int position, String tag) {
                         dialog.dismiss();
-                        if("inStore".equals(tag)){
-                            showStore(tag);
-                        }else if("useToAid".equals(tag)){
-                            showAid(tag);
-                        }else{
-                            showEditTextDialog(tag);
-                        }
+                        //增加日期选择
+                        TimeFilterDialogBuilder2 builder2 = new TimeFilterDialogBuilder2(getContext());
+                        builder2.setTitle("请选择")
+                                .addAction(0, "取消", QMUIDialogAction.ACTION_PROP_NEGATIVE, new QMUIDialogAction.ActionListener(){
+                                    @Override
+                                    public void onClick(QMUIDialog dialog, int index) {
+                                        //二次确认
+                                        new QMUIDialog.MessageDialogBuilder(getActivity())
+                                                .setTitle("")
+                                                .setMessage("确定要取消本次操作吗？")
+                                                .addAction("取消", new QMUIDialogAction.ActionListener() {
+                                                    @Override
+                                                    public void onClick(QMUIDialog dialog2, int index) {
+                                                        dialog2.dismiss();
+                                                    }
+                                                })
+                                                .addAction(0, "确定", QMUIDialogAction.ACTION_PROP_NEGATIVE,  new QMUIDialogAction.ActionListener() {
+                                                    @Override
+                                                    public void onClick(QMUIDialog dialog2, int index) {
+                                                        dialog2.dismiss();
+                                                        dialog.dismiss();
+                                                    }
+                                                })
+                                                .create(mCurrentDialogStyle).show();
+                                    }
+                                })
+                                .addAction("下一步", new QMUIDialogAction.ActionListener() {
+                                    @Override
+                                    public void onClick(QMUIDialog dialog, int index) {
+                                        dialog.dismiss();
+                                        //主要流程
+                                        if("inStore".equals(tag)){
+                                            showStore(tag);
+                                        }else if("useToAid".equals(tag)){
+                                            showAid(tag);
+                                        }else{
+                                            showEditTextDialog(tag);
+                                        }
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
                     }
                 })
                 .build()
                 .show();
     }
 
-    private void showEditTextDialog(String tag) {
-        final QMUIDialog.EditTextDialogBuilder builder = new QMUIDialog.EditTextDialogBuilder(getActivity());
-        builder.setTitle("备注")
-                .setPlaceholder("请填写备注，非必填！")
-                .setInputType(InputType.TYPE_CLASS_TEXT)
+    /*private void showEditTextDialog(String tag) {
+        TimeFilterDialogBuilder builder = new TimeFilterDialogBuilder(getContext());
+        builder.setTitle("")
                 .addAction(0, "取消", QMUIDialogAction.ACTION_PROP_NEGATIVE, new QMUIDialogAction.ActionListener(){
                     @Override
                     public void onClick(QMUIDialog dialog, int index) {
@@ -260,6 +313,78 @@ public class EquipDetailFragment extends QMUIFragment {
                                 break;
                             case "dump": //报废
                                 itemDump();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                })
+                .create(mCurrentDialogStyle).show();
+    }*/
+
+    private void showEditTextDialog(String tag) {
+        final QMUIDialog.EditTextDialogBuilder builder = new QMUIDialog.EditTextDialogBuilder(getActivity());
+        builder.setTitle("备注")
+                .setPlaceholder("请填写备注，非必填！")
+                .setInputType(InputType.TYPE_CLASS_TEXT)
+                .addAction(0, "取消", QMUIDialogAction.ACTION_PROP_NEGATIVE, new QMUIDialogAction.ActionListener(){
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        //二次确认
+                        new QMUIDialog.MessageDialogBuilder(getActivity())
+                                .setTitle("")
+                                .setMessage("确定要取消本次操作吗？")
+                                .addAction("取消", new QMUIDialogAction.ActionListener() {
+                                    @Override
+                                    public void onClick(QMUIDialog dialog2, int index) {
+                                        dialog2.dismiss();
+                                    }
+                                })
+                                .addAction(0,"确定", QMUIDialogAction.ACTION_PROP_NEGATIVE,  new QMUIDialogAction.ActionListener() {
+                                    @Override
+                                    public void onClick(QMUIDialog dialog2, int index) {
+                                        dialog2.dismiss();
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                    }
+                })
+                .addAction("提交", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        remarks = builder.getEditText().getText().toString();
+                        dialog.dismiss();
+                        switch (tag) {
+                            case "inStore": //入库
+                                itemInStore();
+                                break;
+                            case "outStore": //出库
+                                itemOutStore();
+                                break;
+                            case "useToAid": //使用
+                                itemUseToAid();
+                                break;
+                            case "remove": //拆除
+                                itemRemove();
+                                break;
+                            case "transport": //运输
+                                itemTransport();
+                                break;
+                            case "toBeTest": //待检测
+                                itemToBeTest();
+                                break;
+                            case "check": //检测
+                                itemCheck();
+                                break;
+                            case "repair": //维修
+                                itemRepair();
+                                break;
+                            case "dump": //报废
+                                itemDump();
+                                break;
+                            case "unusual": //异常
+                                itemUnusual();
                                 break;
                             default:
                                 break;
@@ -972,6 +1097,7 @@ public class EquipDetailFragment extends QMUIFragment {
             public void run() {
                 Map<String, Object> params = JSONObject.parseObject(JSONObject.toJSONString(equip), new TypeReference<Map<String, Object>>(){});
                 params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipInStoreUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_InStore);
                 message.obj = res;
@@ -997,6 +1123,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipOutStoreUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_OutStore);
                 message.obj = res;
@@ -1023,6 +1150,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
                 params.put("sAid_ID", sAid_ID);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipUseToAidUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_UseToAid);
                 message.obj = res;
@@ -1048,6 +1176,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipRemoveUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_Remove);
                 message.obj = res;
@@ -1073,6 +1202,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipTransportUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_Transport);
                 message.obj = res;
@@ -1098,6 +1228,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipToBeTestUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_ToBeTest);
                 message.obj = res;
@@ -1123,6 +1254,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipCheckUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_Check);
                 message.obj = res;
@@ -1148,6 +1280,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipRepairUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_Repair);
                 message.obj = res;
@@ -1173,6 +1306,7 @@ public class EquipDetailFragment extends QMUIFragment {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("sEquip_ID", equip.getsEquip_ID());
                 params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.equipDumpUrl, params);
                 Message message = mHandler.obtainMessage(MsgType_Dump);
                 message.obj = res;
@@ -1190,4 +1324,229 @@ public class EquipDetailFragment extends QMUIFragment {
         popBackStack();
     }
 
+    private void itemUnusual(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("sEquip_ID", equip.getsEquip_ID());
+                params.put("remarks", remarks);
+                params.put("date", timeFilterStartDate.getTime());
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipUnusualUrl, params);
+                Message message = mHandler.obtainMessage(MsgType_Unusual);
+                message.obj = res;
+                mItemHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleUnusual(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+        popBackStack();
+    }
+
+
+    class TimeFilterDialogBuilder2 extends QMUIDialog.AutoResizeDialogBuilder {
+        private Context mContext;
+        private TextView mTextView1;
+        private EditText mEditText;
+
+        public TimeFilterDialogBuilder2(Context context) {
+            super(context);
+            mContext = context;
+            timeFilterStartDate = new Date();
+        }
+
+        public TextView getTextView1() {
+            return mTextView1;
+        }
+
+        public TextView getEditText() {
+            return mEditText;
+        }
+
+        @Override
+        public View onBuildContent(QMUIDialog dialog, ScrollView parent) {
+            LinearLayout layoutRow = new LinearLayout(mContext);
+            layoutRow.setOrientation(LinearLayout.VERTICAL);
+            layoutRow.setLayoutParams(new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            LinearLayout layout1 = new LinearLayout(mContext);
+            layout1.setOrientation(LinearLayout.HORIZONTAL);
+            layout1.setLayoutParams(new ScrollView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            int padding = QMUIDisplayHelper.dp2px(mContext, 20);
+            layout1.setPadding(padding, padding, padding, padding);
+            //日期标签
+            TextView mTextViewLine = new AppCompatTextView(mContext);
+            mTextViewLine.setText("日期：");
+            LinearLayout.LayoutParams lineLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lineLP.leftMargin = QMUIDisplayHelper.dp2px(getContext(), 10);
+            lineLP.rightMargin = QMUIDisplayHelper.dp2px(getContext(), 10);
+            mTextViewLine.setLayoutParams(lineLP);
+            layout1.addView(mTextViewLine);
+            //日期
+            mTextView1 = new AppCompatTextView(mContext);
+            QMUIViewHelper.setBackgroundKeepingPadding(mTextView1, QMUIResHelper.getAttrDrawable(mContext, R.attr.qmui_list_item_bg_with_border_bottom));
+            if(timeFilterStartDate == null){
+                mTextView1.setHint("请选择日期");
+            }else{
+                mTextView1.setText(FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", timeFilterStartDate));
+            }
+            layout1.addView(mTextView1);
+            mTextView1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d(TAG, "请选择日期");
+                    TimePickerDialog mDialogTime = new TimePickerDialog.Builder()
+                            .setCallBack(new OnDateSetListener() {
+                                @Override
+                                public void onDateSet(TimePickerDialog timePickerView, long millseconds) {
+                                    timeFilterStartDate = new Date(millseconds);
+                                    String str = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", timeFilterStartDate);
+                                    timeFilterStartDate = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", str);
+                                    mTextView1.setText(str);
+                                }
+                            })
+                            .setCancelStringId("取消")
+                            .setSureStringId("确定")
+                            .setTitleStringId("选择日期")
+                            .setYearText("年")
+                            .setMonthText("月")
+                            .setDayText("日")
+                            .setHourText("时")
+                            .setMinuteText("分")
+                            .setCyclic(false)
+                            //.setMinMillseconds(System.currentTimeMillis())
+                            //.setMaxMillseconds(System.currentTimeMillis() + tenYears)
+                            .setCurrentMillseconds(timeFilterStartDate == null ? System.currentTimeMillis() : timeFilterStartDate.getTime())
+                            .setThemeColor(getResources().getColor(R.color.app_color_blue))
+                            .setType(Type.ALL)
+                            .setWheelItemTextNormalColor(getResources().getColor(R.color.timetimepicker_default_text_color))
+                            .setWheelItemTextSelectorColor(getResources().getColor(R.color.timepicker_toolbar_bg))
+                            .setWheelItemTextSize(12)
+                            .build();
+                    mDialogTime.show(getFragmentManager(), "startDate");
+                }
+            });
+            layoutRow.addView(layout1);
+            return layoutRow;
+        }
+    }
+
+   /*class TimeFilterDialogBuilder extends QMUIDialog.AutoResizeDialogBuilder {
+        private Context mContext;
+        private TextView mTextView1;
+        private EditText mEditText;
+
+        public TimeFilterDialogBuilder(Context context) {
+            super(context);
+            mContext = context;
+            timeFilterStartDate = new Date();
+        }
+
+        public TextView getTextView1() {
+            return mTextView1;
+        }
+
+        public TextView getEditText() {
+            return mEditText;
+        }
+
+        @Override
+        public View onBuildContent(QMUIDialog dialog, ScrollView parent) {
+            LinearLayout layoutRow = new LinearLayout(mContext);
+            layoutRow.setOrientation(LinearLayout.VERTICAL);
+            layoutRow.setLayoutParams(new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            LinearLayout layout1 = new LinearLayout(mContext);
+            layout1.setOrientation(LinearLayout.HORIZONTAL);
+            layout1.setLayoutParams(new ScrollView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            int padding = QMUIDisplayHelper.dp2px(mContext, 20);
+            layout1.setPadding(padding, padding, padding, padding);
+            //日期标签
+            TextView mTextViewLine = new AppCompatTextView(mContext);
+            mTextViewLine.setText("日期：");
+            LinearLayout.LayoutParams lineLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lineLP.leftMargin = QMUIDisplayHelper.dp2px(getContext(), 10);
+            lineLP.rightMargin = QMUIDisplayHelper.dp2px(getContext(), 10);
+            mTextViewLine.setLayoutParams(lineLP);
+            layout1.addView(mTextViewLine);
+            //日期
+            mTextView1 = new AppCompatTextView(mContext);
+            QMUIViewHelper.setBackgroundKeepingPadding(mTextView1, QMUIResHelper.getAttrDrawable(mContext, R.attr.qmui_list_item_bg_with_border_bottom));
+            if(timeFilterStartDate == null){
+                mTextView1.setHint("请选择日期");
+            }else{
+                mTextView1.setText(FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", timeFilterStartDate));
+            }
+            layout1.addView(mTextView1);
+            mTextView1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d(TAG, "请选择日期");
+                    TimePickerDialog mDialogTime = new TimePickerDialog.Builder()
+                            .setCallBack(new OnDateSetListener() {
+                                @Override
+                                public void onDateSet(TimePickerDialog timePickerView, long millseconds) {
+                                    timeFilterStartDate = new Date(millseconds);
+                                    String str = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", timeFilterStartDate);
+                                    timeFilterStartDate = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", str);
+                                    mTextView1.setText(str);
+                                }
+                            })
+                            .setCancelStringId("取消")
+                            .setSureStringId("确定")
+                            .setTitleStringId("选择日期")
+                            .setYearText("年")
+                            .setMonthText("月")
+                            .setDayText("日")
+                            .setHourText("时")
+                            .setMinuteText("分")
+                            .setCyclic(false)
+                            //.setMinMillseconds(System.currentTimeMillis())
+                            //.setMaxMillseconds(System.currentTimeMillis() + tenYears)
+                            .setCurrentMillseconds(timeFilterStartDate == null ? System.currentTimeMillis() : timeFilterStartDate.getTime())
+                            .setThemeColor(getResources().getColor(R.color.app_color_blue))
+                            .setType(Type.ALL)
+                            .setWheelItemTextNormalColor(getResources().getColor(R.color.timetimepicker_default_text_color))
+                            .setWheelItemTextSelectorColor(getResources().getColor(R.color.timepicker_toolbar_bg))
+                            .setWheelItemTextSize(12)
+                            .build();
+                    mDialogTime.show(getFragmentManager(), "startDate");
+                }
+            });
+            layoutRow.addView(layout1);
+
+            LinearLayout layout2 = new LinearLayout(mContext);
+            layout2.setOrientation(LinearLayout.HORIZONTAL);
+            layout2.setLayoutParams(new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            int padding2 = QMUIDisplayHelper.dp2px(mContext, 20);
+            layout2.setPadding(padding2, padding2, padding2, padding2);
+            //备注标签
+            TextView mTextViewLine2 = new AppCompatTextView(mContext);
+            mTextViewLine2.setText("备注：");
+            LinearLayout.LayoutParams lineLP2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lineLP2.leftMargin = QMUIDisplayHelper.dp2px(getContext(), 10);
+            lineLP2.rightMargin = QMUIDisplayHelper.dp2px(getContext(), 10);
+            mTextViewLine.setLayoutParams(lineLP2);
+            layout2.addView(mTextViewLine2);
+            //备注
+            LinearLayout.LayoutParams lineLP3 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mEditText = new AppCompatEditText(mContext);
+            mEditText.setFocusable(true);
+            mEditText.setFocusableInTouchMode(true);
+            mEditText.setImeOptions(EditorInfo.IME_ACTION_GO);
+            mEditText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ) );
+            mEditText.setLayoutParams(lineLP3);
+            mEditText.setHint("请填写备注，非必填！");
+            layout2.addView(mEditText);
+            layoutRow.addView(layout2);
+            return layoutRow;
+        }
+    }*/
 }
