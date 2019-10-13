@@ -860,6 +860,9 @@ public class EquipDetailFragment extends QMUIFragment {
                 case MsgType_Dump: //报废
                     handleDump(resData);
                     break;
+                case MsgType_Unusual: //异常
+                    handleUnusual(resData);
+                    break;
                 default:
                     break;
             }

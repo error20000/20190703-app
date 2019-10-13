@@ -4,6 +4,7 @@ package com.jian.system.fragment.components;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,9 @@ import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITabSegment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
+import com.qmuiteam.qmui.widget.dialog.QMUIBottomSheet;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 
 import java.util.ArrayList;
@@ -45,9 +49,14 @@ public class AidDetailFragment extends QMUIFragment {
 
     private final static String TAG = AidDetailFragment.class.getSimpleName();
     private String title = "航标详情";
+    private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
+    private QMUITipDialog tipDialog;
+    private final int MsgType_Unusual = 1;
+    private final int MsgType_Normal = 2;
 
     private String sAid_ID;
     private String from;
+    private String remarks = "";
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -82,10 +91,174 @@ public class AidDetailFragment extends QMUIFragment {
                 }
             }
         });
-
+        // 切换其他情况的按钮
+        mTopBar.addRightImageButton(R.mipmap.icon_topbar_overflow, R.id.topbar_right_change_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showBottomSheetList();
+            }
+        });
         mTopBar.setTitle(title);
     }
 
+    private void showBottomSheetList() {
+        new QMUIBottomSheet.BottomListSheetBuilder(getActivity())
+                .addItem("标记为异常", "unusual")
+                .addItem("恢复正常", "normal")
+                .setOnSheetItemClickListener(new QMUIBottomSheet.BottomListSheetBuilder.OnSheetItemClickListener() {
+                    @Override
+                    public void onClick(QMUIBottomSheet dialog, View itemView, int position, String tag) {
+                        dialog.dismiss();
+                        showEditTextDialog(tag);
+                    }
+                })
+                .build()
+                .show();
+    }
+
+    private void showEditTextDialog(String tag) {
+        final QMUIDialog.EditTextDialogBuilder builder = new QMUIDialog.EditTextDialogBuilder(getActivity());
+        builder.setTitle("备注")
+                .setPlaceholder("请填写备注，非必填！")
+                .setInputType(InputType.TYPE_CLASS_TEXT)
+                .addAction(0, "取消", QMUIDialogAction.ACTION_PROP_NEGATIVE, new QMUIDialogAction.ActionListener(){
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        //二次确认
+                        new QMUIDialog.MessageDialogBuilder(getActivity())
+                                .setTitle("")
+                                .setMessage("确定要取消本次操作吗？")
+                                .addAction("取消", new QMUIDialogAction.ActionListener() {
+                                    @Override
+                                    public void onClick(QMUIDialog dialog2, int index) {
+                                        dialog2.dismiss();
+                                    }
+                                })
+                                .addAction(0,"确定", QMUIDialogAction.ACTION_PROP_NEGATIVE, new QMUIDialogAction.ActionListener() {
+                                    @Override
+                                    public void onClick(QMUIDialog dialog2, int index) {
+                                        dialog2.dismiss();
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                    }
+                })
+                .addAction("提交", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        remarks = builder.getEditText().getText().toString();
+                        dialog.dismiss();
+                        switch (tag) {
+                            case "unusual":
+                                itemUnusual();
+                                break;
+                            case "normal":
+                                itemNormal();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                })
+                .create(mCurrentDialogStyle).show();
+    }
+    //TODO --------------------------------------------------------------------------- handle
+
+    Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            //处理结果
+            hideTips();
+            String str =  (String) msg.obj;
+            if(Utils.isNullOrEmpty(str)){
+                showToast("网络异常，请检查网络。");
+                return;
+            }
+            JSONObject resData = JSONObject.parseObject(str);
+            //处理数据
+            switch (msg.what) {
+                case MsgType_Unusual:
+                    handleUnusual(resData);
+                    break;
+                case MsgType_Normal:
+                    handleNormal(resData);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    private void showTips(String msg){
+        tipDialog = new QMUITipDialog.Builder(getActivity())
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord(msg)
+                .create();
+        tipDialog.show();
+    }
+
+    private void hideTips(){
+        tipDialog.dismiss();
+    }
+    private void showToast(String msg){
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
+    private boolean handleErrorCode(JSONObject resObj){
+        if (resObj.getInteger("code") <= 0) {
+            showToast(resObj.getString("msg"));
+            return true;
+        }
+        return false;
+    }
+
+    private void itemUnusual(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<>();
+                params.put("sAid_ID", sAid_ID);
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.aidUnusualUrl, params);
+                Message message = mHandler.obtainMessage(MsgType_Unusual);
+                message.obj = res;
+                mHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleUnusual(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+    }
+
+    private void itemNormal(){
+        showTips("保存中");
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> params = new HashMap<>();
+                params.put("sAid_ID", sAid_ID);
+                params.put("remarks", remarks);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.aidNormalUrl, params);
+                Message message = mHandler.obtainMessage(MsgType_Normal);
+                message.obj = res;
+                mHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void handleNormal(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        showToast("保存成功");
+    }
     //TODO -------------------------------------------------------------------------------------viewpager
 
     private Map<Pager, View> mPages = new HashMap<>();

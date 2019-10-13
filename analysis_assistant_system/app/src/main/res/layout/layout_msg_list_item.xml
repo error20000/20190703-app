@@ -112,10 +112,12 @@
 
         <TextView
             android:id="@+id/item_detail"
-            android:layout_width="366dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:lineSpacingExtra="?attr/qmui_common_list_item_detail_line_space"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:textColor="?attr/qmui_config_color_gray_5"
             android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
     </LinearLayout>
@@ -147,7 +149,7 @@
 
         <TextView
             android:id="@+id/item_date"
-            android:layout_width="366dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:lineSpacingExtra="?attr/qmui_common_list_item_detail_line_space"
