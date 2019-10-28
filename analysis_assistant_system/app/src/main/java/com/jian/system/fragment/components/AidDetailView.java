@@ -134,7 +134,7 @@ public class AidDetailView extends QMUIWindowInsetLayout{
         String delDate = aid.getdAid_DelDate() == null ? "" : FormatUtils.formatDate("yyyy-MM-dd", aid.getdAid_DelDate());
         dAid_DelDate.setDetailText(delDate);
 
-        QMUICommonListItemView sAid_Lighting = mGroupListView.createItemView("灯质明灭");
+        QMUICommonListItemView sAid_Lighting = mGroupListView.createItemView("灯质");
         String str = FormatUtils.formatDict(aid.getsAid_Lighting(), aidLightingData);
         String strDesc = FormatUtils.formatDictDesc(aid.getsAid_Lighting(), aidLightingData);
         if(!Utils.isNullOrEmpty(strDesc)){
@@ -151,7 +151,7 @@ public class AidDetailView extends QMUIWindowInsetLayout{
         sAid_Lighting.addAccessoryCustomView(equipNameEditText);
 //        sAid_Lighting.setDetailText(str);
 
-        QMUICommonListItemView sAid_Mark = mGroupListView.createItemView("航标设置");
+        QMUICommonListItemView sAid_Mark = mGroupListView.createItemView("航标属性");
         sAid_Mark.setDetailText(FormatUtils.formatDict(aid.getsAid_Mark(), aidMarkData) );
 
         QMUICommonListItemView sAid_NfcID = mGroupListView.createItemView("NFC标签");

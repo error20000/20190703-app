@@ -251,8 +251,8 @@ public class MsgDetailFragment extends QMUIFragment {
         QMUICommonListItemView msgUser = mGroupListView.createItemView("更新人员");
         msgUser.setDetailText(msg.getsMsg_UserName());
 
-        QMUICommonListItemView msgIP = mGroupListView.createItemView("更新人员IP");
-        msgIP.setDetailText(msg.getsMsg_IP());
+        //QMUICommonListItemView msgIP = mGroupListView.createItemView("更新人员IP");
+        //msgIP.setDetailText(msg.getsMsg_IP());
 
         QMUICommonListItemView msgRemarks = mGroupListView.createItemView("消息备注");
         msgRemarks.setDetailText(msg.getsMsg_Remarks());
@@ -273,7 +273,7 @@ public class MsgDetailFragment extends QMUIFragment {
                 .addItemView(msgFromUser, null)
                 .addItemView(msgUpdateDate, null)
                 .addItemView(msgUser, null)
-                .addItemView(msgIP, null)
+                //.addItemView(msgIP, null)
                 .addItemView(msgRemarks, null)
                 .addTo(mGroupListView);
 

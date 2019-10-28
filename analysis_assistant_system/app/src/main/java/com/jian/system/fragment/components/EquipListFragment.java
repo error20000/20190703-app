@@ -213,10 +213,7 @@ public class EquipListFragment extends QMUIFragment {
             @Override
             public void onRefresh() {
                 //清空数据
-                data = new ArrayList<>();
-                total = 0;
-                page = 1;
-                rows = 10;
+                clearData();
                 //请求数据
                 Map<String, Object> params = new HashMap<>();
                 params.put("page", page);
@@ -394,7 +391,19 @@ public class EquipListFragment extends QMUIFragment {
         }
     };
 
+    private void  clearData(){
+        //清空数据
+        data = new ArrayList<>();
+        total = 0;
+        page = 1;
+        rows = 10;
+    }
+
     private void initData(){
+
+        //清空数据
+        clearData();
+
         //查询数据 -- 判断网络
         tipDialog = new QMUITipDialog.Builder(getContext())
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
