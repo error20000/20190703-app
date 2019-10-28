@@ -63,9 +63,9 @@ public class HomeLayout extends QMUIWindowInsetLayout{
     QMUITopBarLayout mTopBar;
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
-    @BindView(R.id.msg_title)
+    //@BindView(R.id.msg_title)
     QMUICommonListItemView mMsgTitle;
-    @BindView(R.id.recyclerViewMsg)
+    //@BindView(R.id.recyclerViewMsg)
     RecyclerView mMsgRecyclerView;
 
     private ViewPagerListener mListener;
@@ -89,9 +89,9 @@ public class HomeLayout extends QMUIWindowInsetLayout{
         initTopBar();
         initRecyclerView();
 
-        mMsgTitle.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
-        mMsgTitle.setOrientation(QMUICommonListItemView.VERTICAL);
-        mMsgTitle.setText("消息中心");
+        //mMsgTitle.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        //mMsgTitle.setOrientation(QMUICommonListItemView.VERTICAL);
+        //mMsgTitle.setText("消息中心");
 
         initData();
     }
@@ -246,7 +246,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
             msgData.add(resData.getObject(i, Messages.class));
         }
         //初始化消息列表
-        initMsgRecyclerView();
+        //initMsgRecyclerView();
     }
 
     private void initMsgRecyclerView() {

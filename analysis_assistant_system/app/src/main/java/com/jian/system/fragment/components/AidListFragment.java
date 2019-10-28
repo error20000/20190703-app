@@ -214,6 +214,8 @@ public class AidListFragment extends QMUIFragment {
             @Override
             public void onItemClick(View itemView, int pos) {
                 Log.d(TAG, "onItemClick: " + data.get(pos).getsAid_Name());
+                Log.d(TAG, "onItemClick: " + itemView);
+                Log.d(TAG, "onItemClick: " + pos);
                 //进入详情页面
                 intoDetail(data.get(pos).getsAid_ID());
             }
@@ -444,7 +446,7 @@ public class AidListFragment extends QMUIFragment {
             node = new SearchSuggestion() {
                 @Override
                 public String getBody() {
-                    return temp.getsAid_NO();
+                    return temp.getsAid_Name();
                 }
 
                 @Override
@@ -461,6 +463,7 @@ public class AidListFragment extends QMUIFragment {
         }
         mSearchView.swapSuggestions(slist);
 
+        Log.e(TAG, JSONObject.toJSONString(sdata));
         //更新列表
         mItemAdapter.setData(sdata);
     }

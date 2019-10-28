@@ -561,7 +561,7 @@ public class EquipDetailFragment extends QMUIFragment {
             equipBatteryVolt.setVisibility(View.VISIBLE);
         }
 
-        QMUICommonListItemView equipBatteryWatt = mGroupListView.createItemView("容量（W）");
+        QMUICommonListItemView equipBatteryWatt = mGroupListView.createItemView("容量（AH）");
         equipBatteryWatt.setVisibility(View.GONE);
         if(sEquip_Type.equals(Constant.EquipType_Battery)){
             equipBatteryWatt.setDetailText(detail.getString("lBattery_Watt"));
@@ -753,8 +753,18 @@ public class EquipDetailFragment extends QMUIFragment {
         for (int i = 0; i < historyData.size(); i++) {
             String str = "";
             str += FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss", historyData.get(i).getdELog_CreateDate());
-            str +=" 【" + historyData.get(i).getsELog_Describe();
-            str +="】    " + (historyData.get(i).getsELog_Remarks() == null ? "" : historyData.get(i).getsELog_Remarks());
+            str +=" 【" + historyData.get(i).getsELog_Describe() + "】 ";
+            if(!Utils.isNullOrEmpty(historyData.get(i).getsELog_AidName())){
+                str +="    " + (historyData.get(i).getsELog_AidName() == null ? "" : historyData.get(i).getsELog_AidName());
+            }
+            String sstr = (historyData.get(i).getsELog_StoreLv1Name() == null ? "" : historyData.get(i).getsELog_StoreLv1Name());
+            sstr += (historyData.get(i).getsELog_StoreLv2Name() == null ? "" : " - " + historyData.get(i).getsELog_StoreLv2Name());
+            sstr += (historyData.get(i).getsELog_StoreLv3Name() == null ? "" : " - " + historyData.get(i).getsELog_StoreLv3Name());
+            sstr += (historyData.get(i).getsELog_StoreLv4Name() == null ? "" : " - " + historyData.get(i).getsELog_StoreLv4Name());
+            if(!Utils.isNullOrEmpty(sstr)){
+                str += "    " + sstr;
+            }
+            str += "    " + (historyData.get(i).getsELog_Remarks() == null ? "" : historyData.get(i).getsELog_Remarks());
             list.add(str);
         }
 

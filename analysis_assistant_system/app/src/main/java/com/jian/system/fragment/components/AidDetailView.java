@@ -136,13 +136,14 @@ public class AidDetailView extends QMUIWindowInsetLayout{
 
         QMUICommonListItemView sAid_Lighting = mGroupListView.createItemView("灯质");
         String str = FormatUtils.formatDict(aid.getsAid_Lighting(), aidLightingData);
-        String strDesc = FormatUtils.formatDictDesc(aid.getsAid_Lighting(), aidLightingData);
+        /*String strDesc = FormatUtils.formatDictDesc(aid.getsAid_Lighting(), aidLightingData);
         if(!Utils.isNullOrEmpty(strDesc)){
-            str += str+str+str;//"("+strDesc+")";
-        }
+            str += "("+strDesc+")";
+        }*/
         TextView equipNameEditText = new TextView(getContext());
-        equipNameEditText.setLayoutParams(new ViewGroup.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        equipNameEditText.setLayoutParams(new ViewGroup.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
         equipNameEditText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 240));
+        equipNameEditText.setLines(4);
         equipNameEditText.setBackgroundDrawable(null);
         equipNameEditText.setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_gray_5));
         equipNameEditText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ));

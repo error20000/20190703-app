@@ -21,6 +21,12 @@ public class EquipLog  {
 	private String sELog_StoreLv2;
 	private String sELog_StoreLv3;
 	private String sELog_StoreLv4;
+	private String sELog_AidID;
+	private String sELog_StoreLv1Name;
+	private String sELog_StoreLv2Name;
+	private String sELog_StoreLv3Name;
+	private String sELog_StoreLv4Name;
+	private String sELog_AidName;
 	
 	
 	
@@ -105,6 +111,54 @@ public class EquipLog  {
 		this.sELog_StoreLv4 = sELog_StoreLv4;
 	}
 
+	public String getsELog_AidID() {
+		return sELog_AidID;
+	}
+
+	public void setsELog_AidID(String sELog_AidID) {
+		this.sELog_AidID = sELog_AidID;
+	}
+
+	public String getsELog_StoreLv1Name() {
+		return sELog_StoreLv1Name;
+	}
+
+	public void setsELog_StoreLv1Name(String sELog_StoreLv1Name) {
+		this.sELog_StoreLv1Name = sELog_StoreLv1Name;
+	}
+
+	public String getsELog_StoreLv2Name() {
+		return sELog_StoreLv2Name;
+	}
+
+	public void setsELog_StoreLv2Name(String sELog_StoreLv2Name) {
+		this.sELog_StoreLv2Name = sELog_StoreLv2Name;
+	}
+
+	public String getsELog_StoreLv3Name() {
+		return sELog_StoreLv3Name;
+	}
+
+	public void setsELog_StoreLv3Name(String sELog_StoreLv3Name) {
+		this.sELog_StoreLv3Name = sELog_StoreLv3Name;
+	}
+
+	public String getsELog_StoreLv4Name() {
+		return sELog_StoreLv4Name;
+	}
+
+	public void setsELog_StoreLv4Name(String sELog_StoreLv4Name) {
+		this.sELog_StoreLv4Name = sELog_StoreLv4Name;
+	}
+
+	public String getsELog_AidName() {
+		return sELog_AidName;
+	}
+
+	public void setsELog_AidName(String sELog_AidName) {
+		this.sELog_AidName = sELog_AidName;
+	}
+
 	public EquipLog cursorToBean(Cursor cursor){
 		this.sELog_ID = cursor.getString(cursor.getColumnIndex("sELog_ID"));
 		this.sELog_Type = cursor.getString(cursor.getColumnIndex("sELog_Type"));
@@ -118,6 +172,7 @@ public class EquipLog  {
 		this.sELog_StoreLv2 = cursor.getString(cursor.getColumnIndex("sELog_StoreLv2"));
 		this.sELog_StoreLv3 = cursor.getString(cursor.getColumnIndex("sELog_StoreLv3"));
 		this.sELog_StoreLv4 = cursor.getString(cursor.getColumnIndex("sELog_StoreLv4"));
+		this.sELog_AidID = cursor.getString(cursor.getColumnIndex("sELog_AidID"));
 
 		return this;
 	}
@@ -136,6 +191,7 @@ public class EquipLog  {
 		values.put("sELog_StoreLv2", sELog_StoreLv2);
 		values.put("sELog_StoreLv3", sELog_StoreLv3);
 		values.put("sELog_StoreLv4", sELog_StoreLv4);
+		values.put("sELog_AidID", sELog_AidID);
 		return values;
 	}
 }
