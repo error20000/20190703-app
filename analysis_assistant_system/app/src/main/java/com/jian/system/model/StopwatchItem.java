@@ -8,7 +8,7 @@ public class StopwatchItem {
     private String date;
     private String time;
 
-    public StopwatchItem(String name, String date, String time){
+    public StopwatchItem(String name, String date, String time) {
         this.name = name;
         this.date = date;
         this.time = time;

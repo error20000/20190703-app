@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -141,13 +142,17 @@ public class AidDetailView extends QMUIWindowInsetLayout{
             str += "("+strDesc+")";
         }*/
         TextView equipNameEditText = new TextView(getContext());
-        equipNameEditText.setLayoutParams(new ViewGroup.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        FrameLayout.LayoutParams textLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        equipNameEditText.setLayoutParams(textLayoutParams);
+        equipNameEditText.setPadding(0,10,0,10);
         equipNameEditText.setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 240));
-        equipNameEditText.setLines(4);
         equipNameEditText.setBackgroundDrawable(null);
         equipNameEditText.setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_gray_5));
         equipNameEditText.setTextSize(QMUIDisplayHelper.px2sp(getContext(), QMUIResHelper.getAttrDimen(getContext(), R.attr.qmui_common_list_item_detail_h_text_size) ));
         equipNameEditText.setText(str);
+        //sAid_Lighting.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, QMUIDisplayHelper.dp2px(getContext(), 100)));
+        sAid_Lighting.setMinimumHeight(sAid_Lighting.getLayoutParams().height);
+        sAid_Lighting.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, equipNameEditText.getLayoutParams().height));
         sAid_Lighting.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
         sAid_Lighting.addAccessoryCustomView(equipNameEditText);
 //        sAid_Lighting.setDetailText(str);
