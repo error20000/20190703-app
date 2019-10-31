@@ -110,12 +110,6 @@ public class EquipListFragment extends QMUIFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.e("dddddddddddd", "dddddddddddddddddddddddddddddddddddd");
-    }
-
-    @Override
     protected void onFragmentResult(int requestCode, int resultCode, Intent data) {
         super.onFragmentResult(requestCode, resultCode, data);
         if (RESULT_OK == resultCode) {

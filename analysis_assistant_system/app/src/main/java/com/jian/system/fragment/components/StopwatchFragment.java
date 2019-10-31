@@ -50,7 +50,8 @@ public class StopwatchFragment extends QMUIFragment {
     ListView mListView;
 
     String title = "秒表";
-    String timeFormatStr = "HH:mm:ss.S";
+    String timeFormatStr = "MM-dd HH:mm:ss.S";
+    long interval = 100;
     boolean isStart = false;
     boolean canClear = false;
     Date startDate = null;
@@ -82,17 +83,18 @@ public class StopwatchFragment extends QMUIFragment {
         mTopBar.setTitle(title);
     }
 
+
     private void init(){
         //计时器线程
-        mThread = new Thread(new Runnable() {
+        /*mThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     while(!Thread.interrupted()){
 
-                        Thread.sleep(100);
+                        Thread.sleep(interval);
 
-                        time += 100;
+                        time += interval;
 
                         Message message = mHandler.obtainMessage();
                         mHandler.sendMessage(message);
@@ -103,7 +105,7 @@ public class StopwatchFragment extends QMUIFragment {
                 }
 
             }
-        });
+        });*/
         //按钮事件
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,11 +140,12 @@ public class StopwatchFragment extends QMUIFragment {
             return;
         }
         startDate = new Date();
-        mThread.start();
         isStart = true;
         canClear = true;
         mButtonClear.setText("计次");
         index = 0;
+        //mThread.start();
+        mHandler.sendEmptyMessageDelayed(1, interval);
         //list
         String dateStr = FormatUtils.formatDate(timeFormatStr, startDate);
         mData.add(0, new StopwatchItem("开始时间", dateStr, ""));
@@ -153,7 +156,7 @@ public class StopwatchFragment extends QMUIFragment {
         if(!isStart){
             return;
         }
-        mThread.interrupt();
+        //mThread.interrupt();
         isStart = false;
         mButtonClear.setText("重置");
         //list
@@ -184,7 +187,7 @@ public class StopwatchFragment extends QMUIFragment {
         //list
         long add = time - lastTime;
         startDate = new Date(startDate.getTime() + add);
-        String dateStr = FormatUtils.formatDate("yyyy-MM-dd HH:mm:ss.S", startDate);
+        String dateStr = FormatUtils.formatDate(timeFormatStr, startDate);
         mData.add(0, new StopwatchItem("计次"+index, dateStr, "+" + format(add)));
         lastTime = time;
         updateList();
@@ -236,10 +239,24 @@ public class StopwatchFragment extends QMUIFragment {
         return str;
     }
 
-    Handler mHandler = new Handler(){
+    /*Handler mHandler = new Handler(){
         @Override
         public void handleMessage(@NonNull Message msg) {
             updateTime();
+        }
+    };*/
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            switch (msg.what) {
+                case 1:
+                    if(isStart){
+                        time += interval;
+                        updateTime();
+                        mHandler.sendEmptyMessageDelayed(1, interval);
+                    }
+                    break;
+            }
         }
     };
 }
