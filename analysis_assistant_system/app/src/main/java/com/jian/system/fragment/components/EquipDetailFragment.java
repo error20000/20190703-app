@@ -4,6 +4,7 @@ package com.jian.system.fragment.components;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -95,6 +96,7 @@ public class EquipDetailFragment extends QMUIFragment {
     private BottomDialog selectorDialog;
     private final int MsgType_Detail = 0;
     private final int MsgType_History = 1;
+    public static final String Fragment_Result = "Fragment_Result";
 
     private final int MsgType_InStore = 100;
     private final int MsgType_OutStore = 101;
@@ -171,6 +173,12 @@ public class EquipDetailFragment extends QMUIFragment {
         return rootView;
     }
 
+    private void handleResult(String sEquip_ID){
+        Intent intent = new Intent();
+        intent.putExtra(Fragment_Result, sEquip_ID);
+        setFragmentResult(RESULT_OK, intent);
+    }
+
     private void initTopBar() {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,6 +196,8 @@ public class EquipDetailFragment extends QMUIFragment {
             @Override
             public void onClick(View view) {
                 showBottomSheetList();
+                //返回结果到list
+                handleResult(equip.getsEquip_ID());
             }
         });
         mTopBar.setTitle(title);

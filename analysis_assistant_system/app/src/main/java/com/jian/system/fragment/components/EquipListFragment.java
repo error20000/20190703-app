@@ -40,6 +40,7 @@ import com.jian.system.nfc.NfcActivity;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
+import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
@@ -77,6 +78,8 @@ public class EquipListFragment extends QMUIFragment {
     private final int MsgType_SEARCH = 3;
     private final int MsgType_NFC = 4;
     private final int MsgType_SCAN = 5;
+    private final int MsgType_Detail = 6;
+    private final int Fragment_Result_Detail = 1;
 
     //search
     List<Equip> sdata = new ArrayList<>();
@@ -106,7 +109,31 @@ public class EquipListFragment extends QMUIFragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e("dddddddddddd", "dddddddddddddddddddddddddddddddddddd");
+    }
 
+    @Override
+    protected void onFragmentResult(int requestCode, int resultCode, Intent data) {
+        super.onFragmentResult(requestCode, resultCode, data);
+        if (RESULT_OK == resultCode) {
+            switch (requestCode) {
+                case Fragment_Result_Detail:
+                    String sEquip_ID = data.getStringExtra(EquipDetailFragment.Fragment_Result);
+                    Log.e("onFragmentResult", sEquip_ID);
+                    if(Utils.isNullOrEmpty(sEquip_ID)){
+                        return;
+                    }
+                    //刷新器材信息
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("sEquip_ID", sEquip_ID);
+                    queryDetail(params);
+                    break;
+            }
+        }
+    }
 
     private void initTopBar() {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
@@ -265,7 +292,8 @@ public class EquipListFragment extends QMUIFragment {
         bundle.putString("type", sEquip_Type);
         EquipDetailFragment fragment = new EquipDetailFragment();
         fragment.setArguments(bundle);
-        startFragment(fragment);
+        //startFragment(fragment);
+        startFragmentForResult(fragment, Fragment_Result_Detail);
     }
 
     /**
@@ -318,7 +346,6 @@ public class EquipListFragment extends QMUIFragment {
         intent.putExtra(NfcActivity.NFC_TYPE, NfcActivity.NFC_TYPE_SEARCH);
         startActivityForResult(intent, Application.Nfc_Search_Request_Code);
     }
-
 
     Handler mHandler = new Handler(){
         @Override
@@ -386,6 +413,9 @@ public class EquipListFragment extends QMUIFragment {
                     break;
                 case MsgType_SCAN:
                     handleScan(resObj);
+                    break;
+                case MsgType_Detail:
+                    handleDetail(resObj);
                     break;
             }
         }
@@ -569,5 +599,44 @@ public class EquipListFragment extends QMUIFragment {
 
         //更新列表
         mItemAdapter.setData(sdata);
+    }
+
+    private void queryDetail(Map<String, Object> params){
+        ThreadUtils.execute(new Runnable() {
+            @Override
+            public void run() {
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryDetailUrl, params);
+                if(res == null || "".equals(res)){
+                    Log.d(TAG, UrlConfig.equipQueryPageUrl + " return  is null ");
+                    return;
+                }
+                JSONObject resObj = JSONObject.parseObject(res);
+                Message msg = mSearchHandler.obtainMessage();
+                msg.what = MsgType_Detail;
+                msg.obj = resObj;
+                mSearchHandler.sendMessage(msg);
+            }
+        });
+    }
+
+    private void handleDetail(JSONObject resObj){
+        JSONObject resData = resObj.getJSONObject("data");
+        if(resData == null){
+            Toast.makeText(getActivity(), "未查询到器材信息", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Log.d(TAG, resObj.getString("data"));
+        Equip nEquip = resData.toJavaObject(Equip.class);
+        if(nEquip == null){
+            return;
+        }
+        //更新列表
+        for (int i = 0; i < data.size(); i++) {
+            if( data.get(i).getsEquip_ID().equals(nEquip.getsEquip_ID()) ){
+                data.set(i, nEquip);
+                break;
+            }
+        }
+        mItemAdapter.setData(data);
     }
 }

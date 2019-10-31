@@ -31,10 +31,10 @@ public class UrlImageView extends AppCompatImageView {
                     setImageBitmap(bitmap);
                     break;
                     case NETWORK_ERROR:
-                        Toast.makeText(getContext(),"网络连接失败",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),"获取图片失败",Toast.LENGTH_SHORT).show();
                         break;
                     case SERVER_ERROR:
-                        Toast.makeText(getContext(),"服务器发生错误",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),"未获取到图片",Toast.LENGTH_SHORT).show();
                         break;
             }
         }

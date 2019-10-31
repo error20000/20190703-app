@@ -65,14 +65,14 @@ public class LoginActivity extends AppCompatActivity {
 
         //判断有无手势密码
         String restureStr = GestureUtils.get(this, GestureUtils.USER_GESTURE);
-        if(!Utils.isNullOrEmpty(restureStr)){
+        if (!Utils.isNullOrEmpty(restureStr)) {
             isFirstLogin = false;
             autoLogin();
         }
 
     }
 
-    private void initLogin(){
+    private void initLogin() {
         editText1 = findViewById(R.id.login_username);
         editText2 = findViewById(R.id.login_password);
 
@@ -87,12 +87,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void autoLogin(){
+    private void autoLogin() {
         //判断用户是否已登录
         sendIsLogin();
     }
 
-    private void sendLogin(String username, String password){
+    private void sendLogin(String username, String password) {
 
         tipDialog = new QMUITipDialog.Builder(this)
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void sendLogout(){
+    private void sendLogout() {
 
         tipDialog = new QMUITipDialog.Builder(this)
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void sendIsLogin(){
+    private void sendIsLogin() {
 
         tipDialog = new QMUITipDialog.Builder(this)
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
@@ -155,19 +155,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    Handler mHandler = new Handler(){
+    Handler mHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             //处理结果
             hideTips();
-            String str =  (String) msg.obj;
-            if(Utils.isNullOrEmpty(str)){
+            String str = (String) msg.obj;
+            if (Utils.isNullOrEmpty(str)) {
                 showToast("网络异常，请检查网络。");
                 return;
             }
             JSONObject resData = JSONObject.parseObject(str);
             //处理数据
-            switch (msg.what){
+            switch (msg.what) {
                 case MsgType_Login:
                     loginMsg(resData);
                     break;
@@ -184,18 +184,18 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    private void hideTips(){
+    private void hideTips() {
         tipDialog.dismiss();
     }
 
-    private void showToast(String msg){
+    private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void loginMsg(JSONObject resObj){
-        if(resObj.getInteger("code") <= 0){
+    private void loginMsg(JSONObject resObj) {
+        if (resObj.getInteger("code") <= 0) {
             showErrorMsg(resObj.getString("msg"));
-            if(isShowPwdLogin){
+            if (isShowPwdLogin) {
                 //清空本地密码
                 GestureUtils.clear(this);
             }
@@ -213,15 +213,15 @@ public class LoginActivity extends AppCompatActivity {
         GestureUtils.set(this, GestureUtils.USER_PASSWORD, Utils.md5(editText2.getText().toString()));
 
         //跳转手势界面
-        if(isFirstLogin){
+        if (isFirstLogin) {
             gesturePwdSetting();
-        }else{
+        } else {
             gesturePwdCheck();
         }
     }
 
-    private void logoutMsg(JSONObject resObj){
-        if(resObj.getInteger("code") <= 0){
+    private void logoutMsg(JSONObject resObj) {
+        if (resObj.getInteger("code") <= 0) {
             showErrorMsg(resObj.getString("msg"));
             return;
         }
@@ -229,11 +229,11 @@ public class LoginActivity extends AppCompatActivity {
         GestureUtils.clear(this);
     }
 
-    private void isLoginMsg(JSONObject resObj){
-        if(resObj.getInteger("code") > 0){
+    private void isLoginMsg(JSONObject resObj) {
+        if (resObj.getInteger("code") > 0) {
             //跳转手势界面
             gesturePwdCheck();
-        }else{
+        } else {
             //自动登录后，跳转手势界面
             String username = GestureUtils.get(this, GestureUtils.USER_USERNAME);
             String password = GestureUtils.get(this, GestureUtils.USER_PASSWORD);
@@ -243,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void showErrorMsg(String msg){
+    private void showErrorMsg(String msg) {
         QMUITipDialog tipDialogE = new QMUITipDialog.Builder(this)
                 .setIconType(QMUITipDialog.Builder.ICON_TYPE_FAIL)
                 .setTipWord(msg)
@@ -260,19 +260,19 @@ public class LoginActivity extends AppCompatActivity {
         //Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void gesturePwdSetting(){
+    private void gesturePwdSetting() {
         Intent intent = new Intent(this, GesturePwdSettingActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private void gesturePwdCheck(){
+    private void gesturePwdCheck() {
         Intent intent = new Intent(this, GesturePwdCheckActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private void gesturePwdReset(){
+    private void gesturePwdReset() {
         Intent intent = new Intent(this, GesturePwdResetActivity.class);
         startActivity(intent);
         finish();

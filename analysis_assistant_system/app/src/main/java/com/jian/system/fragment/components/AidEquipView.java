@@ -2,6 +2,7 @@
 package com.jian.system.fragment.components;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -79,11 +80,27 @@ public class AidEquipView extends QMUIWindowInsetLayout{
     private  void initAidEquip(){
 
         mItemAdapter = new AidEquipAdapter(context, aidEquipData);
+        mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View itemView, int pos) {
+                Log.d(TAG, "onItemClick: " + aidEquipData.get(pos).getsAidEquip_EquipID());
+                //进入详情页面
+                intoDetail(aidEquipData.get(pos).getsAidEquip_EquipID(), aidEquipData.get(pos).getsAidEquip_EquipType());
+            }
+        });
         mRecyclerView.setAdapter(mItemAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST));
     }
 
+    private void intoDetail(String sEquip_NO, String sEquip_Type){
+        Bundle bundle = new Bundle();
+        bundle.putString("id", sEquip_NO);
+        bundle.putString("type", sEquip_Type);
+        EquipDetailFragment fragment = new EquipDetailFragment();
+        fragment.setArguments(bundle);
+        startFragment(fragment);
+    }
 
     private void initData(){
         //查询数据 -- 判断网络
