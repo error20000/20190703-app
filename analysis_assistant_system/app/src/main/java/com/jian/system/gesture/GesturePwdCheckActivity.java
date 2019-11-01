@@ -3,6 +3,7 @@ package com.jian.system.gesture;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import com.jian.system.R;
 import com.jian.system.gesture.base.GestureBaseActivity;
 import com.jian.system.gesture.custom.EasyGestureLockLayout;
 import com.jian.system.gesture.util.GestureUtils;
+import com.jian.system.utils.Utils;
 
 
 /**
@@ -26,12 +28,17 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
     EasyGestureLockLayout layout_parent;
     TextView go_login;
 
+    String isLockScreen = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_gesture_pwd_check);
         initView();
         initLayoutView();
+
+        Intent intent = getIntent();
+        isLockScreen = intent.getStringExtra(GestureUtils.LOCK_SCREEN);
     }
 
     private void initView() {
@@ -42,7 +49,9 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
             @Override
             public void onClick(View view) {
                 //清空登录信息
-                GestureUtils.clear(getApplication());
+                //GestureUtils.clear(getApplication());
+                //不显示手势登录
+                LoginActivity.isShowGestureLogin = false;
                 //跳转登录界面
                 Intent intent = new Intent(getApplication(), LoginActivity.class);
                 startActivity(intent);
@@ -60,7 +69,12 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
                 Toast.makeText(GesturePwdCheckActivity.this, str, Toast.LENGTH_SHORT).show();
                 //跳转主页面
                 if(succeedOrFailed){
-                    onCheckSuccess();
+                    if(Utils.isNullOrEmpty(isLockScreen)){
+                        onCheckSuccess();
+                    }else{
+                        //解锁
+                        finish();
+                    }
                 }
             }
 

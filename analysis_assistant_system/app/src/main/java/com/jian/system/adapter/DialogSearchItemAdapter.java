@@ -2,9 +2,11 @@ package com.jian.system.adapter;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.TextView;
 
 import com.jian.system.R;
 import com.jian.system.entity.Dict;
+import com.jian.system.utils.Utils;
 import com.jian.system.view.SearchDialogBuilder;
 
 import java.util.ArrayList;
@@ -22,5 +24,9 @@ public class DialogSearchItemAdapter extends CommonAdapter<SearchDialogBuilder.I
     @Override
     public void handleItem(View convertView, int position, SearchDialogBuilder.ItemEntity item, CommonViewHolder holder) {
         holder.getTextView(R.id.select_item_info).setText(item.getName());
+        holder.getTextView(R.id.select_item_detail).setText(item.getDetail());
+        /*if(!Utils.isNullOrEmpty(item.getDetail())){
+            TextView detail = holder.getTextView(R.id.select_item_detail).setText(item.getDetail());
+        }*/
     }
 }

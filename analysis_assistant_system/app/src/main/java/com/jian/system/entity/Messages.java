@@ -42,6 +42,8 @@ public class Messages {
 	private int dMsg_StoreNum;
 	private String sMsg_Reason;
 	private String sMsg_ReasonName;
+	private String sMsg_Source;
+	private String sMsg_SourceName;
 	
 
 	public String getsMsg_ID() {
@@ -293,6 +295,21 @@ public class Messages {
 		this.sMsg_ReasonName = sMsg_ReasonName;
 	}
 
+	public String getsMsg_Source() {
+		return sMsg_Source;
+	}
+
+	public void setsMsg_Source(String sMsg_Source) {
+		this.sMsg_Source = sMsg_Source;
+	}
+
+	public String getsMsg_SourceName() {
+		return sMsg_SourceName;
+	}
+
+	public void setsMsg_SourceName(String sMsg_SourceName) {
+		this.sMsg_SourceName = sMsg_SourceName;
+	}
 
 	public Messages cursorToBean(Cursor cursor){
 		this.sMsg_ID = cursor.getString(cursor.getColumnIndex("sMsg_ID"));
@@ -330,6 +347,8 @@ public class Messages {
 		this.dMsg_StoreNum = cursor.getInt(cursor.getColumnIndex("dMsg_StoreNum"));
 		this.sMsg_Reason = cursor.getString(cursor.getColumnIndex("sMsg_Reason"));
 		this.sMsg_ReasonName = cursor.getString(cursor.getColumnIndex("sMsg_ReasonName"));
+		this.sMsg_Source = cursor.getString(cursor.getColumnIndex("sMsg_Source"));
+		this.sMsg_SourceName = cursor.getString(cursor.getColumnIndex("sMsg_SourceName"));
 
 		return this;
 	}

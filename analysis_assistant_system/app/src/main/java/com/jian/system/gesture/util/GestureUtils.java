@@ -21,6 +21,7 @@ public class GestureUtils {
     public static final String USER_INFO = "user_info_str";
     public static final String USER_USERNAME = "user_username";
     public static final String USER_PASSWORD = "user_password";
+    public static final String LOCK_SCREEN = "lock_screen";
 
 
     public static void clear(Context context) {

@@ -38,6 +38,12 @@ public class Constant {
     public static String msgStatusDict = "MsgStatus";
     public static String msgLabelDict = "MsgLabel";
     public static String msgReasonDict = "MsgReason";
+    public static String msgSourceDict = "MsgSource";
+
+    public static String msgStatus_1 = "1"; //未读
+    public static String msgStatus_2 = "2"; //已读
+    public static String msgStatus_3 = "3"; //待处理
+    public static String msgStatus_4 = "4"; //已处理
 
     //系统设置
     public static String superGroupId = "1";

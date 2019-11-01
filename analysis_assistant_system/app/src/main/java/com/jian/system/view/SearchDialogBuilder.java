@@ -70,6 +70,14 @@ public class SearchDialogBuilder extends QMUIDialogBuilder<SearchDialogBuilder> 
         return this;
     }
 
+    public SearchDialogBuilder addItems(List<ItemEntity> items, OnSelectedListiner listener) {
+        if(items != null){
+            mData = items;
+        }
+        this.listener = listener;
+        return this;
+    }
+
     @Override
     protected void onCreateContent(QMUIDialog dialog, ViewGroup parent, Context context) {
         mRootView = LayoutInflater.from(context).inflate(R.layout.dialog_select_search, parent, false);
@@ -156,7 +164,7 @@ public class SearchDialogBuilder extends QMUIDialogBuilder<SearchDialogBuilder> 
             int index = mData.get(i).getName().indexOf(name);
             // 存在匹配的数据
             if (index != -1) {
-                mSearchList.add(new ItemEntity(mData.get(i).getName(), i));
+                mSearchList.add(new ItemEntity(mData.get(i).getName(), i, mData.get(i).getDetail()));
             }
         }
         return mSearchList;
@@ -190,8 +198,9 @@ public class SearchDialogBuilder extends QMUIDialogBuilder<SearchDialogBuilder> 
         public abstract void onSelected(DialogInterface dialog, ItemEntity item);
     }
 
-    public class ItemEntity{
+    public static class ItemEntity{
         private String name;
+        private String detail;
         private int index;
 
         public ItemEntity() {
@@ -201,6 +210,11 @@ public class SearchDialogBuilder extends QMUIDialogBuilder<SearchDialogBuilder> 
         public ItemEntity(String name, int index) {
             this.name = name;
             this.index = index;
+        }
+        public ItemEntity(String name, int index, String detail) {
+            this.name = name;
+            this.index = index;
+            this.detail = detail;
         }
 
         public String getName() {
@@ -217,6 +231,14 @@ public class SearchDialogBuilder extends QMUIDialogBuilder<SearchDialogBuilder> 
 
         public void setIndex(int index) {
             this.index = index;
+        }
+
+        public String getDetail() {
+            return detail;
+        }
+
+        public void setDetail(String detail) {
+            this.detail = detail;
         }
     }
 }

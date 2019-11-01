@@ -42,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private QMUITipDialog tipDialog;
     private boolean isFirstLogin = true;
     private boolean isShowPwdLogin = false;
+    public static boolean isShowGestureLogin = true;
     private final int MsgType_Login = 0;
     private final int MsgType_Logout = 1;
     private final int MsgType_IsLogin = 2;
@@ -67,9 +68,16 @@ public class LoginActivity extends AppCompatActivity {
         String restureStr = GestureUtils.get(this, GestureUtils.USER_GESTURE);
         if (!Utils.isNullOrEmpty(restureStr)) {
             isFirstLogin = false;
-            autoLogin();
+            if(isShowGestureLogin){
+                autoLogin();
+            }
         }
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isShowGestureLogin = true;
     }
 
     private void initLogin() {
@@ -85,6 +93,13 @@ public class LoginActivity extends AppCompatActivity {
                 sendLogin(username, Utils.md5(password));
             }
         });
+    }
+
+    public void clearLogin() {
+        //GestureUtils.clear(this);
+        //不清空手势密码
+        GestureUtils.remove(this, GestureUtils.USER_USERNAME);
+        GestureUtils.remove(this, GestureUtils.USER_PASSWORD);
     }
 
     private void autoLogin() {
@@ -197,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
             showErrorMsg(resObj.getString("msg"));
             if (isShowPwdLogin) {
                 //清空本地密码
-                GestureUtils.clear(this);
+                clearLogin();
             }
             return;
         }
@@ -215,8 +230,10 @@ public class LoginActivity extends AppCompatActivity {
         //跳转手势界面
         if (isFirstLogin) {
             gesturePwdSetting();
-        } else {
+        } else if(isShowGestureLogin){
             gesturePwdCheck();
+        }else{
+            goMainActivity();
         }
     }
 
@@ -226,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         //清空本地密码
-        GestureUtils.clear(this);
+        clearLogin();
     }
 
     private void isLoginMsg(JSONObject resObj) {
@@ -274,6 +291,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void gesturePwdReset() {
         Intent intent = new Intent(this, GesturePwdResetActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void goMainActivity(){
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }

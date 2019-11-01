@@ -2,6 +2,7 @@ package com.jian.system.utils;
 
 import android.util.Log;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jian.system.Application;
 import com.jian.system.gesture.util.GestureUtils;
 
@@ -46,6 +47,7 @@ public class HttpUtils {
                 builder.add(key, String.valueOf(params.get(key)));
             }
         }
+        Log.d("HttpUtils params", JSONObject.toJSONString(params) );
         return sendPost(url, builder.build());
     }
 
@@ -56,10 +58,10 @@ public class HttpUtils {
                 .post(body)
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            Log.d("sendPost", url + "   " + response.code());
+            Log.d("HttpUtils sendPost", url + "   " + response.code() );
             if(response.code() == 200){
                 String res = response.body().string();
-                Log.d("sendPost", res);
+                Log.d("HttpUtils sendPost", res);
                 return res;
             }
         }catch (Exception e){
@@ -74,10 +76,10 @@ public class HttpUtils {
                 .header("token", Application.getTokenStr())
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            Log.d("sendGet", url + "   " + response.code());
+            Log.d("HttpUtils sendGet", url + "   " + response.code());
             if(response.code() == 200){
                 String res = response.body().string();
-                Log.d("sendGet", res);
+                Log.d("HttpUtils sendGet", res);
                 return res;
             }
         }catch (Exception e){

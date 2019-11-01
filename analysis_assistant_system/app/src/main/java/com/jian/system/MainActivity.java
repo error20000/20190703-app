@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 
 import com.jian.system.fragment.MainFragment;
 import com.jian.system.fragment.components.EquipDetailFragment;
+import com.jian.system.gesture.GesturePwdCheckActivity;
+import com.jian.system.gesture.util.GestureUtils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.arch.QMUIFragmentActivity;
 import com.qmuiteam.qmui.arch.annotation.DefaultFirstFragment;
@@ -36,4 +38,12 @@ public class MainActivity extends QMUIFragmentActivity {
         return QMUIFragmentActivity.intentOf(context, MainActivity.class, firstFragment, fragmentArgs);
     }
 
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Intent intent = new Intent(this, GesturePwdCheckActivity.class);
+        intent.putExtra(GestureUtils.LOCK_SCREEN, "lock");
+        startActivity(intent);
+    }
 }

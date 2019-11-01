@@ -25,6 +25,7 @@ import com.jian.system.entity.Messages;
 import com.jian.system.entity.Store;
 import com.jian.system.entity.StoreType;
 import com.jian.system.utils.DataUtils;
+import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
@@ -38,6 +39,8 @@ import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +67,8 @@ public class MsgAddFragment extends QMUIFragment {
     private List<Dict> msgStatusData = new ArrayList<>();
     private List<Dict> msgLabelData = new ArrayList<>();
     private List<Dict> msgReasonData = new ArrayList<>();
+    private List<Dict> msgSourceData = new ArrayList<>();
+    private List<Dict> equipTypeData = new ArrayList<>();
     private List<JSONObject> aidAllData = new ArrayList<>();
     private List<JSONObject> userAidData = new ArrayList<>();
     private List<StoreType> storeTypeData = new ArrayList<>();
@@ -77,6 +82,7 @@ public class MsgAddFragment extends QMUIFragment {
     private QMUICommonListItemView msgLabel;
     private QMUICommonListItemView msgType;
     private QMUICommonListItemView msgReason;
+    private QMUICommonListItemView msgSource;
 
     private final int MsgType_Add = 0;
     private final int MsgType_Aid_Equip = 1;
@@ -170,6 +176,11 @@ public class MsgAddFragment extends QMUIFragment {
         msgType.setDetailText("--请选择--");
         msgType.setTag("msgType");
 
+        msgSource = mGroupListView.createItemView("消息来源");
+        msgSource.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        msgSource.setDetailText("--请选择--");
+        msgSource.setTag("msgSource");
+
         msgReason = mGroupListView.createItemView("原因");
         msgReason.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         msgReason.setDetailText("--请选择--");
@@ -183,6 +194,7 @@ public class MsgAddFragment extends QMUIFragment {
                 .addItemView(msgEquip, mOnClickListenerGroup)
                 //.addItemView(msgLabel, mOnClickListenerGroup)
                 .addItemView(msgType, mOnClickListenerGroup)
+                .addItemView(msgSource, mOnClickListenerGroup)
                 .addItemView(msgReason, mOnClickListenerGroup)
 
                 .addTo(mGroupListView);
@@ -212,6 +224,16 @@ public class MsgAddFragment extends QMUIFragment {
                                         msgAid.setVisibility(View.GONE);
                                         msgStore.setVisibility(View.GONE);
                                         msgEquip.setVisibility(View.GONE);
+                                        //清空数据
+                                        msgAid.setDetailText("--请选择--");
+                                        msgStore.setDetailText("--请选择--");
+                                        msgEquip.setDetailText("--请选择--");
+                                        msg.setsMsg_AidID("");
+                                        msg.setsMsg_EquipID("");
+                                        msg.setsMsg_StoreLv1("");
+                                        msg.setsMsg_StoreLv2("");
+                                        msg.setsMsg_StoreLv3("");
+                                        msg.setsMsg_StoreLv4("");
                                         //显示
                                         switch (flag){
                                             case "航标":
@@ -248,6 +270,9 @@ public class MsgAddFragment extends QMUIFragment {
                                         dialog.dismiss();
                                         //查询航标器材
                                         queryAidEquip(msg.getsMsg_AidID());
+                                        //清空数据
+                                        msgEquip.setDetailText("--请选择--");
+                                        msg.setsMsg_EquipID("");
                                     }
                                 })
                                 .create(mCurrentDialogStyle).show();
@@ -348,6 +373,9 @@ public class MsgAddFragment extends QMUIFragment {
                                 selectorDialog.dismiss();
                                 //查询仓库器材
                                 queryStoreEquip(storeLv1, storeLv2, storeLv3, storeLv4);
+                                //清空数据
+                                msgEquip.setDetailText("--请选择--");
+                                msg.setsMsg_EquipID("");
                             }
                         });
                         selectorDialog = new BottomDialog(getActivity());
@@ -355,9 +383,15 @@ public class MsgAddFragment extends QMUIFragment {
                         selectorDialog.show();
                         break;
                     case "msgEquip":
-                        String[] equips = new String[equipData.size()];
+                        /*String[] equips = new String[equipData.size()];
                         for (int i = 0; i < equipData.size(); i++) {
                             equips[i] = equipData.get(i).getsEquip_NO();
+                        }*/
+                        List<SearchDialogBuilder.ItemEntity> equips = new ArrayList<>();
+                        for (int i = 0; i < equipData.size(); i++) {
+                            Equip node = equipData.get(i);
+                            String typeName = FormatUtils.formatDict(node.getsEquip_Type(), equipTypeData);
+                            equips.add(new SearchDialogBuilder.ItemEntity(node.getsEquip_NO(), i, typeName) );
                         }
                         new SearchDialogBuilder(getActivity())
                                 .setTitle("请选择")
@@ -394,6 +428,7 @@ public class MsgAddFragment extends QMUIFragment {
                         for (int i = 0; i < msgTypeData.size(); i++) {
                             tNames[i] = msgTypeData.get(i).getsDict_Name();
                         }
+                        Arrays.sort(tNames);
                         new QMUIDialog.CheckableDialogBuilder(getActivity())
                                 .setTitle("请选择")
                                 .addItems(tNames, new DialogInterface.OnClickListener() {
@@ -403,6 +438,24 @@ public class MsgAddFragment extends QMUIFragment {
                                         Dict msgTypeDict = msgTypeData.get(which);
                                         msg.setsMsg_Type(msgTypeDict.getsDict_NO());
                                         msg.setsMsg_Title(msgTypeDict.getsDict_Name());
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
+                        break;
+                    case "msgSource":
+                        String[] sNames = new String[msgSourceData.size()];
+                        for (int i = 0; i < msgSourceData.size(); i++) {
+                            sNames[i] = msgSourceData.get(i).getsDict_Name();
+                        }
+                        Arrays.sort(sNames);
+                        new QMUIDialog.CheckableDialogBuilder(getActivity())
+                                .setTitle("请选择")
+                                .addItems(sNames, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        viewList.getDetailTextView().setText(sNames[which]);
+                                        msg.setsMsg_Source(msgSourceData.get(which).getsDict_NO());
                                         dialog.dismiss();
                                     }
                                 })
@@ -474,6 +527,10 @@ public class MsgAddFragment extends QMUIFragment {
         //查询仓库
         //DataUtils.getStoreTypeData(storeTypeData);
         //DataUtils.getStoreData(storeData);
+        //查询器材种类
+        DataUtils.getDictData(Constant.equipTypeDict, equipTypeData);
+        //查询消息来源
+        DataUtils.getDictData(Constant.msgSourceDict, msgSourceData);
 
         initEquipInfo();
 

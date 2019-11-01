@@ -73,13 +73,15 @@ public class MsgDetailFragment extends QMUIFragment {
     private final int MsgType_Detail = 1;
     private final int MsgType_Handle = 2;
     private final int MsgType_UnHandle = 3;
-
+    private final int MsgType_Read = 4;
 
     private String remarks = "";
     private Messages msg;
     private List<Dict> msgTypeData = new ArrayList<>();
     private List<Dict> msgStatusData = new ArrayList<>();
     private List<Dict> msgLabelData = new ArrayList<>();
+
+    QMUICommonListItemView msgStatus;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -204,7 +206,7 @@ public class MsgDetailFragment extends QMUIFragment {
         msgLevel.setDetailText(msg.getlMsg_Level() == Integer.MAX_VALUE ? "默认" : msg.getlMsg_Level()+"");
         msgLevel.setVisibility(View.GONE);
 
-        QMUICommonListItemView msgStatus = mGroupListView.createItemView("消息状态");
+        msgStatus = mGroupListView.createItemView("消息状态");
         String statusName = FormatUtils.formatDict(msg.getsMsg_Status(), msgStatusData);
         msgStatus.setDetailText(statusName);
 
@@ -251,11 +253,18 @@ public class MsgDetailFragment extends QMUIFragment {
         QMUICommonListItemView msgUser = mGroupListView.createItemView("更新人员");
         msgUser.setDetailText(msg.getsMsg_UserName());
 
-        //QMUICommonListItemView msgIP = mGroupListView.createItemView("更新人员IP");
-        //msgIP.setDetailText(msg.getsMsg_IP());
+        QMUICommonListItemView msgIP = mGroupListView.createItemView("更新人员IP");
+        msgIP.setDetailText(msg.getsMsg_IP());
+        msgIP.setVisibility(View.GONE);
 
         QMUICommonListItemView msgRemarks = mGroupListView.createItemView("消息备注");
         msgRemarks.setDetailText(msg.getsMsg_Remarks());
+
+        QMUICommonListItemView msgSource = mGroupListView.createItemView("来源");
+        msgSource.setDetailText(msg.getsMsg_SourceName());
+
+        QMUICommonListItemView msgReason = mGroupListView.createItemView("原因");
+        msgReason.setDetailText(msg.getsMsg_ReasonName());
 
         QMUIGroupListView.newSection(getContext())
                 .setTitle("")
@@ -269,12 +278,16 @@ public class MsgDetailFragment extends QMUIFragment {
                 .addItemView(msgLabel, null)
                 .addItemView(msgAid, null)
                 .addItemView(msgEquip, null)
+                .addItemView(msgStore, null)
                 .addItemView(msgToUser, null)
                 .addItemView(msgFromUser, null)
                 .addItemView(msgUpdateDate, null)
                 .addItemView(msgUser, null)
-                //.addItemView(msgIP, null)
+                .addItemView(msgIP, null)
                 .addItemView(msgRemarks, null)
+                .addItemView(msgSource, null)
+                .addItemView(msgReason, null)
+
                 .addTo(mGroupListView);
 
     }
@@ -320,6 +333,10 @@ public class MsgDetailFragment extends QMUIFragment {
             @Override
             public void run() {
                 String res = HttpUtils.getInstance().sendPost(UrlConfig.msgReadUrl, params);
+                Message msg = mHandler.obtainMessage();
+                msg.what = MsgType_Read;
+                msg.obj = res;
+                mHandler.sendMessage(msg);
             }
         });
     }
@@ -348,6 +365,9 @@ public class MsgDetailFragment extends QMUIFragment {
                     break;
                 case MsgType_UnHandle:
                     handleUnHandle(resData);
+                    break;
+                case MsgType_Read:
+                    handleRead(resData);
                     break;
                 default:
                     break;
@@ -387,11 +407,10 @@ public class MsgDetailFragment extends QMUIFragment {
         //展示数据
         initInfo();
         //已读标记
-        if("1".equals(msg.getsMsg_Status())){
+        if(Constant.msgStatus_1.equals(msg.getsMsg_Status())){
             Map<String, Object> params = new HashMap<>();
             params.put("sMsg_ID", msg.getsMsg_ID());
             readMsg(params);
-            msg.setsMsg_Status("1");
         }
     }
 
@@ -444,4 +463,13 @@ public class MsgDetailFragment extends QMUIFragment {
         showToast("保存成功");
     }
 
+    private void handleRead(JSONObject resObj) {
+        if (handleErrorCode(resObj)) {
+            Log.d(TAG, resObj.toJSONString());
+            return;
+        }
+        //已读
+        String statusName = FormatUtils.formatDict(Constant.msgStatus_2, msgStatusData);
+        msgStatus.setDetailText(statusName);
+    }
 }
