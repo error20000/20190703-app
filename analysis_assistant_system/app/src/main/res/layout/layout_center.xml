@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="?attr/qmui_topbar_height"
         android:fitsSystemWindows="true"
         android:orientation="vertical">
@@ -96,13 +96,10 @@
 
         </com.qmuiteam.qmui.widget.grouplist.QMUIGroupListSectionHeaderFooterView>
 
-        <com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView
-            android:id="@+id/item_logout"
+        <com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView
+            android:id="@+id/groupListView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:qmui_commonList_detailColor="@color/qmui_config_color_red"
-            app:qmui_commonList_titleColor="@color/qmui_s_link_color"
-            app:qmui_orientation="vertical" />
+            android:layout_height="wrap_content"/>
 
         <View
             android:layout_width="match_parent"

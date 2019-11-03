@@ -227,6 +227,12 @@ public class LoginActivity extends AppCompatActivity {
         GestureUtils.set(this, GestureUtils.USER_USERNAME, editText1.getText().toString());
         GestureUtils.set(this, GestureUtils.USER_PASSWORD, Utils.md5(editText2.getText().toString()));
 
+        //锁屏时间
+        String time = GestureUtils.get(this, GestureUtils.USER_LOCK_SCREEN_TIME);
+        if(Utils.isNullOrEmpty(time)){
+            GestureUtils.set(this, GestureUtils.USER_LOCK_SCREEN_TIME, GestureUtils.USER_LOCK_SCREEN_TIME_DEF);
+        }
+
         //跳转手势界面
         if (isFirstLogin) {
             gesturePwdSetting();

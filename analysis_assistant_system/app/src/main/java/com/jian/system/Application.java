@@ -1,15 +1,21 @@
 
 package com.jian.system;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.entity.System;
 import com.jian.system.entity.User;
+import com.jian.system.gesture.GesturePwdCheckActivity;
 import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.utils.NetworkUtils;
 import com.jian.system.utils.SyncUtils;
@@ -22,6 +28,8 @@ public class Application extends MultiDexApplication {
     private static Context context;
     private static String tokenStr;
     public static boolean hasNetwork = true;
+    private int activityCount = 0;
+    private boolean isBackground  = false;
 
     public static final int Scan_Search_Request_Code = 100;
     public static final int Scan_Add_Request_Code = 200;
@@ -69,6 +77,56 @@ public class Application extends MultiDexApplication {
         tokenStr = tokenStr == null ? "" : tokenStr;
 
         QMUISwipeBackActivityManager.init(this);
+
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
+
+            }
+
+            @Override
+            public void onActivityStarted(@NonNull Activity activity) {
+                //等于0时就是从后台或者打开app
+                if(0 == activityCount && (activity instanceof MainActivity)){
+                    //从后台就进入解锁页面
+                    if(isBackground){
+                        Intent intent = new Intent(getContext(), GesturePwdCheckActivity.class);
+                        intent.putExtra(GestureUtils.Gesture_Model_Type, GestureUtils.Gesture_Model_Type_Lock_Screen);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                }
+                activityCount++;
+            }
+
+            @Override
+            public void onActivityResumed(@NonNull Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityPaused(@NonNull Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(@NonNull Activity activity) {
+                activityCount--;
+                if(0 == activityCount){
+                    isBackground  = true;
+                }
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(@NonNull Activity activity) {
+
+            }
+        });
     }
 
     @Override

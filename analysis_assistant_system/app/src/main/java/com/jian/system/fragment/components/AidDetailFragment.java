@@ -1,6 +1,7 @@
 
 package com.jian.system.fragment.components;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +24,7 @@ import com.jian.system.entity.Aid;
 import com.jian.system.entity.AidEquip;
 import com.jian.system.entity.Dict;
 import com.jian.system.entity.Nfc;
+import com.jian.system.fragment.MainFragment;
 import com.jian.system.fragment.ViewPagerListener;
 import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.HttpUtils;
@@ -312,6 +314,14 @@ public class AidDetailFragment extends QMUIFragment {
             @Override
             public void startFragment(QMUIFragment fragment) {
                 AidDetailFragment.this.startFragment(fragment);
+            }
+            @Override
+            public void startFragmentForResult(QMUIFragment fragment, int requestCode) {
+                AidDetailFragment.this.startFragmentForResult(fragment, requestCode);
+            }
+            @Override
+            public void startActivity(Intent intent) {
+                AidDetailFragment.this.startActivity(intent);
             }
         };
 

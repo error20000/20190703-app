@@ -118,6 +118,7 @@ public class MsgLayout extends QMUIWindowInsetLayout {
     private final int MsgType_Refresh = 2;
     private final int MsgType_Search = 3;
 
+
     //search
     List<Messages> sdata = new ArrayList<>();
     List<SearchSuggestion> slist = new ArrayList<>();
@@ -148,13 +149,36 @@ public class MsgLayout extends QMUIWindowInsetLayout {
     }
 
 
+    public List<Messages> getData(){
+        return data;
+    }
+
+    public void setData(List<Messages> data){
+        this.data = data;
+        mItemAdapter.notifyDataSetChanged();
+    }
+
+    public void refreshData(){
+        //清空数据
+        data = new ArrayList<>();
+        total = 0;
+        page = 1;
+        rows = 10;
+        //请求数据
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", page);
+        params.put("rows", rows);
+        queryData(params, MsgType_Refresh);
+    }
+
     private void initTopBar() {
 
         mTopBar.addRightImageButton(R.drawable.ic_xinzeng, R.id.topbar_right_change_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MsgAddFragment fragment = new MsgAddFragment();
-                startFragment(fragment);
+                //startFragment(fragment);
+                startFragmentForResult(fragment, MainFragment.Fragment_Msg_Result_Add);
             }
         });
         mTopBar.addRightImageButton(R.drawable.ic_filter2, R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener(){
@@ -348,7 +372,8 @@ public class MsgLayout extends QMUIWindowInsetLayout {
     private void intoDetail( Bundle bundle){
         MsgDetailFragment fragment = new MsgDetailFragment();
         fragment.setArguments(bundle);
-        startFragment(fragment);
+        //startFragment(fragment);
+        startFragmentForResult(fragment, MainFragment.Fragment_Msg_Result_Detail);
     }
 
 
@@ -804,6 +829,11 @@ public class MsgLayout extends QMUIWindowInsetLayout {
     protected void startFragment(QMUIFragment fragment) {
         if (mListener != null) {
             mListener.startFragment(fragment);
+        }
+    }
+    protected void startFragmentForResult(QMUIFragment fragment, int requestCode) {
+        if (mListener != null) {
+            mListener.startFragmentForResult(fragment, requestCode);
         }
     }
 

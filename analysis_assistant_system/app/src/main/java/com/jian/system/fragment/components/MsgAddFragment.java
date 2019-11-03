@@ -3,6 +3,7 @@ package com.jian.system.fragment.components;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -87,6 +88,7 @@ public class MsgAddFragment extends QMUIFragment {
     private final int MsgType_Add = 0;
     private final int MsgType_Aid_Equip = 1;
     private final int MsgType_Store_Equip = 2;
+    public static final String Fragment_Result = "Fragment_Result";
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -104,6 +106,12 @@ public class MsgAddFragment extends QMUIFragment {
         initData();
 
         return rootView;
+    }
+
+    private void handleResult(){
+        Intent intent = new Intent();
+        intent.putExtra(Fragment_Result, "add");
+        setFragmentResult(RESULT_OK, intent);
     }
 
     private void initTopBar() {
@@ -133,6 +141,8 @@ public class MsgAddFragment extends QMUIFragment {
                                 //保存数据
                                 msg.setsMsg_Describe(mEditText.getText().toString());
                                 sendAdd();
+                                //刷新数据
+                                handleResult();
                             }
                         })
                         .create(mCurrentDialogStyle).show();

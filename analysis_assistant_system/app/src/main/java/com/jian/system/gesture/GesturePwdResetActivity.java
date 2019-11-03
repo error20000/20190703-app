@@ -4,6 +4,7 @@ package com.jian.system.gesture;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.jian.system.R;
 import com.jian.system.gesture.base.GestureBaseActivity;
 import com.jian.system.gesture.custom.EasyGestureLockLayout;
 import com.jian.system.gesture.util.GestureUtils;
+import com.jian.system.utils.Utils;
 
 import java.util.List;
 
@@ -31,6 +33,7 @@ public class GesturePwdResetActivity extends GestureBaseActivity {
     TextView tv_go;
     TextView tv_redraw;
     EasyGestureLockLayout layout_parent;
+    String modelType;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +41,9 @@ public class GesturePwdResetActivity extends GestureBaseActivity {
         setContentView(R.layout.layout_gesture_pwd_reset);
         initView();
         initLayoutView();
+
+        Intent intent = getIntent();
+        modelType = intent.getStringExtra(GestureUtils.Gesture_Model_Type);
     }
 
     private void initView() {
@@ -64,7 +70,17 @@ public class GesturePwdResetActivity extends GestureBaseActivity {
                 super.onResetFinish(pwd);
                 savePwd(showPwd("showGesturePwdInt", pwd));//保存密码到本地
                 //跳转主页面
-                onCheckSuccess();
+                if(Utils.isNullOrEmpty(modelType)){
+                    onCheckSuccess();
+                }else{
+                    switch (modelType){
+                        case GestureUtils.Gesture_Model_Type_Lock_Screen:
+                            break;
+                        case GestureUtils.Gesture_Model_Type_Change_Pwd:
+                            break;
+                    }
+                    finish();
+                }
             }
 
             @Override

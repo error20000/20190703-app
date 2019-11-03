@@ -21,7 +21,13 @@ public class GestureUtils {
     public static final String USER_INFO = "user_info_str";
     public static final String USER_USERNAME = "user_username";
     public static final String USER_PASSWORD = "user_password";
-    public static final String LOCK_SCREEN = "lock_screen";
+    public static final String USER_LOCK_SCREEN_TIME = "user_lock_screen_time";
+    public static final String USER_LOCK_SCREEN_TIME_DEF = "60"; //默认60秒
+
+
+    public static final String Gesture_Model_Type = "modelType";
+    public static final String Gesture_Model_Type_Lock_Screen = "lock_screen";
+    public static final String Gesture_Model_Type_Change_Pwd = "change_pwd";
 
 
     public static void clear(Context context) {

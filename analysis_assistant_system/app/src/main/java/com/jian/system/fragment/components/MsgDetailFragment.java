@@ -3,6 +3,7 @@ package com.jian.system.fragment.components;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -74,6 +75,7 @@ public class MsgDetailFragment extends QMUIFragment {
     private final int MsgType_Handle = 2;
     private final int MsgType_UnHandle = 3;
     private final int MsgType_Read = 4;
+    public static final String Fragment_Result = "Fragment_Result";
 
     private String remarks = "";
     private Messages msg;
@@ -112,6 +114,8 @@ public class MsgDetailFragment extends QMUIFragment {
             @Override
             public void onClick(View view) {
                 showBottomSheetList();
+                //返回刷新
+                handleResult(msg.getsMsg_ID());
             }
         });
         mTopBar.setTitle(title);
@@ -177,6 +181,12 @@ public class MsgDetailFragment extends QMUIFragment {
                     }
                 })
                 .create(mCurrentDialogStyle).show();
+    }
+
+    private void handleResult(String sEquip_ID){
+        Intent intent = new Intent();
+        intent.putExtra(Fragment_Result, sEquip_ID);
+        setFragmentResult(RESULT_OK, intent);
     }
 
     private void initInfo() {
@@ -411,6 +421,8 @@ public class MsgDetailFragment extends QMUIFragment {
             Map<String, Object> params = new HashMap<>();
             params.put("sMsg_ID", msg.getsMsg_ID());
             readMsg(params);
+            //返回刷新
+            handleResult(msg.getsMsg_ID());
         }
     }
 

@@ -2,7 +2,7 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.59.168:8065";
+    public static String baseUrl = "http://192.168.1.36:8065";
 //    public static String baseUrl = "http://gztest.yunh.xyz:8085";
 
     //系统
@@ -67,6 +67,7 @@ public class UrlConfig {
     public static String msgUnHandleUrl = baseUrl + "/api/msg/app/unhandle";
     public static String msgReadUrl = baseUrl + "/api/msg/app/read";
     public static String msgAddUrl = baseUrl + "/api/msg/app/add";
+    public static String msgUnReadNumUrl = baseUrl + "/api/msg/app/unReadNum";
 
     //同步数据
     public static String syncSystemUrl = baseUrl + "/api/sync/app/system";

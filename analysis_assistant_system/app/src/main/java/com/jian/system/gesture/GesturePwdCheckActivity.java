@@ -28,7 +28,7 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
     EasyGestureLockLayout layout_parent;
     TextView go_login;
 
-    String isLockScreen = null;
+    String modelType = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
         initLayoutView();
 
         Intent intent = getIntent();
-        isLockScreen = intent.getStringExtra(GestureUtils.LOCK_SCREEN);
+        modelType = intent.getStringExtra(GestureUtils.Gesture_Model_Type);
     }
 
     private void initView() {
@@ -69,12 +69,18 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
                 Toast.makeText(GesturePwdCheckActivity.this, str, Toast.LENGTH_SHORT).show();
                 //跳转主页面
                 if(succeedOrFailed){
-                    if(Utils.isNullOrEmpty(isLockScreen)){
+                    if(Utils.isNullOrEmpty(modelType)){
                         onCheckSuccess();
                     }else{
-                        //解锁
+                        switch (modelType){
+                            case GestureUtils.Gesture_Model_Type_Lock_Screen:
+                                break;
+                            case GestureUtils.Gesture_Model_Type_Change_Pwd:
+                                break;
+                        }
                         finish();
                     }
+
                 }
             }
 
