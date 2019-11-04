@@ -60,15 +60,6 @@ public class CenterResetGestureFragment extends QMUIFragment {
         //修改提示
         mTextView.setText("登录密码");
         mEditText.setHint("请输入登录密码");
-        //获得焦点并弹出软键盘--inputMethodManager leak 内存泄漏，暂不使用
-        /*InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        mEditText.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mEditText.requestFocus();
-                inputMethodManager.showSoftInput(mEditText, 0);
-            }
-        }, 300);*/
 
         return rootView;
     }
@@ -77,8 +68,6 @@ public class CenterResetGestureFragment extends QMUIFragment {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);*/
                 popBackStack();
             }
         });

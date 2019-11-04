@@ -66,6 +66,12 @@ public class MainActivity extends QMUIFragmentActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        mHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
     protected void onDestroy() {
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();

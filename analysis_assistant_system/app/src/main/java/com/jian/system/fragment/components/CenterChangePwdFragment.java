@@ -67,15 +67,6 @@ public class CenterChangePwdFragment extends QMUIFragment {
         initTopBar();
         //新密码规则提示
         mEditText1.setHint("新"+ Constant.pwdRegTip);
-        //获得焦点并弹出软键盘--inputMethodManager leak 内存泄漏，暂不使用
-        /*InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        mEditText.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mEditText.requestFocus();
-                inputMethodManager.showSoftInput(mEditText, 0);
-            }
-        }, 300);*/
 
         return rootView;
     }
@@ -86,8 +77,6 @@ public class CenterChangePwdFragment extends QMUIFragment {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);*/
                 popBackStack();
             }
         });
@@ -233,6 +222,7 @@ public class CenterChangePwdFragment extends QMUIFragment {
         //清空本地密码
         GestureUtils.remove(getContext(), GestureUtils.USER_USERNAME);
         GestureUtils.remove(getContext(), GestureUtils.USER_PASSWORD);
+        LoginActivity.isShowGestureLogin = false;
         //跳转登录
         Intent intent = new Intent(getContext(), LoginActivity.class);
         startActivity(intent);

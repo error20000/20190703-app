@@ -198,13 +198,7 @@ public class CenterLayout extends QMUIWindowInsetLayout {
                                     @Override
                                     public void onClick(QMUIDialog dialog, int index) {
                                         dialog.dismiss();
-                                        //清空本地密码
-                                        GestureUtils.remove(getContext(), GestureUtils.USER_USERNAME);
-                                        GestureUtils.remove(getContext(), GestureUtils.USER_PASSWORD);
-                                        //跳转登录
-                                        Intent intent = new Intent(context, LoginActivity.class);
-                                        context.startActivity(intent);
-
+                                        logout();
                                     }
                                 })
                                 .create(mCurrentDialogStyle).show();
@@ -225,6 +219,15 @@ public class CenterLayout extends QMUIWindowInsetLayout {
         startFragment(fragment);
     }
 
+    private void logout(){
+        //清空本地密码
+        GestureUtils.remove(getContext(), GestureUtils.USER_USERNAME);
+        GestureUtils.remove(getContext(), GestureUtils.USER_PASSWORD);
+        LoginActivity.isShowGestureLogin = false;
+        //跳转登录
+        Intent intent = new Intent(getContext(), LoginActivity.class);
+        startActivity(intent);
+    }
 
     protected void startFragment(QMUIFragment fragment) {
         if (mListener != null) {
