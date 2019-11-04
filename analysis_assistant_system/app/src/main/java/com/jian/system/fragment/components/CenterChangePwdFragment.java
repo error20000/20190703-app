@@ -215,6 +215,7 @@ public class CenterChangePwdFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
+        popBackStack();
         logout();
     }
 

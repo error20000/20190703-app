@@ -131,12 +131,4 @@ public class CenterResetGestureFragment extends QMUIFragment {
         startActivity(intent);
     }
 
-    private void logout(){
-        //清空本地密码
-        GestureUtils.remove(getContext(), GestureUtils.USER_USERNAME);
-        GestureUtils.remove(getContext(), GestureUtils.USER_PASSWORD);
-        //跳转登录
-        Intent intent = new Intent(getContext(), LoginActivity.class);
-        startActivity(intent);
-    }
 }
