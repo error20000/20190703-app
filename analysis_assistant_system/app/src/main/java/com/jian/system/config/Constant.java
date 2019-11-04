@@ -47,5 +47,7 @@ public class Constant {
 
     //系统设置
     public static String superGroupId = "1";
+    public static String pwdReg = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$";
+    public static String pwdRegTip = "密码至少包含 数字和英文，长度6-20";
 
 }

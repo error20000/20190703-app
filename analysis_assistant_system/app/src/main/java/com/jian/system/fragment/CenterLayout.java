@@ -9,16 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.LoginActivity;
 import com.jian.system.MainActivity;
 import com.jian.system.R;
 import com.jian.system.entity.User;
+import com.jian.system.fragment.components.CenterChangePwdFragment;
+import com.jian.system.fragment.components.CenterResetGestureFragment;
 import com.jian.system.gesture.GesturePwdCheckActivity;
 import com.jian.system.gesture.GesturePwdResetActivity;
 import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
+import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.QMUIWindowInsetLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
@@ -51,6 +56,9 @@ public class CenterLayout extends QMUIWindowInsetLayout {
     String  title = "个人中心";
     private int mCurrentDialogStyle = com.qmuiteam.qmui.R.style.QMUI_Dialog;
 
+    String[] times = {"15秒", "30秒", "1分钟", "2分钟", "5分钟", "10分钟", "30分钟", "从不"};
+    String[] values = {"15", "30", "60", "120", "300", "600", "1800", "never"};
+
     Context context;
 
     public CenterLayout(Context context) {
@@ -82,17 +90,30 @@ public class CenterLayout extends QMUIWindowInsetLayout {
         mSplit2.setText("");
 
         QMUICommonListItemView changePwd =  mGroupListView.createItemView("修改密码");
+        changePwd.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         changePwd.setTag("changePwd");
 
-        QMUICommonListItemView gesturePwd =  mGroupListView.createItemView("手势密码");
+        QMUICommonListItemView gesturePwd =  mGroupListView.createItemView("手势设置");
         gesturePwd.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
         gesturePwd.setTag("gesturePwd");
 
         QMUICommonListItemView lockScreen =  mGroupListView.createItemView("锁屏时间");
-        lockScreen.setDetailText("10秒");
+        String timeStr = "";
+        String time = GestureUtils.get(getContext(), GestureUtils.USER_LOCK_SCREEN_TIME);
+        if(Utils.isNullOrEmpty(time)){
+            time = GestureUtils.USER_LOCK_SCREEN_TIME_DEF;
+        }
+        for(int i = 0; i < values.length; i++){
+            if(time.equals(values[i])){
+                timeStr = times[i];
+                break;
+            }
+        }
+        lockScreen.setDetailText(timeStr);
         lockScreen.setTag("lockScreen");
 
         QMUICommonListItemView logout =  mGroupListView.createItemView("退出登录");
+        logout.getTextView().setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_red));
         logout.setTag("logout");
 
         QMUIGroupListView.newSection(getContext())
@@ -113,11 +134,13 @@ public class CenterLayout extends QMUIWindowInsetLayout {
                 QMUICommonListItemView viewList = (QMUICommonListItemView) view;
                 switch ((String) viewList.getTag()) {
                     case "changePwd":
+                        CenterChangePwdFragment fragment = new CenterChangePwdFragment();
+                        startFragment(fragment);
                         break;
                     case "gesturePwd":
-                        String[] items = {"修改手势", "重置手势"};
+                        String[] items = {"修改手势密码", "重置手势密码"};
                         new QMUIDialog.CheckableDialogBuilder(getContext())
-                                .setTitle("请选择")
+                                .setTitle("")
                                 .addItems(items, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -135,6 +158,31 @@ public class CenterLayout extends QMUIWindowInsetLayout {
                                 .create(mCurrentDialogStyle).show();
                         break;
                     case "lockScreen":
+                        //查询锁屏时间
+                        String time = GestureUtils.get(getContext(), GestureUtils.USER_LOCK_SCREEN_TIME);
+                        if(Utils.isNullOrEmpty(time)){
+                            time = GestureUtils.USER_LOCK_SCREEN_TIME_DEF;
+                        }
+                        int checkedIndex = 0;
+                        for(int i = 0; i < values.length; i++){
+                            if(time.equals(values[i])){
+                                checkedIndex = i;
+                                break;
+                            }
+                        }
+                        new QMUIDialog.CheckableDialogBuilder(getContext())
+                                .setTitle("请选择")
+                                .setCheckedIndex(checkedIndex)
+                                .addItems(times, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        //设置锁屏时间
+                                        viewList.setDetailText(times[which]);
+                                        GestureUtils.set(getContext(), GestureUtils.USER_LOCK_SCREEN_TIME, values[which]);
+                                    }
+                                })
+                                .create(mCurrentDialogStyle).show();
                         break;
                     case "logout":
                         new QMUIDialog.MessageDialogBuilder(context)
@@ -172,11 +220,9 @@ public class CenterLayout extends QMUIWindowInsetLayout {
         startActivity(intent);
     }
 
-
     private  void showResetGesture(){
-        Intent intent = new Intent(getContext(), GesturePwdCheckActivity.class);
-        intent.putExtra(GestureUtils.Gesture_Model_Type, GestureUtils.Gesture_Model_Type_Change_Pwd);
-        startActivity(intent);
+        CenterResetGestureFragment fragment = new CenterResetGestureFragment();
+        startFragment(fragment);
     }
 
 

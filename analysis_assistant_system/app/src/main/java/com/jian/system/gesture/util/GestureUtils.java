@@ -28,6 +28,7 @@ public class GestureUtils {
     public static final String Gesture_Model_Type = "modelType";
     public static final String Gesture_Model_Type_Lock_Screen = "lock_screen";
     public static final String Gesture_Model_Type_Change_Pwd = "change_pwd";
+    public static final String Gesture_Model_Type_Reset_Pwd = "reset_pwd";
 
 
     public static void clear(Context context) {

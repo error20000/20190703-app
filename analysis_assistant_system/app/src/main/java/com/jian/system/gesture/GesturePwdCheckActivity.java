@@ -77,6 +77,8 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
                                 break;
                             case GestureUtils.Gesture_Model_Type_Change_Pwd:
                                 break;
+                            case GestureUtils.Gesture_Model_Type_Reset_Pwd:
+                                break;
                         }
                         finish();
                     }

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.qmuiteam.qmui.widget.QMUIWindowInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/qmui_config_color_white"
+        android:columnCount="2"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_marginTop="?attr/qmui_topbar_height"
+        android:fitsSystemWindows="true">
+        <!--旧密码-->
+        <TextView
+            android:id="@+id/old_password_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/qmui_list_item_height"
+            android:layout_gravity="fill_horizontal"
+            android:background="@drawable/qmui_s_list_item_bg_with_border_bottom"
+            android:gravity="right|center_vertical"
+            android:paddingLeft="@dimen/common_content_spacing"
+            android:paddingRight="@dimen/common_content_spacing"
+            android:text="原密码"
+            android:textColor="?attr/qmui_config_color_gray_1"
+            android:textSize="?attr/qmui_common_list_item_title_h_text_size" />
+
+        <EditText
+            android:id="@+id/old_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill"
+            android:background="@drawable/qmui_divider_bottom_bitmap"
+            android:hint="请输原密码"
+            android:inputType="textPassword"
+            android:maxLength="20"
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+        <!--新密码-->
+        <TextView
+            android:id="@+id/new_password_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/qmui_list_item_height"
+            android:layout_gravity="fill_horizontal"
+            android:background="@drawable/qmui_s_list_item_bg_with_border_bottom"
+            android:gravity="right|center_vertical"
+            android:paddingLeft="@dimen/common_content_spacing"
+            android:paddingRight="@dimen/common_content_spacing"
+            android:text="新密码"
+            android:textColor="?attr/qmui_config_color_gray_1"
+            android:textSize="?attr/qmui_common_list_item_title_h_text_size" />
+        <EditText
+            android:id="@+id/new_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill"
+            android:background="@drawable/qmui_divider_bottom_bitmap"
+            android:hint="请输入新密码"
+            android:inputType="textPassword"
+            android:maxLength="20"
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+        <!--确认密码-->
+        <TextView
+            android:id="@+id/new_password_label_2"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/qmui_list_item_height"
+            android:layout_gravity="fill_horizontal"
+            android:background="@drawable/qmui_s_list_item_bg_with_border_bottom"
+            android:gravity="right|center_vertical"
+            android:paddingLeft="@dimen/common_content_spacing"
+            android:paddingRight="@dimen/common_content_spacing"
+            android:text="确认密码"
+            android:textColor="?attr/qmui_config_color_gray_1"
+            android:textSize="?attr/qmui_common_list_item_title_h_text_size" />
+        <EditText
+            android:id="@+id/new_password_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill"
+            android:background="@drawable/qmui_divider_bottom_bitmap"
+            android:hint="请再次输入新密码"
+            android:inputType="textPassword"
+            android:maxLength="20"
+            android:textColor="?attr/qmui_config_color_gray_5"
+            android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
+    </GridLayout>
+
+
+    <com.qmuiteam.qmui.widget.QMUITopBarLayout
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true" />
+
+</com.qmuiteam.qmui.widget.QMUIWindowInsetLayout>

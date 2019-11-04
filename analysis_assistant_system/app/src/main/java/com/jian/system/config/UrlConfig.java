@@ -2,7 +2,7 @@ package com.jian.system.config;
 
 public class UrlConfig {
 
-    public static String baseUrl = "http://192.168.1.36:8065";
+    public static String baseUrl = "http://192.168.59.168:8065";
 //    public static String baseUrl = "http://gztest.yunh.xyz:8085";
 
     //系统
@@ -14,6 +14,8 @@ public class UrlConfig {
     public static String userIsLoginUrl = baseUrl + "/api/user/app/isLogin";
     public static String userAidUrl = baseUrl + "/api/user/app/aid";
     public static String userAllUrl = baseUrl + "/api/user/app/findAll";
+    public static String userChangePwdUrl = baseUrl + "/api/user/app/changePWD";
+
 
     //查询数据字典
     public static String dictQueryUrl = baseUrl + "/api/dict/app/findList";

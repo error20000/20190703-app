@@ -56,11 +56,19 @@ public class MainActivity extends QMUIFragmentActivity {
                 if(Utils.isNullOrEmpty(time)){
                     time = GestureUtils.USER_LOCK_SCREEN_TIME_DEF;
                 }
-                mHandler.sendEmptyMessageDelayed(0, Integer.parseInt(time) * 1000);
+                if(!"never".equals(time)){
+                    mHandler.sendEmptyMessageDelayed(0, Integer.parseInt(time) * 1000);
+                }
                 break;
 
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 
     private void showCheckGesture(){
