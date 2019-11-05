@@ -45,6 +45,10 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
         mData = (list != null) ? list : new ArrayList<T>();
         notifyDataSetChanged();
     }
+    public void setData(int index, T item) {
+        mData.set(index, item);
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getItemViewType(int position) {

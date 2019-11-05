@@ -31,6 +31,7 @@ import com.jian.system.entity.Dict;
 import com.jian.system.entity.Messages;
 import com.jian.system.fragment.components.AidListFragment;
 import com.jian.system.fragment.components.EquipListFragment;
+import com.jian.system.fragment.components.FlashFragment;
 import com.jian.system.fragment.components.MapFragment;
 import com.jian.system.fragment.components.MsgDetailFragment;
 import com.jian.system.fragment.components.NfcFragment;
@@ -38,6 +39,7 @@ import com.jian.system.fragment.components.ScanFragment;
 import com.jian.system.fragment.components.StopwatchFragment;
 import com.jian.system.model.HomeRvItem;
 import com.jian.system.utils.DataUtils;
+import com.jian.system.utils.FlashUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
@@ -75,6 +77,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
     private QMUITipDialog tipDialog;
     private List<Dict> msgTypeData = new ArrayList<>();
     private List<Messages> msgData = new ArrayList<>();
+    private FlashUtils flashUtils;
 
     private final int MsgType_Msg = 1;
 
@@ -82,6 +85,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
         super(context);
         this.context = context;
         this.manager = manager;
+        flashUtils = new FlashUtils(getContext());
 
         LayoutInflater.from(context).inflate(R.layout.layout_home, this);
         ButterKnife.bind(this);
@@ -94,6 +98,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
         //mMsgTitle.setText("消息中心");
 
         initData();
+
     }
 
     protected void startFragment(QMUIFragment fragment) {
@@ -120,6 +125,7 @@ public class HomeLayout extends QMUIWindowInsetLayout{
         data.add(new HomeRvItem(NfcFragment.class, "器材NFC", R.drawable.ic_nfc_foreground2));
         data.add(new HomeRvItem(MapFragment.class, "电子地图", R.drawable.ic_map_foreground));
         data.add(new HomeRvItem(StopwatchFragment.class, "秒表", R.drawable.ic_miaobiao));
+        data.add(new HomeRvItem(FlashFragment.class, "手电筒", R.drawable.ic_flash_off));
 
         mItemAdapter = new HomeRvItemAdapter(context, data);
         mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
@@ -138,7 +144,17 @@ public class HomeLayout extends QMUIWindowInsetLayout{
                         manager.beginTransaction()
                                 .add(R.id.main, fragment, "ScanFragment")
                                 .commit();
-                    }else{
+                    }else if("FlashFragment".equals(item.getFragment().getSimpleName())){
+                        boolean status = flashUtils.isStatus();
+                        if(status){
+                            item.setIconRes( R.drawable.ic_flash_off );
+                            flashUtils.close();
+                        }else{
+                            item.setIconRes( R.drawable.ic_flash_on );
+                            flashUtils.open();
+                        }
+                        mItemAdapter.notifyDataSetChanged();
+                    }else {
                         QMUIFragment fragment = item.getFragment().newInstance();
                         startFragment(fragment);
                     }

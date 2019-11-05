@@ -18,9 +18,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
 import com.jian.system.config.UrlConfig;
-import com.jian.system.entity.Equip;
 import com.jian.system.entity.Messages;
-import com.jian.system.fragment.components.EquipDetailFragment;
 import com.jian.system.fragment.components.MsgAddFragment;
 import com.jian.system.fragment.components.MsgDetailFragment;
 import com.jian.system.utils.HttpUtils;
@@ -29,7 +27,6 @@ import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUITabSegment;
-import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 
 import java.util.HashMap;
 import java.util.List;

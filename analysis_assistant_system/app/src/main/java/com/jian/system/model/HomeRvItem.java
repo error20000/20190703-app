@@ -29,5 +29,15 @@ public class HomeRvItem {
         return iconRes;
     }
 
+    public void setFragment(Class<? extends QMUIFragment> fragment) {
+        this.fragment = fragment;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIconRes(int iconRes) {
+        this.iconRes = iconRes;
+    }
 }
