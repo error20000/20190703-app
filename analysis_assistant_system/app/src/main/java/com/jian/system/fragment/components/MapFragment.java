@@ -45,12 +45,15 @@ import com.esri.arcgisruntime.location.LocationDataSource;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.GeoElement;
+import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
+import com.esri.arcgisruntime.mapping.view.MapScaleChangedEvent;
+import com.esri.arcgisruntime.mapping.view.MapScaleChangedListener;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.Symbol;
@@ -244,7 +247,7 @@ public class MapFragment extends QMUIFragment {
         });
     }
 
-    private void testArcgislocation() {
+    private void arcgislocation() {
         //定位的方法
         LocationDisplay locationDisplay = mMapView.getLocationDisplay();
         locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
@@ -253,6 +256,7 @@ public class MapFragment extends QMUIFragment {
         Point point = locationDisplay.getMapLocation();
         Log.e("xyh", "point: " + point.toString());
 
+
         //获取基于GPS的位置信息
         LocationDataSource.Location location = locationDisplay.getLocation();
         //基于WGS84的经纬度坐标。
@@ -260,38 +264,18 @@ public class MapFragment extends QMUIFragment {
         if (point1 != null) {
             Log.e("xyh", "point1: " + point1.toString());
         }
-        /*locationDisplay.setLocationListener(new LocationListener() {
+        locationDisplay.addLocationChangedListener(new LocationDisplay.LocationChangedListener() {
             @Override
-            public void onLocationChanged(Location location) {
-
-                String bdlat=location.getLatitude()+"";
-                String bdlon=location.getLongitude()+"";
-                if (bdlat.indexOf("E")==-1|bdlon.indexOf("E")==-1){
-                    //这里做个判断是因为，可能因为gps信号问题，定位出来的经纬度不正常。
-                    Log.i("定位",lat+"?"+lon);
-                    lat = location.getLatitude();//纬度
-                    lon = location.getLongitude();//经度
-
-                }
-
+            public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
+                Log.e("onLocationChanged", "point: " + locationChangedEvent.getLocation().getPosition().toString());
             }
-
+        });
+        locationDisplay.addDataSourceStatusChangedListener(new LocationDisplay.DataSourceStatusChangedListener() {
             @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
+            public void onStatusChanged(LocationDisplay.DataSourceStatusChangedEvent dataSourceStatusChangedEvent) {
+                Log.e("onStatusChanged", "point: " + dataSourceStatusChangedEvent.getSource().getMapLocation().toString());
             }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        });*/
-
+        });
     }
 
     private void locateResult(Location location){
@@ -338,6 +322,13 @@ public class MapFragment extends QMUIFragment {
             int levelOfDetail = system.getlSys_MapLevel();
             ArcGISMap map = new ArcGISMap(basemapType, latitude, longitude, levelOfDetail);
             mMapView.setMap(map);
+            mMapView.addMapScaleChangedListener(new MapScaleChangedListener() {
+                @Override
+                public void mapScaleChanged(MapScaleChangedEvent mapScaleChangedEvent) {
+                    mapScaleChangedEvent.getSource().getMapScale();
+                    Log.e("dddddddddddddddddd", mapScaleChangedEvent.getSource().getMapScale() + "");
+                }
+            });
             //地图
             addLayer(map);
             //画图
@@ -345,7 +336,7 @@ public class MapFragment extends QMUIFragment {
             mMapView.getGraphicsOverlays().add(mGraphicsOverlay);
             //test
             //createPointGraphicsByUrl(longitude, latitude, UrlConfig.baseUrl+"/upload/20190817/201908171805306689781.png", null);
-            testArcgislocation();
+            arcgislocation();
             //点击事件
             mMapView.setOnTouchListener(new DefaultMapViewOnTouchListener(getActivity(), mMapView){
                 @Override

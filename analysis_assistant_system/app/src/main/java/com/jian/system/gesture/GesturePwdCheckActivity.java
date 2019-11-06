@@ -1,8 +1,13 @@
 package com.jian.system.gesture;
 
 
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -18,6 +23,8 @@ import com.jian.system.gesture.custom.EasyGestureLockLayout;
 import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.utils.Utils;
 
+import java.util.List;
+
 
 /**
  * 手势密码 登录校验界面
@@ -29,6 +36,7 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
     TextView go_login;
 
     String modelType = null;
+    boolean canExit = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +47,24 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
 
         Intent intent = getIntent();
         modelType = intent.getStringExtra(GestureUtils.Gesture_Model_Type);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!Utils.isNullOrEmpty(modelType)){
+            switch (modelType){
+                case GestureUtils.Gesture_Model_Type_Lock_Screen:
+                    exitApp();
+                    break;
+                case GestureUtils.Gesture_Model_Type_Change_Pwd:
+                    break;
+                case GestureUtils.Gesture_Model_Type_Reset_Pwd:
+                    break;
+            }
+        }
+        if(!canExit){
+            super.onBackPressed();
+        }
     }
 
     private void initView() {
@@ -108,5 +134,23 @@ public class GesturePwdCheckActivity extends GestureBaseActivity {
         layout_parent.switchToCheckMode(parsePwdStr(getPwd()), 5);//校验密码
     }
 
-
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void exitApp() {
+        if (canExit) {
+            ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.AppTask> appTaskList = activityManager.getAppTasks();
+            for (ActivityManager.AppTask appTask : appTaskList) {
+                appTask.finishAndRemoveTask();
+            }
+        } else {
+            Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            canExit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    canExit = false;
+                }
+            }, 2000);
+        }
+    }
 }
