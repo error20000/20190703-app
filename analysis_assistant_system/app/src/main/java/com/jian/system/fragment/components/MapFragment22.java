@@ -2,10 +2,7 @@
 package com.jian.system.fragment.components;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
@@ -15,23 +12,17 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -41,7 +32,6 @@ import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
-import com.esri.arcgisruntime.location.LocationDataSource;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.GeoElement;
@@ -50,33 +40,20 @@ import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
-import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.Symbol;
-import com.jian.system.MainActivity;
 import com.jian.system.R;
-import com.jian.system.config.Constant;
 import com.jian.system.config.UrlConfig;
-import com.jian.system.entity.Dict;
-import com.jian.system.entity.Messages;
 import com.jian.system.entity.System;
-import com.jian.system.fragment.MapLayout;
 import com.jian.system.fragment.ViewPagerListener;
-import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
-import com.qmuiteam.qmui.widget.dialog.QMUIBottomSheet;
-import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
-import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
-import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
-import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
-import com.sonnyjack.permission.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,16 +63,15 @@ import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import chihane.jdaddressselector.BottomDialog;
 
-public class MapFragment extends QMUIFragment {
+public class MapFragment22 extends QMUIFragment {
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
     @BindView(R.id.mapView)
     MapView mMapView;
 
-    private final static String TAG = MapFragment.class.getSimpleName();
+    private final static String TAG = MapFragment22.class.getSimpleName();
     private String title = "电子地图";
     private QMUITipDialog tipDialog;
     private ViewPagerListener mListener;
@@ -198,22 +174,9 @@ public class MapFragment extends QMUIFragment {
         String provider = locationManager.getBestProvider(criteria, true);
         Log.e(TAG, "provider:" + provider);
         //权限检查
-        if (!(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))) {
-            Log.d(TAG, "请打开网络或GPS定位功能");
-            IsToSet(getActivity());
-            return;
-        }
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "没有位置服务权限");
-            //请求权限
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    }, 100);
             return;
         }
         //获取到了位置
@@ -244,81 +207,10 @@ public class MapFragment extends QMUIFragment {
         });
     }
 
-    private void testArcgislocation() {
-        //定位的方法
-        LocationDisplay locationDisplay = mMapView.getLocationDisplay();
-        locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
-        locationDisplay.startAsync();
-        //获取的点是基于当前地图坐标系的点
-        Point point = locationDisplay.getMapLocation();
-        Log.e("xyh", "point: " + point.toString());
-
-        //获取基于GPS的位置信息
-        LocationDataSource.Location location = locationDisplay.getLocation();
-        //基于WGS84的经纬度坐标。
-        Point point1 = location.getPosition();
-        if (point1 != null) {
-            Log.e("xyh", "point1: " + point1.toString());
-        }
-        /*locationDisplay.setLocationListener(new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-                String bdlat=location.getLatitude()+"";
-                String bdlon=location.getLongitude()+"";
-                if (bdlat.indexOf("E")==-1|bdlon.indexOf("E")==-1){
-                    //这里做个判断是因为，可能因为gps信号问题，定位出来的经纬度不正常。
-                    Log.i("定位",lat+"?"+lon);
-                    lat = location.getLatitude();//纬度
-                    lon = location.getLongitude();//经度
-
-                }
-
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        });*/
-
-    }
-
     private void locateResult(Location location){
         Log.d(TAG, "location getLongitude" + location.getLongitude());
         Log.d(TAG, "location getLatitude" + location.getLatitude());
         this.location = location;
-    }
-
-    private void IsToSet(Activity activity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setMessage("是否跳转到设置页面打开网络或GPS定位功能");
-//        builder.setTitle("提示");
-        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.create().show();
     }
 
     private void initMap() {
@@ -345,7 +237,6 @@ public class MapFragment extends QMUIFragment {
             mMapView.getGraphicsOverlays().add(mGraphicsOverlay);
             //test
             //createPointGraphicsByUrl(longitude, latitude, UrlConfig.baseUrl+"/upload/20190817/201908171805306689781.png", null);
-            testArcgislocation();
             //点击事件
             mMapView.setOnTouchListener(new DefaultMapViewOnTouchListener(getActivity(), mMapView){
                 @Override
