@@ -2,22 +2,26 @@
 package com.jian.system.fragment.components;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.text.InputType;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -56,6 +60,7 @@ import com.esri.arcgisruntime.mapping.view.MapScaleChangedEvent;
 import com.esri.arcgisruntime.mapping.view.MapScaleChangedListener;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.symbology.Symbol;
 import com.jian.system.MainActivity;
 import com.jian.system.R;
@@ -72,6 +77,7 @@ import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
+import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUIBottomSheet;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
@@ -101,24 +107,24 @@ public class MapFragment extends QMUIFragment {
     private final static String TAG = MapFragment.class.getSimpleName();
     private String title = "电子地图";
     private QMUITipDialog tipDialog;
-    private ViewPagerListener mListener;
-    private View cacheView;
     private System system;
-    private LocationManager locationManager;
     private Location location;
     private int contentId = R.id.map_container;
 
     private GraphicsOverlay mGraphicsOverlay;
+    private LocationDisplay locationDisplay;
 
     private List<JSONObject> storeTypeData;
     private List<JSONObject> aidData;
     private final String PointType_Aid = "aid";
     private final String PointType_Store = "store";
+    private int tempZoom = 0;
 
 
     private final int MsgType_Init = 0;
     private final int MsgType_AidList = 1;
     private final int MsgType_StoreList = 2;
+    private final int request_code = 1;
 
 
     @Override
@@ -153,7 +159,6 @@ public class MapFragment extends QMUIFragment {
         ButterKnife.bind(this, rootView);
         rootView.setId(contentId);
 
-        initLocation();
         initTopBar();
         initData();
 
@@ -181,128 +186,16 @@ public class MapFragment extends QMUIFragment {
         mTopBar.setTitle(title);
     }
 
-    private void initLocation(){
-        //获取位置服务
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        //ACCURACY_HIGH/ACCURACY_LOW精度选择
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        //高度
-        criteria.setAltitudeRequired(true);
-        //方位信息
-        criteria.setBearingRequired(true);
-        //是否允许付费
-        criteria.setCostAllowed(true);
-        //对电量的要求
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        //速度
-        criteria.setSpeedRequired(true);
-        //获取最佳服务
-        String provider = locationManager.getBestProvider(criteria, true);
-        Log.e(TAG, "provider:" + provider);
-        //权限检查
-        if (!(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))) {
-            Log.d(TAG, "请打开网络或GPS定位功能");
-            IsToSet(getActivity());
-            return;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == request_code){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if(!locationDisplay.isStarted()){
+                    locationDisplay.startAsync();
+                }
+            }
         }
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "没有位置服务权限");
-            //请求权限
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    }, 100);
-            return;
-        }
-        //获取到了位置
-        location = locationManager.getLastKnownLocation(provider);
-        locateResult(location);
-        //开启地理位置监听定位类型、毫秒、米、监听时间
-        locationManager.requestLocationUpdates(provider, 3000, 1, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                //位置变化，获取最新的位置
-                locateResult(location);
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        });
-    }
-
-    private void arcgislocation() {
-        //定位的方法
-        LocationDisplay locationDisplay = mMapView.getLocationDisplay();
-        locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
-        locationDisplay.startAsync();
-        //获取的点是基于当前地图坐标系的点
-        Point point = locationDisplay.getMapLocation();
-        Log.e("xyh", "point: " + point.toString());
-
-
-        //获取基于GPS的位置信息
-        LocationDataSource.Location location = locationDisplay.getLocation();
-        //基于WGS84的经纬度坐标。
-        Point point1 = location.getPosition();
-        if (point1 != null) {
-            Log.e("xyh", "point1: " + point1.toString());
-        }
-        locationDisplay.addLocationChangedListener(new LocationDisplay.LocationChangedListener() {
-            @Override
-            public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
-                Log.e("onLocationChanged", "point: " + locationChangedEvent.getLocation().getPosition().toString());
-            }
-        });
-        locationDisplay.addDataSourceStatusChangedListener(new LocationDisplay.DataSourceStatusChangedListener() {
-            @Override
-            public void onStatusChanged(LocationDisplay.DataSourceStatusChangedEvent dataSourceStatusChangedEvent) {
-                Log.e("onStatusChanged", "point: " + dataSourceStatusChangedEvent.getSource().getMapLocation().toString());
-            }
-        });
-    }
-
-    private void locateResult(Location location){
-        Log.d(TAG, "location getLongitude" + location.getLongitude());
-        Log.d(TAG, "location getLatitude" + location.getLatitude());
-        this.location = location;
-    }
-
-    private void IsToSet(Activity activity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setMessage("是否跳转到设置页面打开网络或GPS定位功能");
-//        builder.setTitle("提示");
-        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.create().show();
     }
 
     private void initMap() {
@@ -320,15 +213,9 @@ public class MapFragment extends QMUIFragment {
             double latitude = location == null ? system.getlSys_MapLat() : location.getLatitude();
             double longitude = location == null ? system.getlSys_MapLng() : location.getLongitude();
             int levelOfDetail = system.getlSys_MapLevel();
+            tempZoom = system.getlSys_MapLevel();
             ArcGISMap map = new ArcGISMap(basemapType, latitude, longitude, levelOfDetail);
             mMapView.setMap(map);
-            mMapView.addMapScaleChangedListener(new MapScaleChangedListener() {
-                @Override
-                public void mapScaleChanged(MapScaleChangedEvent mapScaleChangedEvent) {
-                    mapScaleChangedEvent.getSource().getMapScale();
-                    Log.e("dddddddddddddddddd", mapScaleChangedEvent.getSource().getMapScale() + "");
-                }
-            });
             //地图
             addLayer(map);
             //画图
@@ -336,7 +223,6 @@ public class MapFragment extends QMUIFragment {
             mMapView.getGraphicsOverlays().add(mGraphicsOverlay);
             //test
             //createPointGraphicsByUrl(longitude, latitude, UrlConfig.baseUrl+"/upload/20190817/201908171805306689781.png", null);
-            arcgislocation();
             //点击事件
             mMapView.setOnTouchListener(new DefaultMapViewOnTouchListener(getActivity(), mMapView){
                 @Override
@@ -365,7 +251,28 @@ public class MapFragment extends QMUIFragment {
                     return super.onSingleTapConfirmed(e);
                 }
             });
+            //比例尺监听
+            mMapView.addMapScaleChangedListener(new MapScaleChangedListener() {
+                @Override
+                public void mapScaleChanged(MapScaleChangedEvent mapScaleChangedEvent) {
+                    double scale = mapScaleChangedEvent.getSource().getMapScale();
+                    int zoom = scaleToZoom(scale);
+                    if(tempZoom != zoom){
+                        changeZoom(zoom);
+                    }
+                }
+            });
+            //定位服务
+            arcgisLocation();
         }
+    }
+
+    private void changeZoom(int zoom){
+        //删除
+        mGraphicsOverlay.getGraphics().clear();
+        tempZoom = zoom;
+        //新增
+        initAidToMap();
     }
 
     private void addLayer(ArcGISMap map){
@@ -383,6 +290,126 @@ public class MapFragment extends QMUIFragment {
         mFeatureLayer.loadAsync();
     }
 
+    private int scaleToZoom(double scale){
+        /*
+         17 2256.994353
+         18 1128.497176
+         19 564.248588
+         20 282.124294
+         21 141.062147
+         22 70.5310735
+         16 4513.988705
+         15 9027.977411
+         14 18055.954822
+         13 36111.909643
+         12 72223.819286
+         11 144447.638572
+         10 288895.277144
+         9 577790.554289
+         8 1155581.108577
+         7 2311162.217155
+         6 4622324.434309
+         5 9244648.868618
+         4 18489297.737236
+         3 36978595.474472
+         2 73957190.948944
+         1 147914381.897889
+         0 295828763.795777
+         */
+        if(scale >= 295828763.795777){
+            return 0;
+        }else if( scale >= 147914381.897889){
+            return 1;
+        }else if( scale >= 73957190.948944){
+            return 2;
+        }else if( scale >= 36978595.474472){
+            return 3;
+        }else if( scale >= 18489297.737236){
+            return 4;
+        }else if( scale >= 9244648.868618){
+            return 5;
+        }else if( scale >= 4622324.434309){
+            return 6;
+        }else if( scale >= 2311162.217155){
+            return 7;
+        }else if( scale >= 1155581.108577){
+            return 8;
+        }else if( scale >= 577790.554289){
+            return 9;
+        }else if( scale >= 288895.277144){
+            return 10;
+        }else if( scale >= 144447.638572){
+            return 11;
+        }else if( scale >= 72223.819286){
+            return 12;
+        }else if( scale >= 36111.909643){
+            return 13;
+        }else if( scale >= 18055.954822){
+            return 14;
+        }else if( scale >= 9027.977411){
+            return 15;
+        }else if( scale >= 4513.988705){
+            return 16;
+        }else if( scale >= 2256.994353){
+            return 17;
+        }else if( scale >= 1128.497176){
+            return 18;
+        }else if( scale >= 564.248588){
+            return 19;
+        }else if( scale >= 282.124294){
+            return 20;
+        }else if( scale >= 141.062147){
+            return 21;
+        }else if( scale >= 70.5310735){
+            return 22;
+        }else{
+            return 23;
+        }
+    }
+
+    private void arcgisLocation() {
+        //初始化定位
+        locationDisplay = mMapView.getLocationDisplay();
+        locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
+        //权限检查
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "没有位置服务权限");
+            //请求权限
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    }, request_code);
+            return;
+        }
+        //开始定位
+        locationDisplay.startAsync();
+        //获取的点是基于当前地图坐标系的点
+        Point point = locationDisplay.getMapLocation();
+        Log.e("xyh", "point: " + point.toString());
+
+        //获取基于GPS的位置信息
+        LocationDataSource.Location location = locationDisplay.getLocation();
+        //基于WGS84的经纬度坐标。
+        Point point1 = location.getPosition();
+        if (point1 != null) {
+            Log.e("xyh", "point1: " + point1.toString());
+        }
+        locationDisplay.addLocationChangedListener(new LocationDisplay.LocationChangedListener() {
+            @Override
+            public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
+                Log.e("onLocationChanged", "point: " + locationChangedEvent.getLocation().getPosition().toString());
+            }
+        });
+    }
+
+    private void locateResult(Location location){
+        Log.d(TAG, "location getLongitude" + location.getLongitude());
+        Log.d(TAG, "location getLatitude" + location.getLatitude());
+        this.location = location;
+    }
+
     private void createPointGraphics(double lng, double lat, Symbol symbol, Map<String, Object> attrs) {
         Point point = new Point(lng, lat, SpatialReferences.getWgs84());
         if(attrs == null){
@@ -392,10 +419,7 @@ public class MapFragment extends QMUIFragment {
         mGraphicsOverlay.getGraphics().add(pointGraphic);
     }
 
-    private void createPointGraphicsByUrl(double lng, double lat, String url, Map<String, Object> attrs) {
-        PictureMarkerSymbol symbol = new PictureMarkerSymbol(url);
-        symbol.setWidth(system.getlSys_MapIconWidth());
-        symbol.setHeight(system.getlSys_MapIconHeight());
+    private void createPointGraphicsByUrl(double lng, double lat, PictureMarkerSymbol symbol, Map<String, Object> attrs) {
         symbol.loadAsync();
         symbol.addDoneLoadingListener(new Runnable() {
             @Override
@@ -405,11 +429,7 @@ public class MapFragment extends QMUIFragment {
         });
     }
 
-    private void createPointGraphicsByImg(double lng, double lat, Map<String, Object> attrs) {
-        BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), R.mipmap.map);
-        PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
-        symbol.setWidth(system.getlSys_MapIconWidth());
-        symbol.setHeight(system.getlSys_MapIconHeight());
+    private void createPointGraphicsByImg(double lng, double lat, PictureMarkerSymbol symbol, Map<String, Object> attrs) {
         symbol.loadAsync();
         symbol.addDoneLoadingListener(new Runnable() {
             @Override
@@ -613,13 +633,35 @@ public class MapFragment extends QMUIFragment {
             attrs.put("id", node.getString("sAid_ID"));
             attrs.put("type", PointType_Aid);
             attrs.put("index", i);
+            attrs.put("status", node.getString("sAid_Status"));
             double lng = node.getDouble("lAid_Lng");
             double lat = node.getDouble("lAid_Lat");
-            if(Utils.isNullOrEmpty(url)){
-                createPointGraphicsByImg(lng, lat, attrs);
+            if(tempZoom <= system.getlSys_MapLevelPoint()){
+                String color = "normal".equals(attrs.get("status")) ? "green" : "red";
+                int size = node.getIntValue("lSys_MapIconWidthPoint");
+                SimpleMarkerSymbol symbol = new SimpleMarkerSymbol();
+                symbol.setColor(Color.parseColor(color));
+                symbol.setSize(size);
+                createPointGraphics(lng, lat, symbol, attrs);
+            }else if(tempZoom <= system.getlSys_MapLevelDef()){
+                int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map1 : R.mipmap.map2;
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+                symbol.setWidth(system.getlSys_MapIconWidthDef());
+                symbol.setHeight(system.getlSys_MapIconHeightDef());
+                createPointGraphicsByImg(lng, lat, symbol, attrs);
+            }else if(Utils.isNullOrEmpty(url)){
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), R.mipmap.map);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+                symbol.setWidth(system.getlSys_MapIconWidthDef());
+                symbol.setHeight(system.getlSys_MapIconHeightDef());
+                createPointGraphicsByImg(lng, lat, symbol, attrs);
             }else{
                 url = UrlConfig.baseUrl +"/"+ url;
-                createPointGraphicsByUrl(lng, lat, url, attrs);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(url);
+                symbol.setWidth(system.getlSys_MapIconWidth());
+                symbol.setHeight(system.getlSys_MapIconHeight());
+                createPointGraphicsByUrl(lng, lat, symbol, attrs);
             }
         }
 
@@ -634,12 +676,36 @@ public class MapFragment extends QMUIFragment {
             attrs.put("id", node.getString("sStoreType_ID"));
             attrs.put("type", PointType_Store);
             attrs.put("index", i);
+            attrs.put("status", node.getString("status"));
             double lng = node.getDouble("lStoreType_Lng");
             double lat = node.getDouble("lStoreType_Lat");
-            if(Utils.isNullOrEmpty(url)){
-                createPointGraphicsByImg(lng, lat, attrs);
-            }else{
-                createPointGraphicsByUrl(lng, lat, url, attrs);
+
+            if(tempZoom <= system.getlSys_MapLevelPoint()){
+                String color = "normal".equals(attrs.get("status")) ? "green" : "red";
+                int size = node.getIntValue("lSys_StoreIconWidthPoint");
+                SimpleMarkerSymbol symbol = new SimpleMarkerSymbol();
+                symbol.setColor(Color.parseColor(color));
+                symbol.setSize(size);
+                createPointGraphics(lng, lat, symbol, attrs);
+            }else if(tempZoom <= system.getlSys_MapLevelDef()){
+                int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map1 : R.mipmap.map2;
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+                symbol.setWidth(system.getlSys_StoreIconWidthDef());
+                symbol.setHeight(system.getlSys_StoreIconHeightDef());
+                createPointGraphicsByImg(lng, lat, symbol, attrs);
+            }else if(Utils.isNullOrEmpty(url)){
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), R.mipmap.map);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+                symbol.setWidth(system.getlSys_StoreIconWidthDef());
+                symbol.setHeight(system.getlSys_StoreIconHeightDef());
+                createPointGraphicsByImg(lng, lat, symbol, attrs);
+            }else {
+                url = UrlConfig.baseUrl +"/"+ url;
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(url);
+                symbol.setWidth(system.getlSys_StoreIconWidth());
+                symbol.setHeight(system.getlSys_StoreIconHeight());
+                createPointGraphicsByUrl(lng, lat, symbol, attrs);
             }
         }
     }
