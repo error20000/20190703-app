@@ -192,6 +192,7 @@ public class MapFragment extends QMUIFragment {
         if(requestCode == request_code){
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if(!locationDisplay.isStarted()){
+                    Log.e("ddddddddddddd", "onRequestPermissionsResult");
                     locationDisplay.startAsync();
                 }
             }
@@ -257,9 +258,7 @@ public class MapFragment extends QMUIFragment {
                 public void mapScaleChanged(MapScaleChangedEvent mapScaleChangedEvent) {
                     double scale = mapScaleChangedEvent.getSource().getMapScale();
                     int zoom = scaleToZoom(scale);
-                    if(tempZoom != zoom){
-                        changeZoom(zoom);
-                    }
+                    changeZoom(zoom);
                 }
             });
             //定位服务
@@ -268,11 +267,45 @@ public class MapFragment extends QMUIFragment {
     }
 
     private void changeZoom(int zoom){
+        Log.e("dddddddddddddddd", tempZoom +"----"+zoom+"");
+        //同一级别
+        if(tempZoom == zoom){
+            return;
+        }
+        //同一组别
+        if(tempZoom <= system.getlSys_MapLevelPoint()){
+            if(zoom <= system.getlSys_MapLevelPoint()){
+                tempZoom = zoom;
+                return;
+            }
+        }else if(tempZoom <= system.getlSys_MapLevelDef()){
+            if(zoom <= system.getlSys_MapLevelDef() && zoom > system.getlSys_MapLevelPoint()){
+                tempZoom = zoom;
+                return;
+            }
+        }else{
+            if(zoom > system.getlSys_MapLevelDef()){
+                tempZoom = zoom;
+                return;
+            }
+        }
+        tempZoom = zoom;
         //删除
         mGraphicsOverlay.getGraphics().clear();
-        tempZoom = zoom;
         //新增
         initAidToMap();
+        initStoreToMap();
+        /*for (int i = 0; i < mGraphicsOverlay.getGraphics().size(); i++) {
+            Graphic graphic = mGraphicsOverlay.getGraphics().get(i);
+
+            int iconRes = "normal".equals(graphic.getAttributes().get("status")) ? R.mipmap.map1 : R.mipmap.map2;
+            BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
+            PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+            symbol.setWidth(system.getlSys_MapIconWidthDef());
+            symbol.setHeight(system.getlSys_MapIconHeightDef());
+
+            graphic.setSymbol(symbol);
+        }*/
     }
 
     private void addLayer(ArcGISMap map){
@@ -637,11 +670,12 @@ public class MapFragment extends QMUIFragment {
             double lng = node.getDouble("lAid_Lng");
             double lat = node.getDouble("lAid_Lat");
             if(tempZoom <= system.getlSys_MapLevelPoint()){
-                String color = "normal".equals(attrs.get("status")) ? "green" : "red";
-                int size = node.getIntValue("lSys_MapIconWidthPoint");
+                String color = "normal".equals(attrs.get("status")) ? "#008000" : "red";
+                int size = system.getlSys_MapIconWidthPoint();
                 SimpleMarkerSymbol symbol = new SimpleMarkerSymbol();
                 symbol.setColor(Color.parseColor(color));
                 symbol.setSize(size);
+                symbol.setStyle(SimpleMarkerSymbol.Style.CIRCLE);
                 createPointGraphics(lng, lat, symbol, attrs);
             }else if(tempZoom <= system.getlSys_MapLevelDef()){
                 int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map1 : R.mipmap.map2;
@@ -651,7 +685,8 @@ public class MapFragment extends QMUIFragment {
                 symbol.setHeight(system.getlSys_MapIconHeightDef());
                 createPointGraphicsByImg(lng, lat, symbol, attrs);
             }else if(Utils.isNullOrEmpty(url)){
-                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), R.mipmap.map);
+                int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map : R.mipmap.map2;
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
                 PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
                 symbol.setWidth(system.getlSys_MapIconWidthDef());
                 symbol.setHeight(system.getlSys_MapIconHeightDef());
@@ -681,11 +716,12 @@ public class MapFragment extends QMUIFragment {
             double lat = node.getDouble("lStoreType_Lat");
 
             if(tempZoom <= system.getlSys_MapLevelPoint()){
-                String color = "normal".equals(attrs.get("status")) ? "green" : "red";
-                int size = node.getIntValue("lSys_StoreIconWidthPoint");
+                String color = "normal".equals(attrs.get("status")) ? "#008000" : "red";
+                int size = system.getlSys_StoreIconWidthPoint();
                 SimpleMarkerSymbol symbol = new SimpleMarkerSymbol();
                 symbol.setColor(Color.parseColor(color));
                 symbol.setSize(size);
+                symbol.setStyle(SimpleMarkerSymbol.Style.CIRCLE);
                 createPointGraphics(lng, lat, symbol, attrs);
             }else if(tempZoom <= system.getlSys_MapLevelDef()){
                 int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map1 : R.mipmap.map2;
@@ -695,7 +731,8 @@ public class MapFragment extends QMUIFragment {
                 symbol.setHeight(system.getlSys_StoreIconHeightDef());
                 createPointGraphicsByImg(lng, lat, symbol, attrs);
             }else if(Utils.isNullOrEmpty(url)){
-                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), R.mipmap.map);
+                int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map : R.mipmap.map2;
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
                 PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
                 symbol.setWidth(system.getlSys_StoreIconWidthDef());
                 symbol.setHeight(system.getlSys_StoreIconHeightDef());
