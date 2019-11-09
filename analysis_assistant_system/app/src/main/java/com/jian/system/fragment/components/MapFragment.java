@@ -291,21 +291,14 @@ public class MapFragment extends QMUIFragment {
         }
         tempZoom = zoom;
         //删除
-        mGraphicsOverlay.getGraphics().clear();
+        //mGraphicsOverlay.getGraphics().clear();
         //新增
-        initAidToMap();
-        initStoreToMap();
-        /*for (int i = 0; i < mGraphicsOverlay.getGraphics().size(); i++) {
+        //initAidToMap();
+        //initStoreToMap();
+        for (int i = 0; i < mGraphicsOverlay.getGraphics().size(); i++) {
             Graphic graphic = mGraphicsOverlay.getGraphics().get(i);
-
-            int iconRes = "normal".equals(graphic.getAttributes().get("status")) ? R.mipmap.map1 : R.mipmap.map2;
-            BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
-            PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
-            symbol.setWidth(system.getlSys_MapIconWidthDef());
-            symbol.setHeight(system.getlSys_MapIconHeightDef());
-
-            graphic.setSymbol(symbol);
-        }*/
+            updateGraphic(graphic);
+        }
     }
 
     private void addLayer(ArcGISMap map){
@@ -321,83 +314,6 @@ public class MapFragment extends QMUIFragment {
             }
         });
         mFeatureLayer.loadAsync();
-    }
-
-    private int scaleToZoom(double scale){
-        /*
-         17 2256.994353
-         18 1128.497176
-         19 564.248588
-         20 282.124294
-         21 141.062147
-         22 70.5310735
-         16 4513.988705
-         15 9027.977411
-         14 18055.954822
-         13 36111.909643
-         12 72223.819286
-         11 144447.638572
-         10 288895.277144
-         9 577790.554289
-         8 1155581.108577
-         7 2311162.217155
-         6 4622324.434309
-         5 9244648.868618
-         4 18489297.737236
-         3 36978595.474472
-         2 73957190.948944
-         1 147914381.897889
-         0 295828763.795777
-         */
-        if(scale >= 295828763.795777){
-            return 0;
-        }else if( scale >= 147914381.897889){
-            return 1;
-        }else if( scale >= 73957190.948944){
-            return 2;
-        }else if( scale >= 36978595.474472){
-            return 3;
-        }else if( scale >= 18489297.737236){
-            return 4;
-        }else if( scale >= 9244648.868618){
-            return 5;
-        }else if( scale >= 4622324.434309){
-            return 6;
-        }else if( scale >= 2311162.217155){
-            return 7;
-        }else if( scale >= 1155581.108577){
-            return 8;
-        }else if( scale >= 577790.554289){
-            return 9;
-        }else if( scale >= 288895.277144){
-            return 10;
-        }else if( scale >= 144447.638572){
-            return 11;
-        }else if( scale >= 72223.819286){
-            return 12;
-        }else if( scale >= 36111.909643){
-            return 13;
-        }else if( scale >= 18055.954822){
-            return 14;
-        }else if( scale >= 9027.977411){
-            return 15;
-        }else if( scale >= 4513.988705){
-            return 16;
-        }else if( scale >= 2256.994353){
-            return 17;
-        }else if( scale >= 1128.497176){
-            return 18;
-        }else if( scale >= 564.248588){
-            return 19;
-        }else if( scale >= 282.124294){
-            return 20;
-        }else if( scale >= 141.062147){
-            return 21;
-        }else if( scale >= 70.5310735){
-            return 22;
-        }else{
-            return 23;
-        }
     }
 
     private void arcgisLocation() {
@@ -667,6 +583,7 @@ public class MapFragment extends QMUIFragment {
             attrs.put("type", PointType_Aid);
             attrs.put("index", i);
             attrs.put("status", node.getString("sAid_Status"));
+            attrs.put("pic", url);
             double lng = node.getDouble("lAid_Lng");
             double lat = node.getDouble("lAid_Lat");
             if(tempZoom <= system.getlSys_MapLevelPoint()){
@@ -682,7 +599,7 @@ public class MapFragment extends QMUIFragment {
                 BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
                 PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
                 symbol.setWidth(system.getlSys_MapIconWidthDef());
-                symbol.setHeight(system.getlSys_MapIconHeightDef());
+                symbol.setHeight(100);
                 createPointGraphicsByImg(lng, lat, symbol, attrs);
             }else if(Utils.isNullOrEmpty(url)){
                 int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map : R.mipmap.map2;
@@ -712,6 +629,7 @@ public class MapFragment extends QMUIFragment {
             attrs.put("type", PointType_Store);
             attrs.put("index", i);
             attrs.put("status", node.getString("status"));
+            attrs.put("pic", url);
             double lng = node.getDouble("lStoreType_Lng");
             double lat = node.getDouble("lStoreType_Lat");
 
@@ -846,4 +764,149 @@ public class MapFragment extends QMUIFragment {
         initStoreToMap();
     }
 
+
+    private Graphic updateGraphic(Graphic graphic){
+        Map<String, Object> attrs = graphic.getAttributes();
+        String url = (String) attrs.get("pic");
+        if( PointType_Aid.equals(attrs.get("type")) ){
+            if(tempZoom <= system.getlSys_MapLevelPoint()){
+                String color = "normal".equals(attrs.get("status")) ? "#008000" : "red";
+                int size = system.getlSys_MapIconWidthPoint();
+                SimpleMarkerSymbol symbol = new SimpleMarkerSymbol();
+                symbol.setColor(Color.parseColor(color));
+                symbol.setSize(size);
+                symbol.setStyle(SimpleMarkerSymbol.Style.CIRCLE);
+                graphic.setSymbol(symbol);
+            }else if(tempZoom <= system.getlSys_MapLevelDef()){
+                int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map1 : R.mipmap.map2;
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+                symbol.setWidth(system.getlSys_MapIconWidthDef());
+                symbol.setHeight(system.getlSys_MapIconHeightDef());
+                graphic.setSymbol(symbol);
+            }else if(Utils.isNullOrEmpty(url)){
+                int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map : R.mipmap.map2;
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+                symbol.setWidth(system.getlSys_MapIconWidthDef());
+                symbol.setHeight(system.getlSys_MapIconHeightDef());
+                graphic.setSymbol(symbol);
+            }else{
+                url = UrlConfig.baseUrl +"/"+ url;
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(url);
+                symbol.setWidth(system.getlSys_MapIconWidth());
+                symbol.setHeight(system.getlSys_MapIconHeight());
+                graphic.setSymbol(symbol);
+            }
+        }else if( PointType_Store.equals(attrs.get("type")) ){
+            if(tempZoom <= system.getlSys_MapLevelPoint()){
+                String color = "normal".equals(attrs.get("status")) ? "#008000" : "red";
+                int size = system.getlSys_StoreIconWidthPoint();
+                SimpleMarkerSymbol symbol = new SimpleMarkerSymbol();
+                symbol.setColor(Color.parseColor(color));
+                symbol.setSize(size);
+                symbol.setStyle(SimpleMarkerSymbol.Style.CIRCLE);
+                graphic.setSymbol(symbol);
+            }else if(tempZoom <= system.getlSys_MapLevelDef()){
+                int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map1 : R.mipmap.map2;
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+                symbol.setWidth(system.getlSys_StoreIconWidthDef());
+                symbol.setHeight(system.getlSys_StoreIconHeightDef());
+                graphic.setSymbol(symbol);
+            }else if(Utils.isNullOrEmpty(url)){
+                int iconRes = "normal".equals(attrs.get("status")) ? R.mipmap.map : R.mipmap.map2;
+                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(getActivity(), iconRes);
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(drawable);
+                symbol.setWidth(system.getlSys_StoreIconWidthDef());
+                symbol.setHeight(system.getlSys_StoreIconHeightDef());
+                graphic.setSymbol(symbol);
+            }else {
+                url = UrlConfig.baseUrl +"/"+ url;
+                PictureMarkerSymbol symbol = new PictureMarkerSymbol(url);
+                symbol.setWidth(system.getlSys_StoreIconWidth());
+                symbol.setHeight(system.getlSys_StoreIconHeight());
+                graphic.setSymbol(symbol);
+            }
+        }
+        return graphic;
+    }
+
+
+    private int scaleToZoom(double scale){
+        /*
+         17 2256.994353
+         18 1128.497176
+         19 564.248588
+         20 282.124294
+         21 141.062147
+         22 70.5310735
+         16 4513.988705
+         15 9027.977411
+         14 18055.954822
+         13 36111.909643
+         12 72223.819286
+         11 144447.638572
+         10 288895.277144
+         9 577790.554289
+         8 1155581.108577
+         7 2311162.217155
+         6 4622324.434309
+         5 9244648.868618
+         4 18489297.737236
+         3 36978595.474472
+         2 73957190.948944
+         1 147914381.897889
+         0 295828763.795777
+         */
+        if(scale >= 295828763.795777){
+            return 0;
+        }else if( scale >= 147914381.897889){
+            return 1;
+        }else if( scale >= 73957190.948944){
+            return 2;
+        }else if( scale >= 36978595.474472){
+            return 3;
+        }else if( scale >= 18489297.737236){
+            return 4;
+        }else if( scale >= 9244648.868618){
+            return 5;
+        }else if( scale >= 4622324.434309){
+            return 6;
+        }else if( scale >= 2311162.217155){
+            return 7;
+        }else if( scale >= 1155581.108577){
+            return 8;
+        }else if( scale >= 577790.554289){
+            return 9;
+        }else if( scale >= 288895.277144){
+            return 10;
+        }else if( scale >= 144447.638572){
+            return 11;
+        }else if( scale >= 72223.819286){
+            return 12;
+        }else if( scale >= 36111.909643){
+            return 13;
+        }else if( scale >= 18055.954822){
+            return 14;
+        }else if( scale >= 9027.977411){
+            return 15;
+        }else if( scale >= 4513.988705){
+            return 16;
+        }else if( scale >= 2256.994353){
+            return 17;
+        }else if( scale >= 1128.497176){
+            return 18;
+        }else if( scale >= 564.248588){
+            return 19;
+        }else if( scale >= 282.124294){
+            return 20;
+        }else if( scale >= 141.062147){
+            return 21;
+        }else if( scale >= 70.5310735){
+            return 22;
+        }else{
+            return 23;
+        }
+    }
 }
