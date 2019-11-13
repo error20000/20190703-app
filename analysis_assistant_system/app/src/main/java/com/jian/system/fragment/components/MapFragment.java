@@ -179,6 +179,7 @@ public class MapFragment extends QMUIFragment {
             public void onClick(View view) {
                 storeTypeData = null;
                 aidData = null;
+                mGraphicsOverlay.getGraphics().clear(); //清除原来的点
                 initData();
             }
         });
@@ -415,11 +416,19 @@ public class MapFragment extends QMUIFragment {
         TextView no = view.findViewById(R.id.callout_no);
         no.setText("编码：" + node.getString("sAid_NO"));
         TextView lngTV = view.findViewById(R.id.callout_lng);
-        String lngStr = node.getString("lAid_Lng");
-        lngTV.setText("经度：" + FormatUtils.formatDegree(lngStr));
+        //String lngStr = node.getString("lAid_Lng");
+        //lngTV.setText("经度：" + FormatUtils.formatDegree(lngStr));
+        String lngStr = node.getString("lAid_LngDu") + "°"
+                + node.getString("lAid_LngFen") + "'"
+                + node.getString("lAid_LngMiao") + "\"";
+        lngTV.setText("经度：" + lngStr);
         TextView latTV = view.findViewById(R.id.callout_lat);
-        String latStr = node.getString("lAid_Lat");
-        latTV.setText("纬度："+ FormatUtils.formatDegree(latStr));
+        //String latStr = node.getString("lAid_Lat");
+        //latTV.setText("纬度："+ FormatUtils.formatDegree(latStr));
+        String latStr = node.getString("lAid_LatDu") + "°"
+                + node.getString("lAid_LatFen") + "'"
+                + node.getString("lAid_LatMiao") + "\"";
+        latTV.setText("纬度："+ latStr);
         ImageView icon = view.findViewById(R.id.callout_icon);
         String url = node.getString("sAid_IconUrl");
         if(!Utils.isNullOrEmpty(url)){
@@ -485,9 +494,17 @@ public class MapFragment extends QMUIFragment {
         TextView station = view.findViewById(R.id.callout_station);
         station.setText(node.getString("sStoreType_StationName"));
         TextView location = view.findViewById(R.id.callout_location);
-        String lngStr = node.getString("lStoreType_Lng");
-        String latStr = node.getString("lStoreType_Lat");
-        location.setText(FormatUtils.formatDegree(lngStr)+" ~ "+FormatUtils.formatDegree(latStr));
+        //String lngStr = node.getString("lStoreType_Lng");
+        //String latStr = node.getString("lStoreType_Lat");
+        //location.setText(FormatUtils.formatDegree(lngStr)+" ~ "+FormatUtils.formatDegree(latStr));
+        String lngStr = node.getString("lStoreType_LngDu") + "°"
+                + node.getString("lStoreType_LngFen") + "'"
+                + node.getString("lStoreType_LngMiao") + "\"";
+        String latStr = node.getString("lStoreType_LatDu") + "°"
+                + node.getString("lStoreType_LatFen") + "'"
+                + node.getString("lStoreType_LatMiao") + "\"";
+        location.setText(lngStr+" ~ "+latStr);
+        view.findViewById(R.id.callout_show_detail).setVisibility(View.GONE);
 
         double lng = node.getDouble("lStoreType_Lng");
         double lat = node.getDouble("lStoreType_Lat");

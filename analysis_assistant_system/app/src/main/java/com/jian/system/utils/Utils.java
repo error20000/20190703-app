@@ -2,6 +2,8 @@ package com.jian.system.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.StrictMode;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
@@ -130,8 +132,13 @@ public class Utils {
 	 * @return
 	 */
 	public static Bitmap getHttpBitmap(String url){
+
+		//不建议主线程访问网络，这里应急处理
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+
 		URL mUrl;
-		Bitmap bitmap=null;
+		Bitmap bitmap = null;
 		try{
 			mUrl = new URL(url);
 			//获得连接
@@ -145,11 +152,14 @@ public class Utils {
 			//这句可有可无，没有影响
 			//conn.connect();
 			//得到数据流
-			InputStream is = conn.getInputStream();
-			//解析得到图片
-			bitmap = BitmapFactory.decodeStream(is);
-			//关闭数据流
-			is.close();
+			int code = conn.getResponseCode();
+			if (code == 200) {
+				InputStream is = conn.getInputStream();
+				//解析得到图片
+				bitmap = BitmapFactory.decodeStream(is);
+				//关闭数据流
+				is.close();
+			}
 		}catch(Exception e){
 			Log.e("Utils", "URL ==> " + url);
 			e.printStackTrace();

@@ -10,4 +10,13 @@
         android:layout_height="wrap_content"
         android:background="@color/qmui_config_color_white"/>
 
+    <TextView
+        android:id="@+id/tips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="没有器材"
+        android:gravity="center"
+        android:padding="10dp"
+        android:visibility="gone"/>
+
 </com.qmuiteam.qmui.widget.QMUIWindowInsetLayout>

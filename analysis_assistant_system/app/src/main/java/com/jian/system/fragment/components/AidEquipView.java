@@ -8,9 +8,11 @@ import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,6 +55,9 @@ public class AidEquipView extends QMUIWindowInsetLayout{
 
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
+    @BindView(R.id.tips)
+    TextView mTextView;
+
 
     private ViewPagerListener mListener;
     private Context context;
@@ -64,11 +69,17 @@ public class AidEquipView extends QMUIWindowInsetLayout{
     private String sAid_ID;
     private AidEquipAdapter mItemAdapter;
     private List<AidEquip> aidEquipData = new ArrayList<>();
+    private String from;
+    private FragmentManager fragmentManager;
+    private int contentId;
 
-    public AidEquipView(Context context, String sAid_ID) {
+    public AidEquipView(Context context, String sAid_ID, String from, FragmentManager fragmentManager, int contentId) {
         super(context);
         this.context = context;
         this.sAid_ID = sAid_ID;
+        this.from = from;
+        this.fragmentManager = fragmentManager;
+        this.contentId = contentId;
 
         LayoutInflater.from(context).inflate(R.layout.fragment_aid_equip_view, this);
         ButterKnife.bind(this);
@@ -78,6 +89,12 @@ public class AidEquipView extends QMUIWindowInsetLayout{
 
 
     private  void initAidEquip(){
+
+        if(aidEquipData.size() == 0){
+            mTextView.setText("抱歉，未查询到器材");
+            mTextView.setVisibility(VISIBLE);
+            return;
+        }
 
         mItemAdapter = new AidEquipAdapter(context, aidEquipData);
         mItemAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
@@ -98,8 +115,17 @@ public class AidEquipView extends QMUIWindowInsetLayout{
         bundle.putString("id", sEquip_NO);
         bundle.putString("type", sEquip_Type);
         EquipDetailFragment fragment = new EquipDetailFragment();
-        fragment.setArguments(bundle);
-        startFragment(fragment);
+        if(Utils.isNullOrEmpty(from)){
+            fragment.setArguments(bundle);
+            startFragment(fragment);
+        }else{
+            bundle.putString("from", from);
+            fragment.setArguments(bundle);
+            fragmentManager.beginTransaction()
+                    .add(contentId, fragment, "MapFragment_Aid_Equip")
+                    .addToBackStack("MapFragment_Aid_Equip")
+                    .commit();
+        }
     }
 
     private void initData(){

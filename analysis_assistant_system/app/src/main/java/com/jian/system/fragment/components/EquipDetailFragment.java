@@ -183,11 +183,7 @@ public class EquipDetailFragment extends QMUIFragment {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if("nfc".equals(from) || "scan".equals(from)){
-                    getFragmentManager().popBackStack();
-                }else{
-                    popBackStack();
-                }
+                goBack();
             }
         });
 
@@ -202,6 +198,15 @@ public class EquipDetailFragment extends QMUIFragment {
         });
         mTopBar.setTitle(title);
     }
+    
+    private void goBack(){
+        if("nfc".equals(from) || "scan".equals(from) || "map".equals(from)){
+            getFragmentManager().popBackStack();
+        }else{
+            popBackStack();
+        }
+    }
+    
     private void showBottomSheetList() {
         new QMUIBottomSheet.BottomListSheetBuilder(getActivity())
                 .addItem("入库", "inStore")
@@ -1135,7 +1140,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("入库成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemOutStore(){
@@ -1161,7 +1166,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("出库成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemUseToAid(){
@@ -1188,7 +1193,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemRemove(){
@@ -1214,7 +1219,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemTransport(){
@@ -1240,7 +1245,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemToBeTest(){
@@ -1266,7 +1271,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemCheck(){
@@ -1292,7 +1297,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemRepair(){
@@ -1318,7 +1323,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemDump(){
@@ -1344,7 +1349,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
-        popBackStack();
+        goBack();
     }
 
     private void itemUnusual(){
@@ -1370,7 +1375,7 @@ public class EquipDetailFragment extends QMUIFragment {
             return;
         }
         showToast("保存成功");
-        popBackStack();
+        goBack();
     }
 
 

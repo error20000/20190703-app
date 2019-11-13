@@ -59,6 +59,7 @@ public class AidDetailFragment extends QMUIFragment {
     private String sAid_ID;
     private String from;
     private String remarks = "";
+    private int contentId = R.id.map_container;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -329,7 +330,7 @@ public class AidDetailFragment extends QMUIFragment {
         detailView.setViewPagerListener(listener);
         mPages.put(Pager.Detail, detailView);
 
-        AidEquipView equipView = new AidEquipView(getActivity(), sAid_ID);
+        AidEquipView equipView = new AidEquipView(getActivity(), sAid_ID, from, getFragmentManager(), contentId);
         equipView.setViewPagerListener(listener);
         mPages.put(Pager.Equip, equipView);
 

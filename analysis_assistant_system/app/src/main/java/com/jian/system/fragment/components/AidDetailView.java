@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -124,6 +125,8 @@ public class AidDetailView extends QMUIWindowInsetLayout{
             sAid_Icon.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CUSTOM);
             UrlImageView imageView = new UrlImageView(context);
             imageView.setImageURL(UrlConfig.baseUrl+"/" + imgUrl );
+            imageView.setAdjustViewBounds(true);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             sAid_Icon.addAccessoryCustomView(imageView);
         }
 
