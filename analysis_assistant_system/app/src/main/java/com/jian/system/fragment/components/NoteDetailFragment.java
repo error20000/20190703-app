@@ -86,18 +86,14 @@ public class NoteDetailFragment extends QMUIFragment {
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
-    @BindView(R.id.groupListView)
-    QMUIGroupListView mGroupListView;
-    @BindView(R.id.equip_history_label)
-    QMUIGroupListSectionHeaderFooterView mEquipHistoryLabelView;
-    @BindView(R.id.equip_history)
-    VerticalStepView mVerticalStepView;
-    @BindView(R.id.emptyView)
-    QMUIEmptyView mEmptyView;
+    @BindView(R.id.text_content)
+    TextView mTextView1;
+    @BindView(R.id.text_date)
+    TextView mTextView2;
 
     @Override
     protected View onCreateView() {
-        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_equip_detail, null);
+        View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_note_view, null);
         ButterKnife.bind(this, rootView);
 
         Bundle bundle = this.getArguments();
