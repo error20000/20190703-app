@@ -292,7 +292,7 @@ public class NoteFragment extends QMUIFragment {
         for (int i = 0; i < 10; i++) {
             Note node = new Note();
             node.setdNote_UpdateDate(new Date(new Date().getTime() + i * 24*3600*1000));
-            node.setsNote_Content(i+"成都测试测试测试村上春树菜市场上传市场上菜市场生产上厕所");
+            node.setsNote_Content(i+"成都测试测试测试村\n上春树菜市场上传市场上\n菜市场生产上厕所");
             data.add(node);
         }
         //初始化列表

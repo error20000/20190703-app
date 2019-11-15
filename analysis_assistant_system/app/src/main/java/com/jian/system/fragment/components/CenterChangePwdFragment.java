@@ -1,11 +1,13 @@
 
 package com.jian.system.fragment.components;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,6 +69,15 @@ public class CenterChangePwdFragment extends QMUIFragment {
         initTopBar();
         //新密码规则提示
         mEditText1.setHint("新"+ Constant.pwdRegTip);
+        //获得焦点并弹出软键盘
+        InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        mEditText.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mEditText.requestFocus();
+                inputMethodManager.showSoftInput(mEditText, 0);
+            }
+        }, 300);
 
         return rootView;
     }
@@ -77,12 +88,20 @@ public class CenterChangePwdFragment extends QMUIFragment {
         mTopBar.addLeftBackImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //关闭软键盘
+                InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+
                 popBackStack();
             }
         });
         mTopBar.addRightTextButton("提交", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //关闭软键盘
+                InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
 
                 boolean flag = checkEditText();
                 if(!flag){

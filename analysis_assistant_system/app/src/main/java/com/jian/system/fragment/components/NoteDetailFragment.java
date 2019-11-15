@@ -5,13 +5,16 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -104,8 +107,38 @@ public class NoteDetailFragment extends QMUIFragment {
         initTopBar();
         //initData();
 
+        String str = "";
+        for (int i = 0; i < 10; i++) {
+            str += "\n"+note.getsNote_Content();
+        }
+        mTextView1.setText(str);
+
+        mTextView2.setText(FormatUtils.formatDate("yyyy-MM-dd hh:mm:ss E", note.getdNote_UpdateDate()));
+
+        mTextView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //goAdd(0);
+            }
+        });
+        mTextView1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_UP:
+                        Log.e("dddddddddddd", ""+getTextViewSelectionIndexByTouch(mTextView1, new Float(event.getX()).intValue(), new Float(event.getY()).intValue()));
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
         return rootView;
     }
+
+
 
 
     private void initTopBar() {
@@ -119,6 +152,59 @@ public class NoteDetailFragment extends QMUIFragment {
         mTopBar.setTitle(title);
     }
     
+    private void goAdd(int line){
 
+        Bundle bundle = new Bundle();
+        bundle.putString("obj", JSONObject.toJSONString(note));
+        bundle.putString("line", line + "");
 
+        NoteAddFragment fragment = new NoteAddFragment();
+        fragment.setArguments(bundle);
+        startFragmentAndDestroyCurrent(fragment);
+    }
+
+    public static Rect getTextViewSelectionRect(TextView tv, int index) {
+        Layout layout = tv.getLayout();
+        Rect bound = new Rect();
+        int line = layout.getLineForOffset(index);
+        layout.getLineBounds(line, bound);
+        int yAxisBottom = bound.bottom;//字符底部y坐标
+        int yAxisTop = bound.top;//字符顶部y坐标
+        int xAxisLeft = (int) layout.getPrimaryHorizontal(index);//字符左边x坐标
+        int xAxisRight = (int) layout.getSecondaryHorizontal(index);//字符右边x坐标
+        // xAxisRight 位置获取后发现与字符左边x坐标相等，如知道原因请告之。暂时加上字符宽度应对。
+        if (xAxisLeft == xAxisRight)        {
+            String s = tv.getText().toString().substring(index, index + 1);//当前字符
+            xAxisRight = xAxisRight + (int) tv.getPaint().measureText(s);//加上字符宽度
+        }
+        int tvTop=tv.getScrollY();//tv绝对位置
+        return new Rect(xAxisLeft, yAxisTop+ tvTop, xAxisRight, yAxisBottom+tvTop );
+    }
+
+    public static String getTextViewSelectionByTouch(TextView tv, int x, int y) {
+        String s = "";
+        for (int i = 0; i < tv.getText().length(); i++)        {
+            Rect rect = getTextViewSelectionRect(tv, i);
+            if (x < rect.right && x > rect.left && y < rect.bottom && y > rect.top)
+            {
+                s = tv.getText().toString().substring(i, i + 1);
+                //当前字符
+                break;
+            }
+        }
+        return s;
+    }
+
+    public static int getTextViewSelectionIndexByTouch(TextView tv, int x, int y) {
+        int index = 0;
+        for (int i = 0; i < tv.getText().length(); i++)        {
+            Rect rect = getTextViewSelectionRect(tv, i);
+            if (/*x < rect.right &&*/ x > rect.left && y < rect.bottom && y > rect.top){
+                index = i;
+                //当前字符
+                break;
+            }
+        }
+        return index;
+    }
 }
