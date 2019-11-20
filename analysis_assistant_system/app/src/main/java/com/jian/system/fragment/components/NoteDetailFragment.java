@@ -199,7 +199,7 @@ public class NoteDetailFragment extends QMUIFragment {
         int index = 0;
         for (int i = 0; i < tv.getText().length(); i++)        {
             Rect rect = getTextViewSelectionRect(tv, i);
-            if (/*x < rect.right &&*/ x > rect.left && y < rect.bottom && y > rect.top){
+            if (x < rect.right && x > rect.left && y < rect.bottom && y > rect.top){
                 index = i;
                 //当前字符
                 break;

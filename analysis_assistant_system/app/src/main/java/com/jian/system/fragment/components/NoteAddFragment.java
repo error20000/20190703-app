@@ -3,9 +3,18 @@ package com.jian.system.fragment.components;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +24,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
 import com.jian.system.entity.Note;
+import com.jian.system.gesture.util.GestureUtils;
+import com.jian.system.service.NoteService;
 import com.jian.system.utils.FormatUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
@@ -25,7 +38,11 @@ import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,20 +75,34 @@ public class NoteAddFragment extends QMUIFragment {
         ButterKnife.bind(this, rootView);
 
         Bundle bundle = this.getArguments();
-        String obj =  bundle.getString("obj");
-        String line =  bundle.getString("line");
-        if(!Utils.isNullOrEmpty(obj)){
-            note = JSONObject.parseObject(obj, Note.class);
+        if(bundle != null){
+            String obj =  bundle.getString("obj");
+            String line =  bundle.getString("line");
+            if(!Utils.isNullOrEmpty(obj)){
+                note = JSONObject.parseObject(obj, Note.class);
+            }
+            String str = "";
+            for (int i = 0; i < 10; i++) {
+                str += "\r\n"+note.getsNote_Content();
+            }
+            mEditText.setText(str);
+            mEditText.setSelection(Utils.isNullOrEmpty(line) ? str.length() : Integer.parseInt(line));
         }
+        mEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                //You can identify which key pressed buy checking keyCode value with KeyEvent.KEYCODE_
+                if(keyCode == KeyEvent.KEYCODE_DEL){
+                    //this is for backspace
+                    Log.e("dddddddd", "delete getSelectionStart " + mEditText.getSelectionStart());
+                    Log.e("dddddddd", "delete getSelectionEnd " + mEditText.getSelectionEnd());
+                }
+                return false;
+            }
+        });
+
         initTopBar();
         //initData();
-
-        String str = "";
-        for (int i = 0; i < 10; i++) {
-            str += "\r\n"+note.getsNote_Content();
-        }
-        mEditText.setText(str);
-        mEditText.setSelection(10);
 
         //设置锚点高度
         initEditHight();
@@ -108,16 +139,79 @@ public class NoteAddFragment extends QMUIFragment {
         mTopBar.addRightTextButton("完成", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("ddddddddddddd", "完成");
+                Log.e("ddddddddddddd", "原始" + mEditText.getText().toString());
+                Log.e("ddddddddddddd", "html" + Html.toHtml(mEditText.getText()).replace(" dir=\"ltr\"", ""));
+
+                SpannableString spannable = new SpannableString("[icon] "+mEditText.getText());
+                //ForegroundColorSpan
+                ForegroundColorSpan colorSpan = new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.app_color_blue));
+                spannable.setSpan(colorSpan, 11, spannable.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+                Drawable drawable1 = getContext().getResources().getDrawable(R.mipmap.map);
+                drawable1.setBounds(0, 0, drawable1.getIntrinsicWidth(),  drawable1.getIntrinsicHeight());
+                ImageSpan imageSpan1 = new ImageSpan(drawable1, ImageSpan.ALIGN_BASELINE);
+                spannable.setSpan(imageSpan1, 0, 6, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+                mEditText.setText(spannable);
+                mEditText.setSelection(spannable.length());
+
+
+                Log.e("ddddddddddddd", "spannableString" + spannable);
+                Log.e("ddddddddddddd", "spannableString start" + spannable.getSpanStart(imageSpan1));
+                Log.e("ddddddddddddd", "spannableString end" + spannable.getSpanEnd(imageSpan1));
+                String fn = "image_test.png";
+                String path = getContext().getFilesDir() + File.separator + fn;
+
+                /*try {
+                    File file = new File(path);
+                    if (file.exists())
+                        file.delete();
+                    if (!file.exists())
+                        file.createNewFile();
+                    FileOutputStream out = null;
+                    out = new FileOutputStream(file);
+                    ((BitmapDrawable) drawable1).getBitmap().compress(Bitmap.CompressFormat.PNG, 100, out);
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+
+                Log.e("ddddddddddddd", "spannableString" + path);
 
                 //关闭软键盘
                 InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
 
+                //保存
+                updateOrAddNote();
             }
         });
 
         mTopBar.setTitle(title);
+    }
+
+    private void updateOrAddNote(){
+        boolean flagAdd = false;
+        if(note == null){
+            note = new Note();
+            note.setsNote_ID(Utils.newSnowflakeIdStr());
+            flagAdd = true;
+        }
+        Date date = new Date();
+        note.setsNote_Content(mEditText.getText().toString());
+        note.setdNote_UpdateDate(date);
+        if(note.getdNote_CreateDate() == null){
+            note.setdNote_CreateDate(date);
+        }
+        NoteService service = new NoteService(getContext());
+        if(flagAdd){
+            service.insert(note);
+            Note test = service.selectOne(note.getsNote_ID());
+            Log.e("ddddddd insert ddddd", JSONObject.toJSONString(test) );
+            Log.e("ddddddd insert ddddd", test.getsNote_Content() );
+        }else{
+
+        }
     }
 
     /*private void bindEvent(final Context context) {

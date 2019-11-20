@@ -16,22 +16,12 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
-import com.jian.system.config.Constant;
-import com.jian.system.config.UrlConfig;
-import com.jian.system.entity.Dict;
-import com.jian.system.entity.Equip;
 import com.jian.system.entity.Note;
-import com.jian.system.entity.Store;
-import com.jian.system.entity.StoreType;
-import com.jian.system.utils.DataUtils;
 import com.jian.system.utils.FormatUtils;
-import com.jian.system.utils.HttpUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
-import com.qmuiteam.qmui.util.QMUIDeviceHelper;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
-import com.qmuiteam.qmui.util.QMUIResHelper;
 import com.qmuiteam.qmui.widget.QMUITopBarLayout;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
@@ -89,7 +79,7 @@ public class NoteFragment extends QMUIFragment {
         mTopBar.addRightImageButton(R.drawable.ic_xinzeng, R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                EquipAddFragment fragment = new EquipAddFragment();
+                NoteAddFragment fragment = new NoteAddFragment();
                 startFragment(fragment);
             }
         });

@@ -22,6 +22,7 @@ import com.jian.system.dao.EquipTelemetryMapper;
 import com.jian.system.dao.EquipViceLampMapper;
 import com.jian.system.dao.MessagesMapper;
 import com.jian.system.dao.NfcMapper;
+import com.jian.system.dao.NoteMapper;
 import com.jian.system.dao.StoreMapper;
 import com.jian.system.dao.StoreTypeMapper;
 import com.jian.system.dao.SyncMapper;
@@ -93,6 +94,7 @@ public class BaseHelper extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL(AidTypeMapIconMapper.createTable());
 
         sqLiteDatabase.execSQL(MessagesMapper.createTable());
+        sqLiteDatabase.execSQL(NoteMapper.createTable());
         Log.d(TAG, "onCreate："+sqLiteDatabase.getPath()+" "+sqLiteDatabase.getVersion());
     }
 
@@ -129,6 +131,7 @@ public class BaseHelper extends SQLiteOpenHelper{
             sqLiteDatabase.execSQL(AidTypeMapIconMapper.dropTable());
 
             sqLiteDatabase.execSQL(MessagesMapper.dropTable());
+            sqLiteDatabase.execSQL(NoteMapper.dropTable());
         } catch (Exception e){
             e.printStackTrace();
         }
