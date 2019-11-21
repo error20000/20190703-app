@@ -1,8 +1,10 @@
 
 package com.jian.system.fragment.components;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -23,15 +25,20 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
 import com.jian.system.entity.Note;
+import com.jian.system.entity.User;
 import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.service.NoteService;
 import com.jian.system.utils.FormatUtils;
+import com.jian.system.utils.LoginUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
@@ -56,6 +63,8 @@ public class NoteAddFragment extends QMUIFragment {
 
     private Note note;
     private View rootView;
+    private final int RequestCode_Choose_Photo = 1;
+    private final int RequestCode_Take_Photo = 2;
 
     private int mAnchorHeight = 0;
     private int mScreenHeight = 0;
@@ -195,6 +204,8 @@ public class NoteAddFragment extends QMUIFragment {
         if(note == null){
             note = new Note();
             note.setsNote_ID(Utils.newSnowflakeIdStr());
+            User user = LoginUtils.getLoginUser(getContext());
+            note.setsNote_UserID(user != null ? user.getsUser_ID() : "");
             flagAdd = true;
         }
         Date date = new Date();
@@ -205,13 +216,57 @@ public class NoteAddFragment extends QMUIFragment {
         }
         NoteService service = new NoteService(getContext());
         if(flagAdd){
-            service.insert(note);
-            Note test = service.selectOne(note.getsNote_ID());
-            Log.e("ddddddd insert ddddd", JSONObject.toJSONString(test) );
-            Log.e("ddddddd insert ddddd", test.getsNote_Content() );
+            long res = service.insert(note);
+            if(res > 0){
+                showToast("保存成功");
+            }else{
+                showToast("保存失败");
+            }
         }else{
-
+            int res = service.update(note);
+            if(res > 0){
+                showToast("修改成功");
+            }else{
+                showToast("修改失败");
+            }
         }
+    }
+
+    private void showToast(String msg){
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    private void checkSelfPermissionChoosePhoto(){
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            //未授权，申请授权(从相册选择图片需要读取存储卡的权限)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RequestCode_Choose_Photo);
+        } else {
+            //已授权，获取照片
+            choosePhoto();
+        }
+    }
+
+    /**
+     权限申请结果回调
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case RequestCode_Take_Photo:   //拍照权限申请返回
+                if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    takePhoto();
+                }
+                break;
+            case RequestCode_Choose_Photo:   //相册选择照片权限申请返回
+                choosePhoto();
+                break;
+        }
+    }
+
+    private void choosePhoto(){
+
     }
 
     /*private void bindEvent(final Context context) {

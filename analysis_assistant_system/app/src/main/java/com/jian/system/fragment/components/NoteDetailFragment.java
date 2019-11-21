@@ -105,35 +105,9 @@ public class NoteDetailFragment extends QMUIFragment {
             note = JSONObject.parseObject(obj, Note.class);
         }
         initTopBar();
-        //initData();
+        initData();
 
-        String str = "";
-        for (int i = 0; i < 10; i++) {
-            str += "\n"+note.getsNote_Content();
-        }
-        mTextView1.setText(str);
 
-        mTextView2.setText(FormatUtils.formatDate("yyyy-MM-dd hh:mm:ss E", note.getdNote_UpdateDate()));
-
-        mTextView1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //goAdd(0);
-            }
-        });
-        mTextView1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()){
-                    case MotionEvent.ACTION_UP:
-                        Log.e("dddddddddddd", ""+getTextViewSelectionIndexByTouch(mTextView1, new Float(event.getX()).intValue(), new Float(event.getY()).intValue()));
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
 
         return rootView;
     }
@@ -150,6 +124,35 @@ public class NoteDetailFragment extends QMUIFragment {
         });
 
         mTopBar.setTitle(title);
+    }
+
+    private void initData(){
+        if(note == null){
+            return;
+        }
+
+        mTextView1.setText(getContent());
+
+        mTextView2.setText(FormatUtils.formatDate("yyyy-MM-dd hh:mm:ss E", note.getdNote_UpdateDate()));
+
+        mTextView1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_UP:
+                        int line = getTextViewSelectionIndexByTouch(mTextView1, new Float(event.getX()).intValue(), new Float(event.getY()).intValue());
+                        goAdd(line);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    private String getContent(){
+        return note.getsNote_Content();
     }
     
     private void goAdd(int line){

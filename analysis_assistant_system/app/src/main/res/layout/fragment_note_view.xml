@@ -20,7 +20,9 @@
                 android:id="@+id/text_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="false" />
+                android:singleLine="false"
+                android:textColor="?attr/qmui_config_color_gray_5"
+                android:textSize="?attr/qmui_common_list_item_detail_h_text_size"/>
         </ScrollView>
 
         <TextView

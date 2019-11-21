@@ -16,8 +16,13 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
+import com.jian.system.config.UrlConfig;
 import com.jian.system.entity.Note;
+import com.jian.system.entity.User;
+import com.jian.system.service.NoteService;
 import com.jian.system.utils.FormatUtils;
+import com.jian.system.utils.HttpUtils;
+import com.jian.system.utils.LoginUtils;
 import com.jian.system.utils.ThreadUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
@@ -49,6 +54,7 @@ public class NoteFragment extends QMUIFragment {
     private final int MsgType_List = 1;
     private final int MsgType_Delete = 2;
     private final int MsgType_Add = 3;
+    private NoteService service;
 
     //search
     List<Note> data = new ArrayList<>();
@@ -104,20 +110,31 @@ public class NoteFragment extends QMUIFragment {
                 .create();
         tipDialog.show();
         //查询列表
-        Map<String, Object> params = new HashMap<>();
-        queryData(params);
+        //Map<String, Object> params = new HashMap<>();
+        //queryData(params);
 
+        service = new NoteService(getContext());
+        queryData();
+    }
+
+    private void queryData(){
+
+        //查询数据库
+        User user = LoginUtils.getLoginUser(getContext());
+        data = service.selectList(user != null ? user.getsUser_ID() : "");
+
+        //初始化列表
+        initNode();
     }
 
     private void queryData(Map<String, Object> params){
         ThreadUtils.execute(new Runnable() {
             @Override
             public void run() {
-                //String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryDetailUrl, params);
+                String res = HttpUtils.getInstance().sendPost(UrlConfig.equipQueryDetailUrl, params);
                 Message msg = mHandler.obtainMessage();
                 msg.what = MsgType_List;
-                //msg.obj = res;
-                msg.obj = "{code:1,data:[]}";
+                msg.obj = res;
                 mHandler.sendMessage(msg);
             }
         });
@@ -206,6 +223,17 @@ public class NoteFragment extends QMUIFragment {
 
     private void deleteNote(String objStr){
         Log.e("deleteNote", objStr);
+        Note note = JSONObject.parseObject(objStr, Note.class);
+        if(note == null){
+            showToast("删除失败：记录不存在。");
+            return;
+        }
+        int res = service.delete(note.getsNote_ID());
+        if(res > 0){
+            showToast("删除成功");
+        }else{
+            showToast("删除失败");
+        }
     }
 
     private void goDetail(String objStr){
@@ -278,13 +306,6 @@ public class NoteFragment extends QMUIFragment {
             data.add(resData.getObject(i, Note.class));
         }
 
-        //模拟数据
-        for (int i = 0; i < 10; i++) {
-            Note node = new Note();
-            node.setdNote_UpdateDate(new Date(new Date().getTime() + i * 24*3600*1000));
-            node.setsNote_Content(i+"成都测试测试测试村\n上春树菜市场上传市场上\n菜市场生产上厕所");
-            data.add(node);
-        }
         //初始化列表
         initNode();
     }

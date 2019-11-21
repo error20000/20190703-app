@@ -26,11 +26,23 @@ public class NoteService {
         baseMapper.deleteAll();
     }
 
-    public void insert(Note data){
-        baseMapper.insert(data);
+    public long insert(Note data){
+        return baseMapper.insert(data);
     }
 
     public Note selectOne(String sNote_ID){
          return baseMapper.selectOne(sNote_ID);
+    }
+
+    public List<Note> selectList(String sNote_UserID){
+        return baseMapper.selectList(sNote_UserID);
+    }
+
+    public int update(Note data){
+        return baseMapper.update(data);
+    }
+
+    public int delete(String sNote_ID){
+        return baseMapper.delete(sNote_ID);
     }
 }
