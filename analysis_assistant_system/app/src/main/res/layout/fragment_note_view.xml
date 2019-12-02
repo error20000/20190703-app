@@ -14,12 +14,17 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:paddingRight="20dp"
+            android:paddingLeft="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:layout_weight="1">
 
             <TextView
                 android:id="@+id/text_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="500dp"
                 android:singleLine="false"
                 android:textColor="?attr/qmui_config_color_gray_5"
                 android:textSize="?attr/qmui_common_list_item_detail_h_text_size"/>

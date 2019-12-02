@@ -16,6 +16,9 @@ import java.io.InputStreamReader;
 public class GestureUtils {
 
     private static final String DEFAULT_SP_NAME = "user_info";
+
+    public static final String TEST_BASE_URL = "test_base_url";
+
     public static final String USER_GESTURE = "user_gesture_str";
     public static final String USER_TOEKN = "user_token_str";
     public static final String USER_INFO = "user_info_str";

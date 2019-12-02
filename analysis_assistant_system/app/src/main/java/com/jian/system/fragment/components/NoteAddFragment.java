@@ -90,12 +90,11 @@ public class NoteAddFragment extends QMUIFragment {
             if(!Utils.isNullOrEmpty(obj)){
                 note = JSONObject.parseObject(obj, Note.class);
             }
-            String str = "";
-            for (int i = 0; i < 10; i++) {
-                str += "\r\n"+note.getsNote_Content();
-            }
+            String str = note.getsNote_Content();
+            int aline = Utils.isNullOrEmpty(line) ? str.length() :
+                    Integer.parseInt(line) == 0 ? str.length() : Integer.parseInt(line);
             mEditText.setText(str);
-            mEditText.setSelection(Utils.isNullOrEmpty(line) ? str.length() : Integer.parseInt(line));
+            mEditText.setSelection(aline);
         }
         mEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -148,10 +147,8 @@ public class NoteAddFragment extends QMUIFragment {
         mTopBar.addRightTextButton("完成", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("ddddddddddddd", "原始" + mEditText.getText().toString());
-                Log.e("ddddddddddddd", "html" + Html.toHtml(mEditText.getText()).replace(" dir=\"ltr\"", ""));
 
-                SpannableString spannable = new SpannableString("[icon] "+mEditText.getText());
+               /* SpannableString spannable = new SpannableString("[icon] "+mEditText.getText());
                 //ForegroundColorSpan
                 ForegroundColorSpan colorSpan = new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.app_color_blue));
                 spannable.setSpan(colorSpan, 11, spannable.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -170,6 +167,7 @@ public class NoteAddFragment extends QMUIFragment {
                 Log.e("ddddddddddddd", "spannableString end" + spannable.getSpanEnd(imageSpan1));
                 String fn = "image_test.png";
                 String path = getContext().getFilesDir() + File.separator + fn;
+                Log.e("ddddddddddddd", "spannableString" + path);*/
 
                 /*try {
                     File file = new File(path);
@@ -185,7 +183,6 @@ public class NoteAddFragment extends QMUIFragment {
                     e.printStackTrace();
                 }*/
 
-                Log.e("ddddddddddddd", "spannableString" + path);
 
                 //关闭软键盘
                 InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -230,6 +227,8 @@ public class NoteAddFragment extends QMUIFragment {
                 showToast("修改失败");
             }
         }
+        //结束返回
+        popBackStack();
     }
 
     private void showToast(String msg){
@@ -241,7 +240,7 @@ public class NoteAddFragment extends QMUIFragment {
     private void checkSelfPermissionChoosePhoto(){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //未授权，申请授权(从相册选择图片需要读取存储卡的权限)
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RequestCode_Choose_Photo);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RequestCode_Choose_Photo);
         } else {
             //已授权，获取照片
             choosePhoto();
@@ -266,6 +265,10 @@ public class NoteAddFragment extends QMUIFragment {
     }
 
     private void choosePhoto(){
+
+    }
+
+    private void takePhoto(){
 
     }
 

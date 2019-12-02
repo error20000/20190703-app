@@ -56,8 +56,8 @@ public class NoteFragment extends QMUIFragment {
     private final int MsgType_Add = 3;
     private NoteService service;
 
-    //search
     List<Note> data = new ArrayList<>();
+    QMUIGroupListView.Section section = null;
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -70,9 +70,15 @@ public class NoteFragment extends QMUIFragment {
         ButterKnife.bind(this, rootView);
 
         initTopBar();
-        initData();
+        //initData();
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        initData();
     }
 
     private void initTopBar() {
@@ -123,6 +129,8 @@ public class NoteFragment extends QMUIFragment {
         User user = LoginUtils.getLoginUser(getContext());
         data = service.selectList(user != null ? user.getsUser_ID() : "");
 
+        hideTips();
+
         //初始化列表
         initNode();
     }
@@ -154,7 +162,10 @@ public class NoteFragment extends QMUIFragment {
             }
         });
 
-        QMUIGroupListView.Section section = QMUIGroupListView.newSection(getContext()).setTitle("");
+        if(section != null){
+            section.removeFrom(mGroupListView);
+        }
+        section = QMUIGroupListView.newSection(getContext()).setTitle("");
         for (int i = 0; i < data.size(); i++){
             Note note = data.get(i);
             QMUICommonListItemView node = mGroupListView.createItemView(note.getsNote_Content());
@@ -222,7 +233,6 @@ public class NoteFragment extends QMUIFragment {
     }
 
     private void deleteNote(String objStr){
-        Log.e("deleteNote", objStr);
         Note note = JSONObject.parseObject(objStr, Note.class);
         if(note == null){
             showToast("删除失败：记录不存在。");
@@ -231,13 +241,14 @@ public class NoteFragment extends QMUIFragment {
         int res = service.delete(note.getsNote_ID());
         if(res > 0){
             showToast("删除成功");
+            //加载数据
+            initData();
         }else{
             showToast("删除失败");
         }
     }
 
     private void goDetail(String objStr){
-        Log.e("goDetail", objStr);
         Bundle bundle = new Bundle();
         bundle.putString("obj", objStr);
         NoteDetailFragment fragment = new NoteDetailFragment();

@@ -38,7 +38,7 @@ public class BaseHelper extends SQLiteOpenHelper{
     private static final String TAG = BaseHelper.class.getSimpleName();
     private static Map<String, BaseHelper> dbMaps = new HashMap<String, BaseHelper>();
     private static String dbName = "aasystem.db";
-    private static int dbVersion = 6;
+    private static int dbVersion = 7;
     private SQLiteOpenHelper helper;
 
     private BaseHelper(Context context, String dbName, int dbVersion) {

@@ -4,12 +4,6 @@ package com.jian.system;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.jian.system.service.UserService;
-import com.jian.system.utils.NetworkUtils;
-import com.jian.system.utils.SyncUtils;
-
 
 public class LauncherActivity extends Activity {
 
@@ -32,8 +26,9 @@ public class LauncherActivity extends Activity {
             }*//*
         }*/
 
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, WelcomeActivity.class);
         startActivity(intent);
         finish();
     }
+
 }
