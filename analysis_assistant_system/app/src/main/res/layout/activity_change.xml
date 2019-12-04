@@ -36,7 +36,7 @@
                 android:gravity="right|center_vertical"
                 android:paddingLeft="@dimen/common_content_spacing"
                 android:paddingRight="@dimen/common_content_spacing"
-                android:text="地址："
+                android:text="地址:"
                 android:textColor="?attr/qmui_config_color_gray_1"
                 android:textSize="?attr/qmui_common_list_item_title_h_text_size" />
 
@@ -47,6 +47,7 @@
                 android:layout_gravity="fill"
                 android:background="@drawable/qmui_divider_bottom_bitmap"
                 android:hint="例如：http://xx.xxx.com or http://127.0.0.1:8080"
+                android:singleLine="true"
                 android:textColor="?attr/qmui_config_color_gray_5"
                 android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
         </GridLayout>
@@ -65,5 +66,6 @@
             app:qmui_radius="4dp" />
 
     </LinearLayout>
+
 
 </LinearLayout>

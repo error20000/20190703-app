@@ -12,9 +12,11 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jian.system.ChangeActivity;
 import com.jian.system.LoginActivity;
 import com.jian.system.MainActivity;
 import com.jian.system.R;
+import com.jian.system.config.UrlConfig;
 import com.jian.system.entity.User;
 import com.jian.system.fragment.components.CenterChangePwdFragment;
 import com.jian.system.fragment.components.CenterResetGestureFragment;
@@ -112,17 +114,24 @@ public class CenterLayout extends QMUIWindowInsetLayout {
         lockScreen.setDetailText(timeStr);
         lockScreen.setTag("lockScreen");
 
+        QMUICommonListItemView serverChange =  mGroupListView.createItemView("切换服务器");
+        serverChange.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
+        serverChange.setTag("serverChange");
+
         QMUICommonListItemView logout =  mGroupListView.createItemView("退出登录");
         logout.getTextView().setTextColor(QMUIResHelper.getAttrColor(getContext(), R.attr.qmui_config_color_red));
         logout.setTag("logout");
 
-        QMUIGroupListView.newSection(getContext())
-                .setTitle("")
-                .addItemView(gesturePwd, mOnClickListenerGroup)
-                .addItemView(changePwd, mOnClickListenerGroup)
-                .addItemView(lockScreen, mOnClickListenerGroup)
-                .addItemView(logout, mOnClickListenerGroup)
-                .addTo(mGroupListView);
+        QMUIGroupListView.Section section = QMUIGroupListView.newSection(getContext())
+                .setTitle("");
+        section.addItemView(gesturePwd, mOnClickListenerGroup);
+        section.addItemView(changePwd, mOnClickListenerGroup);
+        section.addItemView(lockScreen, mOnClickListenerGroup);
+        if(UrlConfig.debug){
+            section.addItemView(serverChange, mOnClickListenerGroup);
+        }
+        section.addItemView(logout, mOnClickListenerGroup);
+        section.addTo(mGroupListView);
     }
 
     private View.OnClickListener mOnClickListenerGroup;
@@ -183,6 +192,10 @@ public class CenterLayout extends QMUIWindowInsetLayout {
                                     }
                                 })
                                 .create(mCurrentDialogStyle).show();
+                        break;
+                    case "serverChange":
+                        Intent intent = new Intent(getContext(), ChangeActivity.class);
+                        startActivity(intent);
                         break;
                     case "logout":
                         new QMUIDialog.MessageDialogBuilder(context)
