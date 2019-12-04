@@ -28,6 +28,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jian.system.R;
 import com.jian.system.entity.Note;
 import com.jian.system.entity.User;
+import com.jian.system.fragment.SoftKeyBoardListener;
 import com.jian.system.service.NoteService;
 import com.jian.system.utils.LoginUtils;
 import com.jian.system.utils.Utils;
@@ -101,8 +102,7 @@ public class NoteAddFragment extends QMUIFragment {
         //initData();
 
         //设置锚点高度
-        //initEditHight();
-        SoftHideKeyBoardUtil.assistActivity(getActivity());
+        initEditHight();
 
         //弹出软键盘
         mEditText.postDelayed(new Runnable() {
@@ -312,153 +312,21 @@ public class NoteAddFragment extends QMUIFragment {
         //监听软键盘弹出，并获取软键盘高度
         SoftKeyBoardListener.setListener(getActivity(), new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             @Override
-            public void keyBoardShow(int visibleHeight, int height) {
+            public void keyBoardShow(int height) {
                 //软键盘弹起事件  并给View设置高度
-                ViewGroup.LayoutParams layoutParams = (ViewGroup.LayoutParams) mAnchorBottomView.getLayoutParams();
+                ViewGroup.LayoutParams layoutParams = mAnchorBottomView.getLayoutParams();
                 layoutParams.height = height;
                 mAnchorBottomView.setLayoutParams(layoutParams);
-
-                /*ViewGroup.LayoutParams parentParams = mAnchorBottomView.getRootView().getLayoutParams();
-                parentParams.height = visibleHeight;
-                mAnchorBottomView.getRootView().setLayoutParams(parentParams);*/
-
-                /*ViewGroup.LayoutParams slp = (ViewGroup.LayoutParams) mScrollView.getLayoutParams();
-                slp.height = visibleHeight - QMUIDisplayHelper.dp2px(getContext(), 40) - QMUIDisplayHelper.dp2px(getContext(), 56);
-                mScrollView.setLayoutParams(slp);*/
             }
 
             @Override
-            public void keyBoardHide(int visibleHeight, int height) {
+            public void keyBoardHide(int height) {
                 //软键盘隐藏事件  并给View设置高度为0
-                ViewGroup.LayoutParams layoutParams = (ViewGroup.LayoutParams) mAnchorBottomView.getLayoutParams();
+                ViewGroup.LayoutParams layoutParams = mAnchorBottomView.getLayoutParams();
                 layoutParams.height = 0;
                 mAnchorBottomView.setLayoutParams(layoutParams);
-
-                /*ViewGroup.LayoutParams parentParams = mAnchorBottomView.getRootView().getLayoutParams();
-                parentParams.height = visibleHeight;
-                mAnchorBottomView.getRootView().setLayoutParams(parentParams);*/
-
-                /*ViewGroup.LayoutParams slp = (ViewGroup.LayoutParams) mScrollView.getLayoutParams();
-                slp.height = visibleHeight - QMUIDisplayHelper.dp2px(getContext(), 40) - QMUIDisplayHelper.dp2px(getContext(), 56);
-                mScrollView.setLayoutParams(slp);*/
             }
         });
-    }
-
-    public static class SoftKeyBoardListener {
-
-        private View rootView;//activity的根视图
-        int rootViewVisibleHeight;//纪录根视图的显示高度
-        private OnSoftKeyBoardChangeListener onSoftKeyBoardChangeListener;
-
-        public SoftKeyBoardListener(Activity activity) {
-            //获取activity的根视图
-            rootView = activity.getWindow().getDecorView();
-
-            //监听视图树中全局布局发生改变或者视图树中的某个视图的可视状态发生改变
-            rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-                //获取当前根视图在屏幕上显示的大小
-                Rect r = new Rect();
-                rootView.getWindowVisibleDisplayFrame(r);
-
-                int visibleHeight = r.height();
-                System.out.println(""+visibleHeight+"---"+ (visibleHeight- r.top));
-                if (rootViewVisibleHeight == 0) {
-                    rootViewVisibleHeight = visibleHeight;
-                    return;
-                }
-
-                //根视图显示高度没有变化，可以看作软键盘显示／隐藏状态没有改变
-                if (rootViewVisibleHeight == visibleHeight) {
-                    return;
-                }
-
-                //根视图显示高度变小超过200，可以看作软键盘显示了
-                if (rootViewVisibleHeight - visibleHeight > 200) {
-                    if (onSoftKeyBoardChangeListener != null) {
-                        onSoftKeyBoardChangeListener.keyBoardShow(visibleHeight - r.top, rootViewVisibleHeight - visibleHeight);
-                    }
-                    rootViewVisibleHeight = visibleHeight;
-                    return;
-                }
-
-                //根视图显示高度变大超过200，可以看作软键盘隐藏了
-                if (visibleHeight - rootViewVisibleHeight > 200) {
-                    if (onSoftKeyBoardChangeListener != null) {
-                        onSoftKeyBoardChangeListener.keyBoardHide(visibleHeight - r.top, visibleHeight - rootViewVisibleHeight);
-                    }
-                    rootViewVisibleHeight = visibleHeight;
-                    return;
-                }
-
-            });
-        }
-
-        private void setOnSoftKeyBoardChangeListener(OnSoftKeyBoardChangeListener onSoftKeyBoardChangeListener) {
-            this.onSoftKeyBoardChangeListener = onSoftKeyBoardChangeListener;
-        }
-
-        public interface OnSoftKeyBoardChangeListener {
-            void keyBoardShow(int visibleHeight, int height);
-
-            void keyBoardHide(int visibleHeight, int height);
-        }
-
-        public static void setListener(Activity activity, OnSoftKeyBoardChangeListener onSoftKeyBoardChangeListener) {
-            SoftKeyBoardListener softKeyBoardListener = new SoftKeyBoardListener(activity);
-            softKeyBoardListener.setOnSoftKeyBoardChangeListener(onSoftKeyBoardChangeListener);
-        }
-    }
-
-    /**
-     * 解决键盘档住输入框
-     * Created by SmileXie on 2017/4/3.
-     */
-    public static class SoftHideKeyBoardUtil {
-        public static void assistActivity (Activity activity) {
-            new SoftHideKeyBoardUtil(activity);
-        }
-        private View mChildOfContent; private int usableHeightPrevious; private FrameLayout.LayoutParams frameLayoutParams; //为适应华为小米等手机键盘上方出现黑条或不适配
-        private int contentHeight;//获取setContentView本来view的高度
-        private boolean isfirst = true;//只用获取一次
-        private int statusBarHeight;//状态栏高度
-        private SoftHideKeyBoardUtil(Activity activity) { //1､找到Activity的最外层布局控件，它其实是一个DecorView,它所用的控件就是FrameLayout
-            FrameLayout content = (FrameLayout) activity.findViewById(android.R.id.content); //2､获取到setContentView放进去的View
-            mChildOfContent = content.getChildAt(0); //3､给Activity的xml布局设置View树监听，当布局有变化，如键盘弹出或收起时，都会回调此监听
-            mChildOfContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() { //4､软键盘弹起会使GlobalLayout发生变化
-                public void onGlobalLayout() {  if (isfirst) {
-                    contentHeight = mChildOfContent.getHeight();//兼容华为等机型
-                    isfirst = false;
-                }  //5､当前布局发生变化时，对Activity的xml布局进行重绘
-                    possiblyResizeChildOfContent();
-                }
-            }); //6､获取到Activity的xml布局的放置参数
-            frameLayoutParams = (FrameLayout.LayoutParams) mChildOfContent.getLayoutParams();
-        }
-        // 获取界面可用高度，如果软键盘弹起后，Activity的xml布局可用高度需要减去键盘高度
-        private void possiblyResizeChildOfContent() { //1､获取当前界面可用高度，键盘弹起后，当前界面可用布局会减少键盘的高度
-            int usableHeightNow = computeUsableHeight(); //2､如果当前可用高度和原始值不一样
-            if (usableHeightNow != usableHeightPrevious) {  //3､获取Activity中xml中布局在当前界面显示的高度
-                int usableHeightSansKeyboard = mChildOfContent.getRootView().getHeight();  //4､Activity中xml布局的高度-当前可用高度
-                int heightDifference = usableHeightSansKeyboard - usableHeightNow;  //5､高度差大于屏幕1/4时，说明键盘弹出
-                if (heightDifference > (usableHeightSansKeyboard/4)) {  // 6､键盘弹出了，Activity的xml布局高度应当减去键盘高度
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                        frameLayoutParams.height = usableHeightSansKeyboard - heightDifference + statusBarHeight;
-                    } else {
-                        frameLayoutParams.height = usableHeightSansKeyboard - heightDifference;
-                    }
-                } else {
-                    frameLayoutParams.height = contentHeight;
-                }  //7､ 重绘Activity的xml布局
-                mChildOfContent.requestLayout();
-                usableHeightPrevious = usableHeightNow;
-            }
-        }
-        private int computeUsableHeight() {
-            Rect r = new Rect();
-            mChildOfContent.getWindowVisibleDisplayFrame(r); // 全屏模式下：直接返回r.bottom，r.top其实是状态栏的高度
-            return (r.bottom - r.top);
-        }
     }
 
 }

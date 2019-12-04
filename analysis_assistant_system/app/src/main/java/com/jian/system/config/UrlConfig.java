@@ -8,7 +8,7 @@ public class UrlConfig {
 
     public static boolean debug = true;  //false 关闭可选测试地址
 
-    public static String baseUrl = "http://192.168.59.168:8065";
+    public static String baseUrl = "http://192.168.1.33:8065";
 //    public static String baseUrl = "http://gztest.yunh.xyz:8085";
 
     //系统
