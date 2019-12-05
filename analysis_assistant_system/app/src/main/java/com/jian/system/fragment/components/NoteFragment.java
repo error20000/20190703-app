@@ -41,6 +41,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,6 +57,7 @@ public class NoteFragment extends QMUIFragment {
     private final int MsgType_Delete = 2;
     private final int MsgType_Add = 3;
     private NoteService service;
+    public static String imgRegEx = "\\[img=[^\\]]+\\]";
 
     List<Note> data = new ArrayList<>();
     QMUIGroupListView.Section section = null;
@@ -169,6 +172,7 @@ public class NoteFragment extends QMUIFragment {
         for (int i = 0; i < data.size(); i++){
             Note note = data.get(i);
             String title = note.getsNote_Content().split("\\n")[0];
+            title = title.replaceAll(imgRegEx, ""); //去除图片
             QMUICommonListItemView node = mGroupListView.createItemView(title);
             node.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
             node.getTextView().setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 200));
@@ -320,5 +324,20 @@ public class NoteFragment extends QMUIFragment {
 
         //初始化列表
         initNode();
+    }
+
+    public static void main(String[] args){
+
+        String test = "[img=htt://127.0.0.1/t est/test.png]测试测试[img=file://data/0/dat/com.system/test.png]ddeedd";
+        String regEx = "\\[img=[^\\]]+\\]";
+        Pattern pat = Pattern.compile(regEx);
+        Matcher mat = pat.matcher(test);
+        while (mat.find()) {
+            String r = mat.group();
+            System.out.println(r);
+        }
+
+        System.out.println(test.replaceAll(regEx, ""));
+
     }
 }
