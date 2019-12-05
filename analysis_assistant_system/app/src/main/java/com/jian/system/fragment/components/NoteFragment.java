@@ -120,10 +120,10 @@ public class NoteFragment extends QMUIFragment {
         //queryData(params);
 
         service = new NoteService(getContext());
-        queryData();
+        queryDataLocal();
     }
 
-    private void queryData(){
+    private void queryDataLocal(){
 
         //查询数据库
         User user = LoginUtils.getLoginUser(getContext());
@@ -168,7 +168,8 @@ public class NoteFragment extends QMUIFragment {
         section = QMUIGroupListView.newSection(getContext()).setTitle("");
         for (int i = 0; i < data.size(); i++){
             Note note = data.get(i);
-            QMUICommonListItemView node = mGroupListView.createItemView(note.getsNote_Content());
+            String title = note.getsNote_Content().split("\\n")[0];
+            QMUICommonListItemView node = mGroupListView.createItemView(title);
             node.setAccessoryType(QMUICommonListItemView.ACCESSORY_TYPE_CHEVRON);
             node.getTextView().setMaxWidth(QMUIDisplayHelper.dp2px(getContext(), 200));
             node.getTextView().setSingleLine(true);

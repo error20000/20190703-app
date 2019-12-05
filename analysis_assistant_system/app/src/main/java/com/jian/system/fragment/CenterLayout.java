@@ -23,6 +23,7 @@ import com.jian.system.fragment.components.CenterResetGestureFragment;
 import com.jian.system.gesture.GesturePwdCheckActivity;
 import com.jian.system.gesture.GesturePwdResetActivity;
 import com.jian.system.gesture.util.GestureUtils;
+import com.jian.system.utils.DataCacheUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
 import com.qmuiteam.qmui.util.QMUIResHelper;
@@ -195,6 +196,7 @@ public class CenterLayout extends QMUIWindowInsetLayout {
                         break;
                     case "serverChange":
                         Intent intent = new Intent(getContext(), ChangeActivity.class);
+                        intent.putExtra(ChangeActivity.isFromSet, true);
                         startActivity(intent);
                         break;
                     case "logout":
@@ -237,6 +239,8 @@ public class CenterLayout extends QMUIWindowInsetLayout {
         GestureUtils.remove(getContext(), GestureUtils.USER_USERNAME);
         GestureUtils.remove(getContext(), GestureUtils.USER_PASSWORD);
         LoginActivity.isShowGestureLogin = false;
+        //清除数据缓存
+        DataCacheUtils.clearAll();
         //跳转登录
         Intent intent = new Intent(getContext(), LoginActivity.class);
         startActivity(intent);

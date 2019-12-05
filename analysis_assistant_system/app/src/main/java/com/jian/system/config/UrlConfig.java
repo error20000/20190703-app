@@ -1,5 +1,7 @@
 package com.jian.system.config;
 
+import com.jian.system.Application;
+import com.jian.system.gesture.util.GestureUtils;
 import com.jian.system.utils.Utils;
 
 import java.lang.reflect.Field;
@@ -8,8 +10,9 @@ public class UrlConfig {
 
     public static boolean debug = true;  //false 关闭可选测试地址
 
-    public static String baseUrl = "http://192.168.1.33:8065";
+    public static String baseUrl = "http://192.168.59.168:8065";
 //    public static String baseUrl = "http://gztest.yunh.xyz:8085";
+    public static String defUrl = baseUrl;
 
     //系统
     public static String sysQueryUrl = "/api/sys/app/findOne";
@@ -102,7 +105,8 @@ public class UrlConfig {
     public static String syncMsgUrl = "/api/sync/app/msg";
 
     static {
-        updateBaseUrl("");
+        //String baseUrl = GestureUtils.get(Application.getContext(), GestureUtils.TEST_BASE_URL);
+        updateBaseUrl(baseUrl);
     }
 
     public static void updateBaseUrl(String newBaseUrl) {
@@ -114,7 +118,8 @@ public class UrlConfig {
         //更新其他url
         Field[]  f = UrlConfig.class.getDeclaredFields();
         for (int i = 0; i < f.length; i++) {
-            if("debug".equals(f[i].getName()) || "baseUrl".equals(f[i].getName())) {
+            //排除不更新的字段
+            if("debug,baseUrl,defUrl".contains(f[i].getName())) {
                 continue;
             }
             f[i].setAccessible(true);

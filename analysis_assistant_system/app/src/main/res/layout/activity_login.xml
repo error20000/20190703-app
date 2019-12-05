@@ -30,9 +30,11 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:paddingLeft="40dp"
-            android:paddingRight="40dp">
+            android:paddingRight="40dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" >
 
-            <com.github.florent37.materialtextfield.MaterialTextField
+            <!--<com.github.florent37.materialtextfield.MaterialTextField
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:mtf_image="@drawable/ic_username"
@@ -44,6 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="用户名"
+                    android:maxLength="32"
                     android:textColor="#333"
                     android:singleLine="true"
                     android:textSize="15sp" />
@@ -62,12 +65,42 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="密码"
+                    android:maxLength="32"
                     android:singleLine="true"
                     android:inputType="textPassword"
                     android:textColor="#333"
                     android:textSize="15sp" />
 
-            </com.github.florent37.materialtextfield.MaterialTextField>
+            </com.github.florent37.materialtextfield.MaterialTextField>-->
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/login_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="用户名"
+                android:maxLength="32"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelText="用户名"
+                app:met_singleLineEllipsis="true"
+                app:met_baseColor="#666"
+                app:met_primaryColor="#666"
+                app:met_iconLeft="@mipmap/username"
+                app:met_iconPadding="8dp" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/login_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="密码"
+                android:inputType="textPassword"
+                android:maxLength="32"
+                app:met_floatingLabel="highlight"
+                app:met_floatingLabelText="密码"
+                app:met_singleLineEllipsis="true"
+                app:met_baseColor="#666"
+                app:met_primaryColor="#666"
+                app:met_iconLeft="@mipmap/password"
+                app:met_iconPadding="8dp" />
 
             <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
                 android:id="@+id/button_login"

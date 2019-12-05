@@ -23,4 +23,8 @@ public class DataCacheUtils {
     public static void clear(String key){
         cache.remove(key);
     }
+
+    public static void clearAll(){
+        cache.clear();
+    }
 }

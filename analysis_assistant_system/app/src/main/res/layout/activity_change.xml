@@ -20,6 +20,23 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:id="@+id/base_url_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="?attr/qmui_config_color_gray_5"
+                android:textSize="?attr/qmui_common_list_item_detail_h_text_size"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +45,6 @@
             android:fitsSystemWindows="true">
 
             <TextView
-                android:id="@+id/base_url_label"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/qmui_list_item_height"
                 android:layout_gravity="fill_horizontal"
@@ -52,18 +68,54 @@
                 android:textSize="?attr/qmui_common_list_item_detail_h_text_size" />
         </GridLayout>
 
-        <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
-            android:id="@+id/button_base_url"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:gravity="right"
             android:layout_marginTop="20dp"
-            android:paddingLeft="16dp"
-            android:paddingTop="10dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="10dp"
-            android:text="确定切换"
-            app:qmui_radius="4dp" />
+            android:visibility="gone">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="记住服务器"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
+
+            <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+                android:id="@+id/button_sure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingLeft="16dp"
+                android:paddingTop="10dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="10dp"
+                android:text="确定切换"
+                app:qmui_radius="4dp" />
+
+            <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+                android:id="@+id/button_reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="10dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="10dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="10dp"
+                android:text="恢复默认"
+                app:qmui_radius="4dp"
+                android:visibility="gone"/>
+        </LinearLayout>
 
     </LinearLayout>
 

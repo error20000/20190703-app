@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.jian.system.utils.NetworkUtils;
 import com.jian.system.utils.SyncUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUISwipeBackActivityManager;
+import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.squareup.leakcanary.LeakCanary;
 
 public class Application extends MultiDexApplication {
@@ -133,5 +135,45 @@ public class Application extends MultiDexApplication {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
+    }
+
+    //TODO -------------------------------------------------------------------------------- 工具栏
+
+    static QMUITipDialog tipDialog;
+
+    public static void showTips(String msg){
+        tipDialog = new QMUITipDialog.Builder(context)
+                .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING)
+                .setTipWord(msg)
+                .create();
+        tipDialog.show();
+    }
+
+    public static void showTips(String msg, @QMUITipDialog.Builder.IconType int iconType){
+        tipDialog = new QMUITipDialog.Builder(context)
+                .setIconType(iconType)
+                .setTipWord(msg)
+                .create();
+        tipDialog.show();
+    }
+
+    public static void hideTips(){
+        tipDialog.dismiss();
+    }
+
+    public static void showToast(String msg){
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    public static boolean checkNetwork(){
+        return NetworkUtils.isNetworkConnected(context);
+    }
+
+    public static boolean handleErrorCode(JSONObject resObj){
+        if (resObj.getInteger("code") <= 0) {
+            showToast(resObj.getString("msg"));
+            return true;
+        }
+        return false;
     }
 }

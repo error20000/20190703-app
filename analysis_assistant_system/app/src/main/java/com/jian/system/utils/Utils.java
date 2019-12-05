@@ -143,7 +143,7 @@ public class Utils {
 			mUrl = new URL(url);
 			//获得连接
 			HttpURLConnection conn = (HttpURLConnection) mUrl.openConnection();
-			//设置超时时间为6000毫秒，conn.setConnectionTiem(0);表示没有时间限制
+			//设置超时时间为6000毫秒，conn.setConnectTimeout(0);表示没有时间限制
 			conn.setConnectTimeout(6000);
 			//连接设置获得数据流
 			conn.setDoInput(true);
