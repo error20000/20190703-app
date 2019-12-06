@@ -32,6 +32,7 @@ public class Application extends MultiDexApplication {
     public static boolean hasNetwork = true;
     private int activityCount = 0;
     private boolean isBackground  = false;
+    public static boolean isBackLock  = true; //是否开启后台锁
 
     public static final int Scan_Search_Request_Code = 100;
     public static final int Scan_Add_Request_Code = 200;
@@ -91,7 +92,8 @@ public class Application extends MultiDexApplication {
                 //等于0时就是从后台或者打开app
                 if(0 == activityCount && (activity instanceof MainActivity)){
                     //从后台就进入解锁页面
-                    if(isBackground){
+                    if(isBackground && isBackLock){
+                        Log.d("Application", "onActivityStarted " + activity.getLocalClassName());
                         Intent intent = new Intent(getContext(), GesturePwdCheckActivity.class);
                         intent.putExtra(GestureUtils.Gesture_Model_Type, GestureUtils.Gesture_Model_Type_Lock_Screen);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

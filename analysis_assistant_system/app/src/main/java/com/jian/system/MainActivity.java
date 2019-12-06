@@ -49,12 +49,16 @@ public class MainActivity extends QMUIFragmentActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+
         switch(ev.getAction()){
             case MotionEvent.ACTION_DOWN:
+                Log.d("MainActivity", "dispatchTouchEvent ACTION_DOWN" );
                 mHandler.removeCallbacksAndMessages(null);
                 break;
 
             case MotionEvent.ACTION_UP:
+                Log.d("MainActivity", "dispatchTouchEvent ACTION_UP" );
+                Application.isBackLock = true;
                 //获取锁屏时间
                 String time = GestureUtils.get(this, GestureUtils.USER_LOCK_SCREEN_TIME);
                 if(Utils.isNullOrEmpty(time)){
@@ -73,6 +77,7 @@ public class MainActivity extends QMUIFragmentActivity {
     protected void onPause() {
         super.onPause();
         mHandler.removeCallbacksAndMessages(null);
+        Log.d("MainActivity", "onPause");
     }
 
     @Override
@@ -80,6 +85,7 @@ public class MainActivity extends QMUIFragmentActivity {
         mHandler.removeCallbacksAndMessages(null);
         fixInputMethodManagerLeak(this);
         super.onDestroy();
+        Log.d("MainActivity", "onDestroy");
     }
 
     private void showCheckGesture(){

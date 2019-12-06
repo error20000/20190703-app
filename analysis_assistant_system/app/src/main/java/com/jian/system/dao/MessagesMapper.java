@@ -218,6 +218,7 @@ public class MessagesMapper {
         buffer.append("      sMsg_StoreLv4 NVARCHAR(32), ");
         buffer.append("      dMsg_StoreNum NUMBER, ");
         buffer.append("      sMsg_Reason NVARCHAR(64), ");
+        buffer.append("      sMsg_Source NVARCHAR(64), ");
         buffer.append("  PRIMARY KEY (sMsg_ID)");
         buffer.append(" );");
         return buffer.toString();

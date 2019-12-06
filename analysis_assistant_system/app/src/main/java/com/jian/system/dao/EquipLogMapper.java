@@ -95,6 +95,7 @@ public class EquipLogMapper {
         buffer.append("      sELog_StoreLv2 NVARCHAR(32), ");
         buffer.append("      sELog_StoreLv3 NVARCHAR(32), ");
         buffer.append("      sELog_StoreLv4 NVARCHAR(32), ");
+        buffer.append("      sELog_AidID NVARCHAR(32), ");
         buffer.append("  PRIMARY KEY (sELog_ID)");
         buffer.append(" );");
         return buffer.toString();

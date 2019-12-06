@@ -100,6 +100,30 @@ public class SystemMapper {
         buffer.append("      lSys_MapLevel NUMBER,");
         buffer.append("      lSys_MapIconWidth NUMBER,");
         buffer.append("      lSys_MapIconHeight NUMBER,");
+
+        buffer.append("      lSys_StoreMode NUMBER,");
+        buffer.append("      lSys_StoreValue NUMBER,");
+        buffer.append("      lSys_StoreMsg NUMBER,");
+
+        buffer.append("      lSys_EquipMode NUMBER,");
+        buffer.append("      lSys_EquipValue NUMBER,");
+        buffer.append("      lSys_EquipMsg NUMBER,");
+        buffer.append("      lSys_EquipRate NUMBER,");
+
+        buffer.append("      lSys_MapLevelPoint NUMBER,");
+        buffer.append("      lSys_MapIconWidthPoint NUMBER,");
+        buffer.append("      lSys_MapIconHeightPoint NUMBER,");
+        buffer.append("      lSys_MapLevelDef NUMBER,");
+        buffer.append("      lSys_MapIconWidthDef NUMBER,");
+        buffer.append("      lSys_MapIconHeightDef NUMBER,");
+
+        buffer.append("      lSys_StoreIconWidth NUMBER,");
+        buffer.append("      lSys_StoreIconHeight NUMBER,");
+        buffer.append("      lSys_StoreIconWidthPoint NUMBER,");
+        buffer.append("      lSys_StoreIconHeightPoint NUMBER,");
+        buffer.append("      lSys_StoreIconWidthDef NUMBER,");
+        buffer.append("      lSys_StoreIconHeightDef NUMBER,");
+
         buffer.append("  PRIMARY KEY (sSys_ID)");
         buffer.append(" );");
         return buffer.toString();
