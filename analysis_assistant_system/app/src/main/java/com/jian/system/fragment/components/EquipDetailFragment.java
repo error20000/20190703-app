@@ -795,7 +795,7 @@ public class EquipDetailFragment extends QMUIFragment {
         mVerticalStepView.setStepsViewIndicatorComplectingPosition(list.size() - 1)//设置完成的步数
                 .reverseDraw(true)//default is true
                 .setStepViewTexts(list)//总步骤
-                .setLinePaddingProportion(0.85f)//设置indicator线与线间距的比例系数
+                .setLinePaddingProportion(1f)//设置indicator线与线间距的比例系数
                 .setStepsViewIndicatorCompletedLineColor(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5))//设置StepsViewIndicator完成线的颜色
                 .setStepsViewIndicatorUnCompletedLineColor(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5))//设置StepsViewIndicator未完成线的颜色
                 .setStepViewComplectedTextColor(ContextCompat.getColor(getActivity(), R.color.qmui_config_color_gray_5))//设置StepsView text完成线的颜色
@@ -803,6 +803,11 @@ public class EquipDetailFragment extends QMUIFragment {
                 .setStepsViewIndicatorCompleteIcon(defaultIcon)//设置StepsViewIndicator CompleteIcon
                 .setStepsViewIndicatorDefaultIcon(defaultIcon)//设置StepsViewIndicator DefaultIcon
                 .setStepsViewIndicatorAttentionIcon(attentionIcon);//设置StepsViewIndicator AttentionIcon
+
+        //临时解决高度不够
+        ViewGroup.LayoutParams lp = mVerticalStepView.getChildAt(0).getLayoutParams();
+        lp.height = list.size() * 167;
+        mVerticalStepView.getChildAt(0).setLayoutParams(lp);
     }
 
 

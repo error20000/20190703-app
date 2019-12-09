@@ -288,6 +288,10 @@ public class MsgAddFragment extends QMUIFragment {
                                 .create(mCurrentDialogStyle).show();
                         break;
                     case "msgStore":
+                        if(storeTypeData.size() == 0){
+                            showToast("未查询到仓库数据");
+                            return;
+                        }
                         Selector selector = new Selector(getActivity(), 4);
                         selector.setDataProvider(new DataProvider() {
                             @Override

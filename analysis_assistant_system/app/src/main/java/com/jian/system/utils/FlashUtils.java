@@ -58,7 +58,7 @@ public class FlashUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
                 manager.setTorchMode("0", false);
-            } catch (CameraAccessException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {

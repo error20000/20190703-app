@@ -52,7 +52,9 @@ public class DataUtils {
                     for (int i = 0; i < data.size(); i++) {
                         resData.add(data.getObject(i, Dict.class));
                     }
-                    DataCacheUtils.set(sDict_DictTypeNO, resData);
+                    if(resData.size() > 0){
+                        DataCacheUtils.set(sDict_DictTypeNO, resData);
+                    }
                 }
             }
         });
@@ -90,7 +92,9 @@ public class DataUtils {
                     for (int i = 0; i < data.size(); i++) {
                         storeTypeData.add(data.getObject(i, StoreType.class));
                     }
-                    DataCacheUtils.set(ckey, storeTypeData);
+                    if(storeTypeData.size() > 0){
+                        DataCacheUtils.set(ckey, storeTypeData);
+                    }
                 }
             }
         });
@@ -128,7 +132,9 @@ public class DataUtils {
                     for (int i = 0; i < data.size(); i++) {
                         storeData.add(data.getObject(i, Store.class));
                     }
-                    DataCacheUtils.set(ckey, storeData);
+                    if(storeData.size() > 0){
+                        DataCacheUtils.set(ckey, storeData);
+                    }
                 }
             }
         });
@@ -166,7 +172,9 @@ public class DataUtils {
                     for (int i = 0; i < data.size(); i++) {
                         nfcAllData.add(data.getObject(i, Nfc.class));
                     }
-                    DataCacheUtils.set(ckey, nfcAllData);
+                    if(nfcAllData.size() > 0){
+                        DataCacheUtils.set(ckey, nfcAllData);
+                    }
                 }
             }
         });
@@ -233,7 +241,9 @@ public class DataUtils {
                     for (int i = 0; i < data.size(); i++) {
                         aidAllData.add(data.getJSONObject(i));
                     }
-                    DataCacheUtils.set(ckey, aidAllData);
+                    if(aidAllData.size() > 0){
+                        DataCacheUtils.set(ckey, aidAllData);
+                    }
                 }
             }
         });
@@ -271,7 +281,9 @@ public class DataUtils {
                     for (int i = 0; i < data.size(); i++) {
                         aidUserData.add(data.getJSONObject(i));
                     }
-                    DataCacheUtils.set(ckey, aidUserData);
+                    if(aidUserData.size() > 0){
+                        DataCacheUtils.set(ckey, aidUserData);
+                    }
                 }
             }
         });

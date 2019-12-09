@@ -89,6 +89,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = editText1.getText().toString();
                 String password = editText2.getText().toString();
+                //清除数据缓存
+                DataCacheUtils.clearAll();
                 //登录
                 sendLogin(username, Utils.md5(password));
             }

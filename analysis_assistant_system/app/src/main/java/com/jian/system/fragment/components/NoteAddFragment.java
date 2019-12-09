@@ -127,6 +127,7 @@ public class NoteAddFragment extends QMUIFragment {
             }
         });
 
+        mImageView.setVisibility(View.GONE); //关闭图片功能（功能未完成）
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

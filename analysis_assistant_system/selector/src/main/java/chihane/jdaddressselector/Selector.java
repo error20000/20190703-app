@@ -233,7 +233,7 @@ public class Selector implements AdapterView.OnItemClickListener {
 
     private void updateProgressVisibility() {
         ListAdapter adapter = listView.getAdapter();
-        int itemCount = adapter.getCount();
+        int itemCount = adapter != null ? adapter.getCount() : 0;
         progressBar.setVisibility(itemCount > 0 ? View.GONE : View.VISIBLE);
     }
 

@@ -349,7 +349,7 @@ public class MapFragment extends QMUIFragment {
         locationDisplay.addLocationChangedListener(new LocationDisplay.LocationChangedListener() {
             @Override
             public void onLocationChanged(LocationDisplay.LocationChangedEvent locationChangedEvent) {
-                Log.e("onLocationChanged", "point: " + locationChangedEvent.getLocation().getPosition().toString());
+                Log.d("onLocationChanged", "point: " + locationChangedEvent.getLocation().getPosition().toString());
             }
         });
     }
