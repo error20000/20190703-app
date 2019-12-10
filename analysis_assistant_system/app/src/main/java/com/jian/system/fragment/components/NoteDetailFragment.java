@@ -5,13 +5,19 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
 import android.text.Layout;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -64,11 +70,14 @@ import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListSectionHeaderFooterView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -151,10 +160,10 @@ public class NoteDetailFragment extends QMUIFragment {
         });
     }
 
-    private String getContent(){
-        return note.getsNote_Content();
+    private SpannableString getContent(){
+        return NoteFragment.parseContent(note);
     }
-    
+
     private void goAdd(int line){
 
         Bundle bundle = new Bundle();

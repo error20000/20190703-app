@@ -3,6 +3,7 @@ package com.jian.system.fragment.components;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +15,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -37,15 +41,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jian.system.Application;
+import com.jian.system.MainActivity;
 import com.jian.system.R;
 import com.jian.system.entity.Note;
 import com.jian.system.entity.User;
 import com.jian.system.fragment.SoftKeyBoardListener;
 import com.jian.system.nfc.NfcActivity;
 import com.jian.system.service.NoteService;
+import com.jian.system.utils.ImageUtils;
 import com.jian.system.utils.LoginUtils;
 import com.jian.system.utils.Utils;
 import com.qmuiteam.qmui.arch.QMUIFragment;
@@ -59,6 +66,7 @@ import com.sonnyjack.library.qrcode.QrCodeUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -79,10 +87,9 @@ public class NoteAddFragment extends QMUIFragment {
     private View rootView;
     private final int RequestCode_Choose_Photo = 1;
     private final int RequestCode_Take_Photo = 2;
-
-    private int mAnchorHeight = 0;
-    private int mScreenHeight = 0;
-    private int mScrollHeight = 0;
+    private Uri uri = null;
+    private String FileProviderAuthor = "com.jian.system.note";
+    private String takePhotoCacheFile = "noteTakePhotoCache.png";
 
     @BindView(R.id.topbar)
     QMUITopBarLayout mTopBar;
@@ -111,23 +118,10 @@ public class NoteAddFragment extends QMUIFragment {
             String str = note.getsNote_Content();
             int aline = Utils.isNullOrEmpty(line) ? str.length() :
                     Integer.parseInt(line) == 0 ? str.length() : Integer.parseInt(line);
-            mEditText.setText(str);
+            mEditText.setText(NoteFragment.parseContent(note));
             mEditText.setSelection(aline);
         }
-        mEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                //You can identify which key pressed buy checking keyCode value with KeyEvent.KEYCODE_
-                if(keyCode == KeyEvent.KEYCODE_DEL){
-                    //this is for backspace
-                    Log.e("dddddddd", "delete getSelectionStart " + mEditText.getSelectionStart());
-                    Log.e("dddddddd", "delete getSelectionEnd " + mEditText.getSelectionEnd());
-                }
-                return false;
-            }
-        });
 
-        mImageView.setVisibility(View.GONE); //关闭图片功能（功能未完成）
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,7 +130,6 @@ public class NoteAddFragment extends QMUIFragment {
         });
 
         initTopBar();
-        //initData();
 
         //设置锚点高度
         initEditHight();
@@ -173,42 +166,6 @@ public class NoteAddFragment extends QMUIFragment {
         mTopBar.addRightTextButton("完成", R.id.topbar_right_about_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                SpannableString spannable = new SpannableString("[icon] "+mEditText.getText());
-                //ForegroundColorSpan
-                ForegroundColorSpan colorSpan = new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.app_color_blue));
-                spannable.setSpan(colorSpan, 11, spannable.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
-                Drawable drawable1 = getContext().getResources().getDrawable(R.mipmap.map);
-                drawable1.setBounds(0, 0, drawable1.getIntrinsicWidth(),  drawable1.getIntrinsicHeight());
-                ImageSpan imageSpan1 = new ImageSpan(drawable1, ImageSpan.ALIGN_BASELINE);
-                spannable.setSpan(imageSpan1, 0, 6, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
-                mEditText.setText(spannable);
-                mEditText.setSelection(spannable.length());
-
-
-                Log.e("ddddddddddddd", "spannableString" + spannable);
-                Log.e("ddddddddddddd", "spannableString start" + spannable.getSpanStart(imageSpan1));
-                Log.e("ddddddddddddd", "spannableString end" + spannable.getSpanEnd(imageSpan1));
-                String fn = "image_test.png";
-                String path = getContext().getFilesDir() + File.separator + fn;
-                Log.e("ddddddddddddd", "spannableString" + path);
-
-                try {
-                    File file = new File(path);
-                    if (file.exists())
-                        file.delete();
-                    if (!file.exists())
-                        file.createNewFile();
-                    FileOutputStream out = null;
-                    out = new FileOutputStream(file);
-                    ((BitmapDrawable) drawable1).getBitmap().compress(Bitmap.CompressFormat.PNG, 100, out);
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
 
                 //关闭软键盘
                 InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -281,7 +238,7 @@ public class NoteAddFragment extends QMUIFragment {
             ArrayAdapter adapter = new ArrayAdapter<>(getActivity(), R.layout.simple_list_item, data);
 
             mListPopup = new QMUIListPopup(getContext(), QMUIPopup.DIRECTION_NONE, adapter);
-            mListPopup.create(QMUIDisplayHelper.dp2px(getContext(), 150), QMUIDisplayHelper.dp2px(getContext(), 100), new AdapterView.OnItemClickListener() {
+            mListPopup.create(QMUIDisplayHelper.dp2px(getContext(), 120), QMUIDisplayHelper.dp2px(getContext(), 120), new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     mListPopup.dismiss();
@@ -315,7 +272,7 @@ public class NoteAddFragment extends QMUIFragment {
 
     private void checkSelfPermissionTakePhoto(){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA ) != PackageManager.PERMISSION_GRANTED ) {
-            //未授权，申请授权(从相册选择图片需要读取存储卡的权限)
+            //未授权，申请授权(使用相机)
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, RequestCode_Take_Photo);
         } else {
             //已授权，获取相机
@@ -328,22 +285,28 @@ public class NoteAddFragment extends QMUIFragment {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d("权限申请结果回调", permissions.length +" : " + requestCode + "-" + grantResults.length + "-" + (grantResults[0] == PackageManager.PERMISSION_GRANTED) );
         switch (requestCode) {
             case RequestCode_Take_Photo:   //拍照权限申请返回
                 if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
                     takePhoto();
+                }else{
+                    showToast("请设置必要权限");
                 }
                 break;
             case RequestCode_Choose_Photo:   //相册选择照片权限申请返回
-                if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
                     choosePhoto();
+                }else{
+                    showToast("请设置必要权限");
                 }
+
                 break;
         }
     }
 
     private void choosePhoto(){
-        Intent intent = new Intent(Intent.ACTION_PICK);  //跳转到 ACTION_IMAGE_CAPTURE
+        Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, RequestCode_Choose_Photo);
         //关闭后台锁
@@ -351,7 +314,23 @@ public class NoteAddFragment extends QMUIFragment {
     }
 
     private void takePhoto(){
-
+        File file = new File(getContext().getExternalCacheDir(),takePhotoCacheFile);
+        if (file.exists())
+            file.delete();
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT >= 24){
+            // FileProvider是一种特殊的内容提供器，使用了和内容提供器类似的机制来保护数据，可以选择性的将封装过的Uri共享给外部，从而提高应用的安全性。
+            uri = FileProvider.getUriForFile(getContext(), FileProviderAuthor, file);
+        }else{
+            uri = Uri.fromFile(file);
+        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        startActivityForResult(intent, RequestCode_Take_Photo);
         //关闭后台锁
         Application.isBackLock = false;
     }
@@ -362,78 +341,60 @@ public class NoteAddFragment extends QMUIFragment {
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case RequestCode_Choose_Photo:
-                    Uri uri1 = data.getData();
-                    Log.e("ddddddddddd", uri1.toString());
-                    try {
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContext().getContentResolver().openInputStream(uri1));
-
-                        SpannableString spannable = new SpannableString("[icon] "+mEditText.getText());
-
-                        Drawable drawable1 = new BitmapDrawable(bitmap);
-                        drawable1.setBounds(0, 0, bitmap.getWidth(),  bitmap.getHeight());
-                        ImageSpan imageSpan1 = new ImageSpan(drawable1, ImageSpan.ALIGN_BASELINE);
-                        spannable.setSpan(imageSpan1, 0, 6, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
-                        Log.e("dddddddddd", mEditText.getWidth() + "__" + bitmap.getWidth() + "__" +drawable1.getIntrinsicWidth());
-                        Log.e("dddddddddd", mEditText.getHeight() + "__" + bitmap.getHeight() + "__" +drawable1.getIntrinsicHeight());
-
-                        mEditText.setText(spannable);
-                        mEditText.setSelection(spannable.length());
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    uri = data.getData();
+                    Log.d("ddddddddddd", uri.toString());
                     break;
                 case RequestCode_Take_Photo:
-
+                    Log.d("ddddddddddd", uri.toString());
                     break;
+            }
+            //读取返回的数据
+            if(uri == null){
+                Log.e(TAG, "未获取到图片。");
+                return;
+            }
+            try {
+                //读取图片
+                InputStream in = getContext().getContentResolver().openInputStream(uri);
+                Bitmap bitmap = BitmapFactory.decodeStream(in);
+                bitmap = ImageUtils.scaleBitmapUniformWidth(bitmap, mEditText.getWidth());//等比缩放
+                //保存图片
+                String fn = "note_" + new Date().getTime();
+                String path = getContext().getFilesDir() + File.separator + fn;
+                File file = new File(path);
+                if (file.exists()){
+                    file.delete();
+                }
+                file.createNewFile();
+                FileOutputStream out = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.close();
+                //插入标记
+                String tips = "[img="+path+"]";
+                String sp = "\n";
+                int index = mEditText.getSelectionStart();
+                Editable editable = mEditText.getText();
+                editable.insert(index, sp + tips + sp);
+                //解析标记数据
+                int start = index + sp.length();
+                int end = index + sp.length() + tips.length();
+                SpannableString spannable = new SpannableString(mEditText.getText());
+
+                Drawable drawable = new BitmapDrawable(getContext().getResources(), bitmap);
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),  drawable.getIntrinsicHeight());
+
+                ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE);
+                spannable.setSpan(imageSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+                mEditText.setText(spannable);
+                mEditText.setSelection(end + sp.length()); //光标
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
-    /*private void bindEvent(final Context context) {
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            public void onGlobalLayout() {
-                //noinspection ConstantConditions
-                View mDecor = getActivity().getWindow().getDecorView();
-                Rect r = new Rect();
-                mDecor.getWindowVisibleDisplayFrame(r);
-                mScreenHeight = QMUIDisplayHelper.getScreenHeight(context);
-                int anchorShouldHeight = mScreenHeight - r.bottom;
-                if (anchorShouldHeight != mAnchorHeight) {
-                    mAnchorHeight = anchorShouldHeight;
-                    LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mAnchorBottomView.getLayoutParams();
-                    lp.height = mAnchorHeight;
-                    mAnchorBottomView.setLayoutParams(lp);
-                    LinearLayout.LayoutParams slp = (LinearLayout.LayoutParams) mScrollerView.getLayoutParams();
-                    if (onGetScrollHeight() == ViewGroup.LayoutParams.WRAP_CONTENT) {
-                        mScrollHeight = Math.max(mScrollHeight, mScrollerView.getMeasuredHeight());
-                    } else {
-                        mScrollHeight = onGetScrollHeight();
-                    }
-                    if (mAnchorHeight == 0) {
-                        slp.height = mScrollHeight;
-                    } else {
-                        mScrollerView.getChildAt(0).requestFocus();
-                        slp.height = mScrollHeight - mAnchorHeight;
-                    }
-                    mScrollerView.setLayoutParams(slp);
-                } else {
-                    //如果内容过高,anchorShouldHeight=0,但实际下半部分会被截断,因此需要保护
-                    //由于高度超过后,actionContainer并不会去测量和布局,所以这里拿不到action的高度,因此用比例估算一个值
-                    LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mDialogView.getLayoutParams();
-                    int dialogLayoutMaxHeight = mScreenHeight - lp.bottomMargin - lp.topMargin - r.top;
-                    int scrollLayoutHeight = mScrollerView.getMeasuredHeight();
-                    if (scrollLayoutHeight > dialogLayoutMaxHeight * 0.8) {
-                        mScrollHeight = (int) (dialogLayoutMaxHeight * 0.8);
-                        LinearLayout.LayoutParams slp = (LinearLayout.LayoutParams) mScrollerView.getLayoutParams();
-                        slp.height = mScrollHeight;
-                        mScrollerView.setLayoutParams(slp);
-                    }
-                }
-            }
-        });
-    }*/
 
     /**
      * 使键盘能够弹起

@@ -2,10 +2,17 @@
 package com.jian.system.fragment.components;
 
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +22,7 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jian.system.Application;
 import com.jian.system.R;
 import com.jian.system.config.UrlConfig;
 import com.jian.system.entity.Note;
@@ -326,6 +334,32 @@ public class NoteFragment extends QMUIFragment {
         initNode();
     }
 
+
+    public static SpannableString parseContent(Note note){
+        String oragin = note.getsNote_Content();
+        SpannableString spannable = new SpannableString(oragin);
+        //提取图片地址
+        String regEx = "\\[img=[^\\]]+\\]";
+        Pattern pat = Pattern.compile(regEx);
+        Matcher mat = pat.matcher(oragin);
+        while (mat.find()) {
+            String r = mat.group();
+            String path = r.replace("[img=", "").replace("]", "");
+            //读取图片
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            //解析
+            int start = mat.start();
+            int end = mat.end();
+
+            Drawable drawable = new BitmapDrawable(Application.getContext().getResources(), bitmap);
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),  drawable.getIntrinsicHeight());
+
+            ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE);
+            spannable.setSpan(imageSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
+        return spannable;
+    }
+
     public static void main(String[] args){
 
         String test = "[img=htt://127.0.0.1/t est/test.png]测试测试[img=file://data/0/dat/com.system/test.png]ddeedd";
@@ -335,6 +369,7 @@ public class NoteFragment extends QMUIFragment {
         while (mat.find()) {
             String r = mat.group();
             System.out.println(r);
+            System.out.println(mat.start()+"---"+mat.end());
         }
 
         System.out.println(test.replaceAll(regEx, ""));
