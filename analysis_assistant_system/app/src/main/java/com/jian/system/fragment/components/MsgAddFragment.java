@@ -442,7 +442,6 @@ public class MsgAddFragment extends QMUIFragment {
                         for (int i = 0; i < msgTypeData.size(); i++) {
                             tNames[i] = msgTypeData.get(i).getsDict_Name();
                         }
-                        Arrays.sort(tNames);
                         new QMUIDialog.CheckableDialogBuilder(getActivity())
                                 .setTitle("请选择")
                                 .addItems(tNames, new DialogInterface.OnClickListener() {
@@ -462,7 +461,6 @@ public class MsgAddFragment extends QMUIFragment {
                         for (int i = 0; i < msgSourceData.size(); i++) {
                             sNames[i] = msgSourceData.get(i).getsDict_Name();
                         }
-                        Arrays.sort(sNames);
                         new QMUIDialog.CheckableDialogBuilder(getActivity())
                                 .setTitle("请选择")
                                 .addItems(sNames, new DialogInterface.OnClickListener() {
