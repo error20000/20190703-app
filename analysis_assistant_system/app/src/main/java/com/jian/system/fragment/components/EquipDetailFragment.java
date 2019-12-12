@@ -806,7 +806,7 @@ public class EquipDetailFragment extends QMUIFragment {
 
         //临时解决高度不够
         ViewGroup.LayoutParams lp = mVerticalStepView.getChildAt(0).getLayoutParams();
-        lp.height = list.size() * 167;
+        lp.height = list.size() * 300;
         mVerticalStepView.getChildAt(0).setLayoutParams(lp);
     }
 
